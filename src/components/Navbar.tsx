@@ -33,7 +33,7 @@ function Navbar() {
               <div className="space-y-5">
                 <Link to="/login">
                   <div className="flex h-14 items-center justify-center bg-[#2bb3b3] text-lg font-bold text-white transition hover:bg-[#20a3a3]">
-                    Sign in
+                    Login
                   </div>
                 </Link>
 
@@ -43,7 +43,7 @@ function Navbar() {
                     to="/register"
                     className="font-semibold text-[#2bb3b3] hover:underline"
                   >
-                    Sign up
+                    Sign in
                   </Link>
                 </p>
               </div>

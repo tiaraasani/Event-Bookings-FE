@@ -66,7 +66,7 @@ function Jumbotron() {
           <div className="w-full max-w-[650px] overflow-hidden rounded-xl">
             <img
               src="/activity.jpg"
-              alt="People attending an outdoor event"
+              alt="event activity"
               className="h-[640px] w-full object-cover"
             />
           </div>

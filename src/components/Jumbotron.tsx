@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export default function Jumbotron() {
+function Jumbotron() {
   return (
     <div className="min-h-screen bg-[#002F36] px-8 pt-32 pb-16 text-white">
       <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-7xl items-center">
@@ -75,3 +75,5 @@ export default function Jumbotron() {
     </div>
   );
 }
+
+export default Jumbotron;

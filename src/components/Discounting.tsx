@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
-export default function Discounting() {
+function Discounting() {
   return (
-    <section className="min-h-screen bg-[#E8FFFF] px-6 py-20">
+    <div className="min-h-screen bg-[#E8FFFF] px-6 py-20">
       <div className="mx-auto flex min-h-[calc(100vh-10rem)] max-w-7xl items-center">
         {/* Left */}
         <div className="w-full lg:w-1/2">
@@ -41,6 +41,8 @@ export default function Discounting() {
           />
         </div>
       </div>
-    </section>
+    </div>
   );
 }
+
+export default Discounting;

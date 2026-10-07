@@ -4,8 +4,11 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/stores/useAuth";
 
 function Navbar() {
+  const { user, logout } = useAuth();
+
   return (
     <nav className="absolute top-0 left-0 z-50 w-full bg-transparent text-white">
       <div className="flex h-24 items-center justify-between px-8">
@@ -20,35 +23,47 @@ function Navbar() {
 
         {/* Right */}
         <div className="flex items-center gap-6">
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 text-base font-semibold outline-none">
-              Greetings! Sign in
-              <span className="text-xs">▼</span>
-            </DropdownMenuTrigger>
+          {user ? (
+            <div className="flex items-center gap-4">
+              <span className="font-semibold">Hi, {user.name}</span>
+              <button
+                onClick={logout}
+                className="text-sm font-semibold underline underline-offset-4"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-2 text-base font-semibold outline-none">
+                Greetings! Sign in
+                <span className="text-xs">▼</span>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent
-              align="end"
-              className="mt-4 w-[440px] bg-white p-8 text-black"
-            >
-              <div className="space-y-5">
-                <Link to="/login">
-                  <div className="flex h-14 items-center justify-center bg-[#2bb3b3] text-lg font-bold text-white transition hover:bg-[#20a3a3]">
-                    Login
-                  </div>
-                </Link>
-
-                <p className="text-center text-lg">
-                  New here?{" "}
-                  <Link
-                    to="/register"
-                    className="font-semibold text-[#2bb3b3] hover:underline"
-                  >
-                    Sign in
+              <DropdownMenuContent
+                align="end"
+                className="mt-4 w-[440px] bg-white p-8 text-black"
+              >
+                <div className="space-y-5">
+                  <Link to="/login">
+                    <div className="flex h-14 items-center justify-center bg-[#2bb3b3] text-lg font-bold text-white transition hover:bg-[#20a3a3]">
+                      Login
+                    </div>
                   </Link>
-                </p>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+                  <p className="text-center text-lg">
+                    New here?{" "}
+                    <Link
+                      to="/register"
+                      className="font-semibold text-[#2bb3b3] hover:underline"
+                    >
+                      Register
+                    </Link>
+                  </p>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
           <Link
             to="/c"

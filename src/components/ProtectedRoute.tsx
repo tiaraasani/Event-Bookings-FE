@@ -1,15 +1,15 @@
 import type { Role } from "@/types/user";
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuthStore } from "@/store/auth.store";
+import { useAuth } from "@/stores/useAuth";
 
 type Props = {
   roles?: Role[];
 };
 
 function ProtectedRoute({ roles }: Props) {
-  const { user, token } = useAuthStore();
+  const { user } = useAuth();
 
-  if (!token) {
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 

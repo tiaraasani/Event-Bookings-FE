@@ -7,6 +7,7 @@ import EventPage from "./pages/EventPage";
 import CreateEvent from "@/pages/CreateEvent";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ProfilePage from "./pages/ProfilePage";
 
 export const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -22,7 +23,7 @@ export const router = createBrowserRouter([
   },
   {
     element: <ProtectedRoute />,
-    children: [],
+    children: [{ path: "/profile", element: <ProfilePage /> }],
   },
 
   {

@@ -24,7 +24,9 @@ function Navbar() {
         <div className="flex items-center gap-6">
           {user ? (
             <div className="flex items-center gap-4">
-              <span className="font-semibold">Hi, {user.name}</span>
+              <Link to="/profile" className="font-semibold hover:underline">
+                Hi, {user.name}
+              </Link>
 
               <button
                 onClick={logout}

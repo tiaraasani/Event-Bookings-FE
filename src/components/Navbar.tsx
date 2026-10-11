@@ -10,7 +10,7 @@ function Navbar() {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="absolute top-0 left-0 z-50 w-full bg-transparent text-white">
+    <nav className="absolute left-0 top-0 z-50 w-full bg-[#003238] text-white">
       <div className="flex h-24 items-center justify-between px-8">
         <Link to="/" className="flex items-center gap-3">
           <div className="text-3xl font-bold">EB</div>
@@ -21,11 +21,11 @@ function Navbar() {
           </div>
         </Link>
 
-        {/* Right */}
         <div className="flex items-center gap-6">
           {user ? (
             <div className="flex items-center gap-4">
               <span className="font-semibold">Hi, {user.name}</span>
+
               <button
                 onClick={logout}
                 className="text-sm font-semibold underline underline-offset-4"
@@ -66,8 +66,8 @@ function Navbar() {
           )}
 
           <Link
-            to="/c"
-            className="flex h-14 items-center bg-[#0fc45b] px-8 text-lg font-bold text-white transition hover:bg-[#0eae52]"
+            to="/events/create"
+            className="flex h-14 items-center bg-green-500 px-8 text-lg font-bold text-white transition hover:bg-green-600"
           >
             <span className="mr-3 text-xl">▣</span>
             Create Event

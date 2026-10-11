@@ -1,6 +1,6 @@
 import { useAuth } from "@/stores/useAuth";
 import { useNavigate } from "react-router-dom";
-import { api } from "@/lib/api";
+import { axiosInstance } from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { AxiosError } from "axios";
@@ -12,7 +12,7 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (values: LoginSchema) => {
-      const { data } = await api.post("/auth/login", values);
+      const { data } = await axiosInstance.post("/auth/login", values);
       return data;
     },
 

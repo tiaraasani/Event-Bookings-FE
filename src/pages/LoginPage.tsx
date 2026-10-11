@@ -21,7 +21,7 @@ function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-[#002F36] px-4">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-md space-y-5-bg-white p-8"
+        className="w-full max-w-md space-y-5 bg-white p-8"
       >
         <h1 className="text-2xl font-bold">Login</h1>
 
@@ -43,6 +43,12 @@ function LoginPage() {
             </p>
           )}
         </div>
+        <p className="text-right text-sm">
+          <Link to="/forgot-password" className="text-[#2bb3b3]">
+            Forget password?
+          </Link>
+        </p>
+
         <Button type="submit" disabled={isPending} className="w-full">
           {isPending ? "Loading..." : "Login"}
         </Button>

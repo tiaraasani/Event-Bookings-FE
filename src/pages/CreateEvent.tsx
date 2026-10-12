@@ -6,6 +6,7 @@ import {
 } from "@/schemas/createEvent";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 function CreateEvent() {
   const { mutate, isPending } = useCreateEvent();
@@ -49,10 +50,15 @@ function CreateEvent() {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
   }
-
   function onSubmit(data: CreateEventSchema) {
-    mutate(data);
+    mutate({
+      ...data,
+      imageFile,
+    });
   }
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState("");
 
   return (
     <div className="min-h-screen bg-[#f3f6f8] text-[#123638]">
@@ -137,17 +143,56 @@ function CreateEvent() {
               className="w-full resize-y rounded border border-gray-300 px-4 py-3 outline-none focus:border-teal-500"
             />
           </div>
-
           <div>
             <label className="mb-4 block text-xl font-medium">
-              Event image URL
+              Event image
             </label>
 
             <input
-              {...register("image")}
-              placeholder="Paste an image URL"
-              className="w-full rounded border border-gray-300 px-4 py-3 outline-none focus:border-teal-500"
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+
+                if (file) {
+                  setImageFile(file);
+                  setImagePreview(URL.createObjectURL(file));
+                }
+              }}
+              className="w-full rounded border border-gray-300 px-4 py-3
+      file:mr-4 file:rounded file:border-0 file:bg-teal-500
+      file:px-4 file:py-2 file:font-semibold file:text-white"
             />
+
+            <p className="mt-2 text-sm text-gray-500">
+              Choose an image from your computer. JPG, PNG, or WebP recommended.
+            </p>
+
+            {imagePreview && (
+              <div className="mt-4">
+                <img
+                  src={imagePreview}
+                  alt="Event preview"
+                  className="h-56 w-full rounded-md border object-cover"
+                />
+
+                <p className="mt-2 text-sm text-gray-600">
+                  Selected file: {imageFile?.name}
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    URL.revokeObjectURL(imagePreview);
+                    setImageFile(null);
+                    setImagePreview("");
+                  }}
+                  className="mt-2 text-sm font-semibold text-red-600 hover:underline"
+                >
+                  Remove image
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

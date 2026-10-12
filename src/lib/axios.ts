@@ -9,8 +9,9 @@ axiosInstance.interceptors.request.use(
   (config) => {
     const token = useAuth.getState().user?.accessToken;
 
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-
+    if (token && !config.headers.Authorization) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => Promise.reject(error),

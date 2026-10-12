@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import { axiosInstance } from "@/lib/axios";
 import type { RegisterSchema } from "@/schemas/register";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
@@ -10,7 +10,7 @@ export function useRegister() {
 
   return useMutation({
     mutationFn: async (values: RegisterSchema) => {
-      await api.post("/auth/register", {
+      await axiosInstance.post("/auth/register", {
         name: values.name,
         email: values.email,
         password: values.password,

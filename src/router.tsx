@@ -8,6 +8,8 @@ import CreateEvent from "@/pages/CreateEvent";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
+import EventDetail from "./pages/EventDetail";
+import AccessDeniedPage from "./pages/AccessDeniedPage";
 
 export const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -18,12 +20,12 @@ export const router = createBrowserRouter([
     element: <EventPage />,
   },
   {
-    path: "/events/create",
-    element: <CreateEvent />,
-  },
-  {
     path: "/events/:id",
     element: <EventDetail />,
+  },
+  {
+    path: "/access-denied",
+    element: <AccessDeniedPage />,
   },
   {
     element: <ProtectedRoute />,
@@ -32,8 +34,14 @@ export const router = createBrowserRouter([
 
   {
     element: <ProtectedRoute roles={["ORGANIZER"]} />,
-    children: [],
+    children: [
+      {
+        path: "/events/create",
+        element: <CreateEvent />,
+      },
+    ],
   },
+
   { path: "/forgot-password", element: <ForgotPasswordPage /> },
   { path: "/reset-password", element: <ResetPasswordPage /> },
 ]);

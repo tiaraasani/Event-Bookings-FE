@@ -22,6 +22,10 @@ export const router = createBrowserRouter([
     element: <CreateEvent />,
   },
   {
+    path: "/events/:id",
+    element: <EventDetail />,
+  },
+  {
     element: <ProtectedRoute />,
     children: [{ path: "/profile", element: <ProfilePage /> }],
   },

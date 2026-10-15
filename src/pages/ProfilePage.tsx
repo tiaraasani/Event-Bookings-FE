@@ -16,6 +16,7 @@ import {
   changePasswordSchema,
   type ChangePasswordSchema,
 } from "@/schemas/change-password";
+import { Link } from "react-router-dom";
 
 type ProfileTab = "home" | "orders" | "settings";
 
@@ -128,7 +129,8 @@ function ProfilePage() {
             Home
           </button>
 
-          <button
+          <Link
+            to="/my-orders"
             type="button"
             onClick={() => setActiveTab("orders")}
             className={`border-b-2 px-5 py-4 text-sm font-semibold transition ${
@@ -138,7 +140,7 @@ function ProfilePage() {
             }`}
           >
             My Orders
-          </button>
+          </Link>
 
           <button
             type="button"
@@ -251,91 +253,6 @@ function ProfilePage() {
                   </ul>
                 )}
               </div>
-            </section>
-          </div>
-        )}
-
-        {/* MY ORDERS TAB */}
-        {activeTab === "orders" && (
-          <div className="mx-auto max-w-3xl space-y-6">
-            <section className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
-              <h2 className="text-2xl font-bold">Find My Ticket</h2>
-
-              <p className="mt-2 leading-6 text-gray-600">
-                Enter your six-digit Order ID to look up your ticket.
-              </p>
-
-              <form
-                className="mt-6 space-y-5"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  toast.info(
-                    "Order lookup will be available when the transaction API is implemented.",
-                  );
-                }}
-              >
-                <div className="space-y-2">
-                  <Label htmlFor="orderId">Order ID</Label>
-
-                  <Input
-                    id="orderId"
-                    inputMode="numeric"
-                    maxLength={6}
-                    placeholder="Enter your 6-digit Order ID"
-                    value={orderId}
-                    disabled={noOrderId}
-                    onChange={(event) =>
-                      setOrderId(
-                        event.target.value.replace(/\D/g, "").slice(0, 6),
-                      )
-                    }
-                  />
-                </div>
-
-                <label className="flex cursor-pointer items-start gap-3 text-sm text-gray-600">
-                  <input
-                    type="checkbox"
-                    checked={noOrderId}
-                    onChange={(event) => {
-                      setNoOrderId(event.target.checked);
-                      setOrderId("");
-                    }}
-                    className="mt-1 accent-[#159E98]"
-                  />
-
-                  <span>
-                    I don't have my Order ID
-                    <span className="mt-1 block text-gray-500">
-                      You'll need an order lookup option to recover your
-                      booking.
-                    </span>
-                  </span>
-                </label>
-
-                <Button
-                  type="submit"
-                  disabled={!noOrderId && orderId.length !== 6}
-                  className="w-full bg-[#159E98] text-white hover:bg-[#117F7A]"
-                >
-                  Find My Ticket
-                </Button>
-
-                <p className="text-xs leading-5 text-gray-500">
-                  Ticket searching is not connected yet. This button will become
-                  functional when your team adds the order lookup API.
-                </p>
-              </form>
-            </section>
-
-            <section className="rounded-xl border border-[#D4EAE6] bg-[#EDF8F6] p-6">
-              <h3 className="font-semibold text-gray-900">
-                Need help with your tickets?
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-gray-600">
-                Once ticket lookup is connected, you will be able to retrieve
-                your booking details using your order information.
-              </p>
             </section>
           </div>
         )}

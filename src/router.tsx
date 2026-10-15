@@ -10,6 +10,8 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import EventDetail from "./pages/EventDetail";
 import AccessDeniedPage from "./pages/AccessDeniedPage";
+import MyOrdersPage from "./pages/myOrdersPage";
+import TransactionPage from "./pages/TransactionPage";
 
 export const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -28,8 +30,16 @@ export const router = createBrowserRouter([
     element: <AccessDeniedPage />,
   },
   {
+    path: "/transaction/:eventId",
+    element: <TransactionPage />,
+  },
+  {
     element: <ProtectedRoute />,
     children: [{ path: "/profile", element: <ProfilePage /> }],
+  },
+  {
+    element: <ProtectedRoute />,
+    children: [{ path: "/my-orders", element: <MyOrdersPage /> }],
   },
 
   {

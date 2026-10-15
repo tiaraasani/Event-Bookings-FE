@@ -27,10 +27,10 @@ function Jumbotron() {
             </Link>
 
             <Link
-              to="/demo"
+              to="/Events"
               className="border-b-2 border-white pb-2 text-lg font-bold transition hover:text-gray-300"
             >
-              Book A Demo
+              Book An Event
             </Link>
           </div>
 

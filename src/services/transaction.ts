@@ -60,10 +60,16 @@ export const uploadPaymentProof = async (orderId: number, image: File) => {
 export interface CreateTransactionData {
   ticketId: number;
   quantity: number;
+  pointsToUse?: number;
 }
 
 export const createTransaction = async (data: CreateTransactionData) => {
   const response = await axiosInstance.post("/transactions", data);
 
   return response.data;
+};
+
+export const getMyPointBalance = async (): Promise<number> => {
+  const response = await axiosInstance.get("/transactions/my/points");
+  return response.data.data.balance;
 };

@@ -2,7 +2,7 @@ import EventCard from "@/components/EventCard";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import useGetEvents from "@/hooks/api/event/useGetEvents";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function EventsPage() {
   const { data: events, isPending, isError } = useGetEvents();
@@ -10,6 +10,16 @@ function EventsPage() {
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [search]);
 
   const categories = [
     "All",
@@ -19,7 +29,9 @@ function EventsPage() {
   ];
 
   const filteredEvents = (events ?? []).filter((event) => {
-    const matchesName = event.name.toLowerCase().includes(search.toLowerCase());
+    const matchesName = event.name
+      .toLowerCase()
+      .includes(debouncedSearch.toLowerCase());
 
     const matchesLocation = event.city
       .toLowerCase()
@@ -101,21 +113,8 @@ function EventsPage() {
           ))}
         </div>
 
-        <div className="my-6 flex gap-3 overflow-x-auto">
-          {["All", "Today", "Tomorrow", "This Week", "This Month"].map(
-            (date) => (
-              <button
-                key={date}
-                className="shrink-0 rounded-full border px-5 py-2 text-sm hover:border-teal-500 hover:text-teal-600"
-              >
-                {date}
-              </button>
-            ),
-          )}
-        </div>
-
         <section id="events">
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6 flex items-center justify-between py-4">
             <h2 className="text-2xl font-bold">Explore Events</h2>
 
             <span className="text-sm text-gray-500">

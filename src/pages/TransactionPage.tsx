@@ -4,6 +4,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import useGetEventsById from "@/hooks/api/event/useGetEventById";
 import { createTransaction } from "@/services/transaction";
+import { useGetMyPointBalance } from "@/hooks/api/useGetMyPointsBalance";
 
 const formatRupiah = (amount: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -22,6 +23,11 @@ function TransactionPage() {
 
   const { data: event, isLoading, isError } = useGetEventsById(eventId);
 
+  const { data: pointBalance = 0, isLoading: isPointBalanceLoading } =
+    useGetMyPointBalance();
+
+  const [pointsToUse, setPointsToUse] = useState(0);
+
   const [errorMessage, setErrorMessage] = useState("");
 
   const selectedTicket = event?.tickets.find(
@@ -30,6 +36,13 @@ function TransactionPage() {
 
   const quantity = Math.min(10, Math.max(1, requestedQuantity));
   const total = selectedTicket ? selectedTicket.price * quantity : 0;
+  const validPointsToUse = Math.min(
+    Math.max(0, Math.floor(pointsToUse)),
+    pointBalance,
+    total,
+  );
+
+  const finalPrice = total - validPointsToUse;
 
   const createTransactionMutation = useMutation({
     mutationFn: createTransaction,
@@ -169,12 +182,55 @@ function TransactionPage() {
             <span>Subtotal</span>
             <span>{formatRupiah(total)}</span>
           </div>
+          <div className="mt-5 rounded-xl border border-gray-200 p-4">
+            <div className="flex justify-between gap-4">
+              <label htmlFor="pointsToUse" className="font-medium">
+                Use your points
+              </label>
+
+              <span className="text-sm text-teal-700">
+                {isPointBalanceLoading
+                  ? "Loading..."
+                  : `${pointBalance.toLocaleString("id-ID")} points available`}
+              </span>
+            </div>
+
+            <input
+              id="pointsToUse"
+              type="number"
+              min={0}
+              max={Math.min(pointBalance, total)}
+              step={1}
+              value={pointsToUse}
+              disabled={isPointBalanceLoading || pointBalance === 0}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+
+                setPointsToUse(
+                  Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0,
+                );
+              }}
+              className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-teal-500"
+            />
+
+            <p className="mt-2 text-xs text-gray-500">
+              1 point reduces your payment by Rp 1. Maximum usable:{" "}
+              {Math.min(pointBalance, total).toLocaleString("id-ID")} points.
+            </p>
+
+            {validPointsToUse > 0 && (
+              <div className="mt-3 flex justify-between text-teal-700">
+                <span>Points discount</span>
+                <span>-{formatRupiah(validPointsToUse)}</span>
+              </div>
+            )}
+          </div>
 
           <hr className="my-5 border-gray-200" />
 
           <div className="flex justify-between text-xl font-bold">
             <span>Total</span>
-            <span>{formatRupiah(total)}</span>
+            <span>{formatRupiah(finalPrice)}</span>
           </div>
 
           {errorMessage && (
@@ -192,6 +248,7 @@ function TransactionPage() {
               createTransactionMutation.mutate({
                 ticketId: selectedTicket.id,
                 quantity,
+                pointsToUse: validPointsToUse,
               });
             }}
             className="mt-7 w-full rounded-lg bg-teal-600 px-6 py-4 font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"

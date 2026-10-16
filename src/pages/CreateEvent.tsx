@@ -331,14 +331,14 @@ function CreateEvent() {
             </div>
 
             <div>
-              <label className="mb-2 block">Select currency</label>
+              <label className="mb-2 block">Currency</label>
 
-              <select
+              <div
                 defaultValue="IDR"
                 className="w-full rounded border border-gray-300 bg-white px-4 py-3"
               >
-                <option value="IDR">IDR - Indonesian Rupiah</option>
-              </select>
+                IDR - Indonesian Rupiah
+              </div>
             </div>
           </div>
         </section>

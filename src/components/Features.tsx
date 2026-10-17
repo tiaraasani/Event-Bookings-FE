@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 function Features() {
   return (
     <div className="min-h-screen bg-[#FFFFFF] px-6 py-20">
@@ -191,16 +189,6 @@ function Features() {
               </p>
             </div>
           </div>
-        </div>
-
-        <div className="mt-20 flex justify-center">
-          <Link
-            to="/"
-            className="group text-xl font-bold text-[#073B4C] underline decoration-2 underline-offset-8"
-          >
-            View All Feature
-            <span className="ml-3 inline-block">→</span>
-          </Link>
         </div>
       </div>
     </div>

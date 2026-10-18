@@ -74,7 +74,7 @@ function EventDetail() {
       <Navbar />
 
       {/* Event image */}
-      <section className="mt-6 h-[70vh] w-full bg-gray-100">
+      <section className="mt-6 h-[40vh] w-full bg-gray-100 md:h-[70vh]">
         {event.image ? (
           <img
             src={event.image}
@@ -89,8 +89,9 @@ function EventDetail() {
       </section>
 
       {/* Event information */}
-      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-12 md:px-12 md:py-16 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
-        <div>
+      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-12 md:min-h-[70vh] md:grid-cols-[1.5fr_1fr] md:gap-16 md:px-12 md:py-16">
+        {/* Left column */}
+        <div className="flex flex-col">
           <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-green-700">
             {event.category?.name ?? "Event"}
           </p>
@@ -114,12 +115,13 @@ function EventDetail() {
               {event.description || "No event description available."}
             </p>
           </div>
-          {/* Back button */}
-          <div className="mx-auto max-w-7xl px-6 pt-6 md:px-12">
+
+          {/* Back button pushed to the bottom */}
+          <div className="mt-10 pt-6 md:mt-auto md:pt-10">
             <button
               type="button"
               onClick={() => navigate("/events")}
-              className="inline-flex items-center gap-2 font-semibold text-green-700 transition hover:text-green-800 py-40"
+              className="inline-flex items-center gap-2 font-semibold text-green-700 transition hover:text-green-800"
             >
               <span aria-hidden="true">←</span>
               Back to Events
@@ -127,7 +129,7 @@ function EventDetail() {
           </div>
         </div>
 
-        {/* Event details and purchase button */}
+        {/* Right column: Event details and purchase button */}
         <aside className="h-fit rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
           <h2 className="mb-8 text-2xl font-bold">Event Details</h2>
 
@@ -166,13 +168,17 @@ function EventDetail() {
           </button>
         </aside>
       </section>
+
+      {/* Ticket selection modal */}
       {isTicketModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl">
-            <div className="bg-slate-800 p-6 text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4 backdrop-blur-sm">
+          <div className="my-auto w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <div className="bg-slate-800 p-5 text-white md:p-6">
               <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-xl font-bold">{event.name}</h2>
+                <div className="min-w-0">
+                  <h2 className="break-words text-xl font-bold">
+                    {event.name}
+                  </h2>
                   <p className="mt-2 text-sm text-slate-300">
                     {event.type === "ONLINE" ? "Online event" : event.city}
                   </p>
@@ -181,7 +187,7 @@ function EventDetail() {
                 <button
                   type="button"
                   onClick={() => setIsTicketModalOpen(false)}
-                  className="text-2xl text-white hover:text-teal-300"
+                  className="shrink-0 text-2xl text-white hover:text-teal-300"
                   aria-label="Close ticket selection"
                 >
                   &times;
@@ -227,8 +233,8 @@ function EventDetail() {
 
               return (
                 <>
-                  <div className="p-6">
-                    <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                  <div className="p-5 md:p-6">
+                    <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
                       <div>
                         <h3 className="text-lg font-bold">{ticket.name}</h3>
                         <p className="mt-1 font-semibold text-teal-700">
@@ -273,7 +279,7 @@ function EventDetail() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-4 border-t border-gray-200 p-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-col gap-4 border-t border-gray-200 p-5 md:flex-row md:items-center md:justify-between">
                     <div>
                       <p className="text-xl font-bold">
                         {formatRupiah(ticket.price * quantity)}
@@ -290,7 +296,7 @@ function EventDetail() {
                           `/transaction/${event.id}?ticketId=${ticket.id}&quantity=${quantity}`,
                         );
                       }}
-                      className="rounded-lg bg-teal-600 px-8 py-3 font-semibold text-white hover:bg-teal-700"
+                      className="w-full rounded-lg bg-teal-600 px-8 py-3 font-semibold text-white hover:bg-teal-700 md:w-auto"
                     >
                       Continue
                     </button>

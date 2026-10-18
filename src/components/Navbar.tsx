@@ -11,23 +11,24 @@ function Navbar() {
 
   return (
     <nav className="absolute left-0 top-0 z-50 w-full bg-[#003238] text-white">
-      <div className="flex h-24 items-center justify-between px-8">
-        <Link to="/" className="flex items-center gap-3">
-          <div className="text-3xl font-bold">EB</div>
-
+      <div className="flex min-h-20 items-center justify-between gap-3 px-4 py-3 md:h-24 md:px-8">
+        <Link to="/" className="flex shrink-0 items-center gap-2 md:gap-3">
+          <div className="text-2xl font-bold md:text-3xl">EB</div>
           <div className="leading-none">
-            <p className="text-xl font-bold">EVENT</p>
-            <p className="text-xl font-bold">BOOKINGS</p>
+            <p className="text-base font-bold md:text-xl">EVENT</p>
+            <p className="text-base font-bold md:text-xl">BOOKINGS</p>
           </div>
         </Link>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 md:gap-6">
           {user ? (
-            <div className="flex items-center gap-4">
-              <Link to="/profile" className="font-semibold hover:underline">
+            <div className="flex items-center gap-3 md:gap-4">
+              <Link
+                to="/profile"
+                className="max-w-24 truncate text-sm font-semibold hover:underline md:max-w-none md:text-base"
+              >
                 Hi, {user.name}
               </Link>
-
               <button
                 onClick={logout}
                 className="text-sm font-semibold underline underline-offset-4"
@@ -37,23 +38,23 @@ function Navbar() {
             </div>
           ) : (
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-2 text-base font-semibold outline-none">
-                Greetings! Sign in
+              <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-semibold outline-none md:gap-2 md:text-base">
+                Sign in
                 <span className="text-xs">▼</span>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent
                 align="end"
-                className="mt-4 w-[440px] bg-white p-8 text-black"
+                className="mt-4 w-[calc(100vw-2rem)] max-w-[440px] bg-white p-5 text-black md:p-8"
               >
                 <div className="space-y-5">
                   <Link to="/login">
-                    <div className="flex h-14 items-center justify-center bg-[#2bb3b3] text-lg font-bold text-white transition hover:bg-[#20a3a3]">
+                    <div className="flex h-12 items-center justify-center bg-[#2bb3b3] text-base font-bold text-white transition hover:bg-[#20a3a3] md:h-14 md:text-lg">
                       Login
                     </div>
                   </Link>
 
-                  <p className="text-center text-lg">
+                  <p className="text-center text-base md:text-lg">
                     New here?{" "}
                     <Link
                       to="/register"
@@ -69,10 +70,11 @@ function Navbar() {
 
           <Link
             to="/events/create"
-            className="flex h-14 items-center bg-green-500 px-8 text-lg font-bold text-white transition hover:bg-green-600"
+            className="flex shrink-0 items-center justify-center bg-green-500 px-3 py-3 text-sm font-bold text-white transition hover:bg-green-600 md:h-14 md:px-8 md:text-lg"
           >
-            <span className="mr-3 text-xl">▣</span>
-            Create Event
+            <span className="mr-1 md:mr-3 md:text-xl">▣</span>
+            Create
+            <span className="ml-1 hidden md:inline">Event</span>
           </Link>
         </div>
       </div>

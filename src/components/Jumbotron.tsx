@@ -2,72 +2,62 @@ import { Link } from "react-router-dom";
 
 function Jumbotron() {
   return (
-    <div className="min-h-screen bg-[#002F36] px-8 pt-32 pb-16 text-white">
-      <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-7xl items-center">
+    <div className="min-h-screen bg-[#002F36] px-5 pb-12 pt-28 text-white md:px-8 md:pb-16 md:pt-32">
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-10 text-center md:min-h-[calc(100vh-8rem)] md:flex-row md:gap-8 md:text-left">
         {/* Left */}
-        <div className="w-full lg:w-1/2">
-          <h1 className="max-w-2xl text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
+        <div className="w-full md:w-1/2">
+          <h1 className="text-4xl font-bold leading-tight tracking-tight md:text-6xl">
             Event ticketing
             <br />
             made simple
           </h1>
 
-          <p className="mt-8 max-w-2xl text-lg leading-8 text-gray-200 sm:text-xl">
+          <p className="mt-6 text-base leading-7 text-gray-200 md:mt-8 md:text-xl md:leading-8">
             An easy-to-use event ticketing platform with fair pricing and
             dedicated human support. All the tools you need for a fraction of
             the cost charged by other platforms.
           </p>
 
-          <div className="mt-10 flex items-center gap-10">
-            <Link
-              to="/create-event"
-              className="bg-[#0CC85A] px-8 py-5 text-lg font-bold transition hover:bg-[#0AAF4D]"
-            >
-              Create Event
-            </Link>
-
+          <div className="mt-8 flex flex-wrap flex-col items-center justify-center gap-4 md:mt-10 md:gap-10">
             <Link
               to="/Events"
-              className="border-b-2 border-white pb-2 text-lg font-bold transition hover:text-gray-300"
+              className="inline-block bg-[#0CC85A] px-6 py-4 text-base font-bold transition hover:bg-[#0AAF4D] md:px-8 md:py-5 md:text-lg"
             >
-              Book An Event
+              Book an Event
             </Link>
           </div>
 
-          <div className="mt-12 flex flex-wrap items-center gap-6">
-            <div className="pr-6 lg:border-r lg:border-gray-500">
-              <p className="font-bold">Capterra 4.7/5</p>
-
-              <p className="mt-2 text-lg tracking-wide text-yellow-400">
-                ★ ★ ★ ★ ★
+          <div className="mt-10 grid grid-cols-3 gap-2 md:mt-12 md:gap-4">
+            <div className="min-w-0 md:border-r md:border-gray-500 md:pr-4">
+              <p className="text-xs font-bold md:text-base">Capterra 4.7/5</p>
+              <p className="mt-2 whitespace-nowrap text-xs tracking-tight text-yellow-400 md:text-base">
+                ★★★★★
               </p>
             </div>
 
-            <div className="pr-6 lg:border-r lg:border-gray-500">
-              <p className="font-bold">G2 5/5</p>
-
-              <p className="mt-2 text-lg tracking-wide text-yellow-400">
-                ★ ★ ★ ★ ★
+            <div className="min-w-0 md:border-r md:border-gray-500 md:pr-4">
+              <p className="text-xs font-bold md:text-base">G2 5/5</p>
+              <p className="mt-2 whitespace-nowrap text-xs tracking-tight text-yellow-400 md:text-base">
+                ★★★★★
               </p>
             </div>
 
-            <div>
-              <p className="font-bold">Google 4.7/5</p>
-
-              <p className="mt-2 text-lg tracking-wide text-yellow-400">
-                ★ ★ ★ ★ ★
+            <div className="min-w-0">
+              <p className="text-xs font-bold md:text-base">Google 4.7/5</p>
+              <p className="mt-2 whitespace-nowrap text-xs tracking-tight text-yellow-400 md:text-base">
+                ★★★★★
               </p>
             </div>
           </div>
         </div>
 
         {/* Right */}
-        <div className="hidden w-1/2 justify-end lg:flex">
+        <div className="w-full md:flex md:w-1/2 md:justify-end">
           <div className="w-full max-w-[650px] overflow-hidden rounded-xl">
             <img
               src="/activity.jpg"
-              alt="event activity"
-              className="h-[640px] w-full object-cover"
+              alt="Event activity"
+              className="h-auto max-h-[640px] w-full object-cover md:h-[560px]"
             />
           </div>
         </div>

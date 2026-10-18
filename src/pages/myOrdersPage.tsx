@@ -363,12 +363,12 @@ function MyOrdersPage() {
       </div>
       <div className="mx-auto max-w-7xl px-6 pt-6 md:px-12">
         <Link
-          to="/"
+          to="/profile"
           type="button"
           className="inline-flex items-center gap-2 font-semibold text-green-700 transition hover:text-green-800 py-40"
         >
           <span aria-hidden="true">←</span>
-          Back to Home
+          Back to Profile
         </Link>
       </div>
     </main>

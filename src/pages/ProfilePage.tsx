@@ -17,6 +17,7 @@ import {
   type ChangePasswordSchema,
 } from "@/schemas/change-password";
 import { Link } from "react-router-dom";
+import UpdatePictureForm from "@/components/UpdatePictureForm";
 
 type ProfileTab = "home" | "orders" | "settings";
 
@@ -90,9 +91,17 @@ function ProfilePage() {
       {/* Profile banner */}
       <section className="bg-gradient-to-r from-[#DDF4F0] to-[#E8F5F5]">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 pb-10 pt-28 sm:flex-row sm:items-center sm:px-10">
-          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-4 border-white bg-[#BCE7DF] text-3xl font-bold text-[#147D74] shadow-sm">
-            {profile.name.charAt(0).toUpperCase()}
-          </div>
+          {profile.picture ? (
+            <img
+              src={profile.picture}
+              alt={profile.name}
+              className="h-24 w-24 shrink-0 rounded-full border-4 border-white object-cover shadow-sm"
+            />
+          ) : (
+            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-4 border-white bg-[#BCE7DF] text-3xl font-bold text-[#147D74] shadow-sm">
+              {profile.name.charAt(0).toUpperCase()}
+            </div>
+          )}
 
           <div>
             <p className="mb-2 text-sm text-gray-600">
@@ -275,6 +284,14 @@ function ProfilePage() {
               <p className="mt-2 text-xs text-gray-500">
                 Email changes are not supported by the current profile API.
               </p>
+            </section>
+            <section className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 text-xl font-bold">Profile Picture</h2>
+
+              <UpdatePictureForm
+                currentPicture={profile.picture}
+                name={profile.name}
+              />
             </section>
 
             {/* Existing name update form */}

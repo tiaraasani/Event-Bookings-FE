@@ -23,6 +23,15 @@ function Navbar() {
         <div className="flex items-center gap-3 md:gap-6">
           {user ? (
             <div className="flex items-center gap-3 md:gap-4">
+              {user.role === "ORGANIZER" && (
+                <Link
+                  to="/organizer/transactions"
+                  className="text-sm font-semibold hover:underline md:text-base"
+                >
+                  Transactions
+                </Link>
+              )}
+
               <Link
                 to="/profile"
                 className="max-w-24 truncate text-sm font-semibold hover:underline md:max-w-none md:text-base"

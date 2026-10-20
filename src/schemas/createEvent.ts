@@ -3,7 +3,6 @@ import { z } from "zod";
 export const createEventSchema = z
   .object({
     categoryId: z.coerce.number().int().positive(),
-    organizationId: z.coerce.number().int().positive(),
     name: z.string().min(3, "Event name must be at least 3 characters"),
     description: z.string().optional(),
     category: z.string().min(1, "Category is required"),

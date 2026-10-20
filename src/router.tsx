@@ -12,6 +12,7 @@ import EventDetail from "./pages/EventDetail";
 import AccessDeniedPage from "./pages/AccessDeniedPage";
 import MyOrdersPage from "./pages/myOrdersPage";
 import TransactionPage from "./pages/TransactionPage";
+import OrganizerTransactionsPage from "./pages/OrganizerTransactionsPage";
 
 export const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -48,6 +49,10 @@ export const router = createBrowserRouter([
       {
         path: "/events/create",
         element: <CreateEvent />,
+      },
+      {
+        path: "/organizer/transactions",
+        element: <OrganizerTransactionsPage />,
       },
     ],
   },

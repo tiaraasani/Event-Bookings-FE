@@ -20,7 +20,6 @@ function CreateEvent() {
     resolver: zodResolver(createEventSchema),
     defaultValues: {
       categoryId: 1,
-      organizationId: 1,
       name: "",
       category: "",
       description: "",
@@ -398,34 +397,6 @@ function CreateEvent() {
               )}
             </div>
           </div>
-        </section>
-
-        {/* Organization and category database IDs */}
-        <section className="space-y-6 rounded-md border border-gray-200 bg-white p-6 md:p-10">
-          <h2 className="text-xl font-medium">Organizer information</h2>
-
-          <div>
-            <label className="mb-2 block">Organization ID</label>
-
-            <input
-              type="number"
-              min="1"
-              {...register("organizationId")}
-              className="w-full rounded border border-gray-300 px-4 py-3 outline-none focus:border-teal-500"
-            />
-
-            {errors.organizationId && (
-              <p className="mt-2 text-sm text-red-500">
-                {errors.organizationId.message}
-              </p>
-            )}
-          </div>
-
-          <p className="text-sm text-gray-500">
-            The category is entered above by name. The category name must be
-            matched to an existing category in your database before the event
-            can be saved.
-          </p>
         </section>
 
         {/* Bottom actions */}

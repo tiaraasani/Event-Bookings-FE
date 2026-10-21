@@ -4,13 +4,23 @@ import { Button } from "@/components/ui/button";
 import useGetEvents from "@/hooks/api/event/useGetEvents";
 import { useEffect, useState } from "react";
 
+const standardCategories = [
+  "Sports",
+  "Technology",
+  "Concert",
+  "Arts",
+  "Business",
+  "Community & Culture",
+  "Education & Training",
+  "Others",
+];
+
 function EventsPage() {
   const { data: events, isPending, isError } = useGetEvents();
 
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   useEffect(() => {
@@ -21,12 +31,23 @@ function EventsPage() {
     return () => clearTimeout(timeout);
   }, [search]);
 
-  const categories = [
-    "All",
+  // Keep the standard categories visible even when they have no events.
+  // Also include custom category names entered through "Others".
+  const customCategories = [
     ...new Set(
-      (events ?? []).map((event) => event.category?.name).filter(Boolean),
+      (events ?? [])
+        .map((event) => event.category?.name)
+        .filter(
+          (name): name is string =>
+            Boolean(name) &&
+            !standardCategories.some(
+              (category) => category.toLowerCase() === name.toLowerCase(),
+            ),
+        ),
     ),
   ];
+
+  const categories = ["All", ...standardCategories, ...customCategories];
 
   const filteredEvents = (events ?? []).filter((event) => {
     const matchesName = event.name
@@ -38,7 +59,14 @@ function EventsPage() {
       .includes(location.toLowerCase());
 
     const matchesCategory =
-      selectedCategory === "All" || event.category?.name === selectedCategory;
+      selectedCategory === "All" ||
+      event.category?.name.toLowerCase() === selectedCategory.toLowerCase() ||
+      (selectedCategory === "Others" &&
+        !standardCategories.some(
+          (category) =>
+            category !== "Others" &&
+            category.toLowerCase() === event.category?.name.toLowerCase(),
+        ));
 
     return matchesName && matchesLocation && matchesCategory;
   });
@@ -101,6 +129,7 @@ function EventsPage() {
           {categories.map((category) => (
             <button
               key={category}
+              type="button"
               onClick={() => setSelectedCategory(category)}
               className={`shrink-0 pb-2 ${
                 selectedCategory === category

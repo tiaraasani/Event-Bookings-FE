@@ -20,7 +20,7 @@ function Jumbotron() {
 
           <div className="mt-8 flex flex-wrap flex-col items-center justify-center gap-4 md:mt-10 md:gap-10">
             <Link
-              to="/Events"
+              to="/events"
               className="inline-block bg-[#0CC85A] px-6 py-4 text-base font-bold transition hover:bg-[#0AAF4D] md:px-8 md:py-5 md:text-lg"
             >
               Book an Event

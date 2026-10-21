@@ -5,26 +5,43 @@ import {
   type CreateEventSchema,
 } from "@/schemas/createEvent";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, type FieldErrors } from "react-hook-form";
 import { useState } from "react";
+
+const categoryOptions = [
+  "Sports",
+  "Technology",
+  "Concert",
+  "Arts",
+  "Business",
+  "Community & Culture",
+  "Education & Training",
+  "Others",
+];
 
 function CreateEvent() {
   const { mutate, isPending } = useCreateEvent();
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [customCategory, setCustomCategory] = useState("");
+
   const {
     register,
     handleSubmit,
     watch,
     setValue,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(createEventSchema),
+  } = useForm<CreateEventSchema>({
+    resolver: zodResolver(createEventSchema) as any,
     defaultValues: {
-      categoryId: 1,
+      categoryId: undefined,
+      customCategory: "",
       name: "",
-      category: "",
       description: "",
       city: "",
-      type: "VENUE" as const,
+      type: "VENUE",
       slug: "",
       image: "",
       startDate: "",
@@ -49,22 +66,44 @@ function CreateEvent() {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
   }
+
   function onSubmit(data: CreateEventSchema) {
+    const categoryName =
+      selectedCategory === "Others" ? customCategory.trim() : selectedCategory;
+
+    if (!categoryName) {
+      alert("Please select or enter an event category.");
+      return;
+    }
+
     mutate({
       ...data,
+      city: data.type === "ONLINE" ? "Online" : data.city?.trim(),
+      categoryId: undefined,
+      customCategory: categoryName,
       imageFile,
     });
   }
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState("");
+  function onInvalid(errors: FieldErrors<CreateEventSchema>) {
+    console.error("Form validation errors:", errors);
+
+    const firstError = Object.entries(errors).find(
+      ([, error]) => error && "message" in error,
+    );
+
+    if (firstError) {
+      alert(`${firstError[0]}: ${firstError[1].message}`);
+    } else {
+      alert("Please check your form fields.");
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#f3f6f8] text-[#123638]">
       <Navbar />
 
-      {/* Page heading */}
-      <div className="border-b border-gray-200 bg-white px-6 pb-5 pt-28">
+      <div className="border-b border-gray-200 bg-white px-5 pb-5 pt-28 md:px-6">
         <div className="mx-auto flex max-w-7xl items-center gap-4">
           <button
             type="button"
@@ -79,10 +118,11 @@ function CreateEvent() {
       </div>
 
       <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="mx-auto max-w-5xl space-y-8 px-5 py-10 pb-32"
+        onSubmit={handleSubmit(onSubmit, onInvalid)}
+        className="mx-auto max-w-5xl space-y-8 px-4 py-8 pb-28 md:px-5 md:py-10"
       >
-        <div className="space-y-7 rounded-md border border-gray-200 bg-white p-6 md:p-10">
+        {/* Event details */}
+        <section className="space-y-7 rounded-md border border-gray-200 bg-white p-5 md:p-10">
           <div>
             <label className="mb-4 block text-xl font-medium">
               Event name <span className="text-red-500">*</span>
@@ -103,31 +143,59 @@ function CreateEvent() {
             )}
           </div>
 
+          {/* Category dropdown */}
           <div>
             <label className="mb-4 block text-xl font-medium">
               Category <span className="text-red-500">*</span>
             </label>
 
-            <input
-              value={watch("category") ?? ""}
-              onChange={(e) =>
-                setValue("category", e.target.value, {
+            <select
+              value={selectedCategory}
+              onChange={(e) => {
+                const value = e.target.value;
+
+                setSelectedCategory(value);
+
+                setValue("customCategory", value === "Others" ? "" : value, {
                   shouldValidate: true,
-                })
-              }
-              placeholder="e.g. Music, Technology, Workshop"
-              className="w-full rounded border border-gray-300 px-4 py-3 outline-none focus:border-teal-500"
-            />
+                });
+
+                setValue("categoryId", undefined, { shouldValidate: true });
+              }}
+              className="w-full rounded border border-gray-300 bg-white px-4 py-3 outline-none focus:border-teal-500"
+            >
+              <option value="">Select a category</option>
+
+              {categoryOptions.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+
+            {selectedCategory === "Others" && (
+              <div className="mt-4">
+                <label className="mb-2 block font-medium">
+                  Custom category
+                </label>
+
+                <input
+                  value={customCategory}
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    setCustomCategory(value);
+                    setValue("customCategory", value, { shouldValidate: true });
+                  }}
+                  placeholder="Enter your category"
+                  className="w-full rounded border border-gray-300 px-4 py-3 outline-none focus:border-teal-500"
+                />
+              </div>
+            )}
 
             <p className="mt-2 text-sm text-gray-500">
-              Enter the category that best describes your event.
+              Choose the category that best describes your event.
             </p>
-
-            {errors.category && (
-              <p className="mt-2 text-sm text-red-500">
-                {errors.category.message}
-              </p>
-            )}
           </div>
 
           <div>
@@ -142,6 +210,8 @@ function CreateEvent() {
               className="w-full resize-y rounded border border-gray-300 px-4 py-3 outline-none focus:border-teal-500"
             />
           </div>
+
+          {/* Event image */}
           <div>
             <label className="mb-4 block text-xl font-medium">
               Event image
@@ -154,13 +224,15 @@ function CreateEvent() {
                 const file = e.target.files?.[0];
 
                 if (file) {
+                  if (imagePreview) {
+                    URL.revokeObjectURL(imagePreview);
+                  }
+
                   setImageFile(file);
                   setImagePreview(URL.createObjectURL(file));
                 }
               }}
-              className="w-full rounded border border-gray-300 px-4 py-3
-      file:mr-4 file:rounded file:border-0 file:bg-teal-500
-      file:px-4 file:py-2 file:font-semibold file:text-white"
+              className="w-full rounded border border-gray-300 px-4 py-3 file:mr-4 file:rounded file:border-0 file:bg-teal-500 file:px-4 file:py-2 file:font-semibold file:text-white"
             />
 
             <p className="mt-2 text-sm text-gray-500">
@@ -193,10 +265,10 @@ function CreateEvent() {
               </div>
             )}
           </div>
-        </div>
+        </section>
 
-        {/* Event type and venue */}
-        <section className="space-y-8 rounded-md border border-gray-200 bg-white p-6 md:p-10">
+        {/* Event type and location */}
+        <section className="space-y-8 rounded-md border border-gray-200 bg-white p-5 md:p-10">
           <div>
             <label className="mb-4 block text-xl font-medium">
               Select the event type <span className="text-red-500">*</span>
@@ -205,7 +277,11 @@ function CreateEvent() {
             <div className="flex flex-wrap">
               <button
                 type="button"
-                onClick={() => setValue("type", "VENUE")}
+                onClick={() =>
+                  setValue("type", "VENUE", {
+                    shouldValidate: true,
+                  })
+                }
                 className={`border border-teal-500 px-4 py-3 font-semibold ${
                   eventType === "VENUE"
                     ? "bg-[#20aaa7] text-white"
@@ -217,7 +293,11 @@ function CreateEvent() {
 
               <button
                 type="button"
-                onClick={() => setValue("type", "ONLINE")}
+                onClick={() =>
+                  setValue("type", "ONLINE", {
+                    shouldValidate: true,
+                  })
+                }
                 className={`border-y border-r border-teal-500 px-4 py-3 font-semibold ${
                   eventType === "ONLINE"
                     ? "bg-[#20aaa7] text-white"
@@ -252,7 +332,7 @@ function CreateEvent() {
           {eventType === "ONLINE" && (
             <div>
               <label className="mb-4 block text-xl font-medium">
-                Online event location
+                Event location
               </label>
 
               <input
@@ -275,8 +355,8 @@ function CreateEvent() {
           </div>
         </section>
 
-        {/* Event date and time */}
-        <section className="space-y-7 rounded-md border border-gray-200 bg-white p-6 md:p-10">
+        {/* Event dates */}
+        <section className="space-y-7 rounded-md border border-gray-200 bg-white p-5 md:p-10">
           <h2 className="text-xl font-medium">
             Select event date &amp; time <span className="text-red-500">*</span>
           </h2>
@@ -314,36 +394,10 @@ function CreateEvent() {
               )}
             </div>
           </div>
-
-          <div className="grid gap-6 border-t border-gray-200 pt-7 md:grid-cols-2">
-            <div>
-              <label className="mb-2 block">Timezone</label>
-
-              <select
-                defaultValue="Asia/Jakarta"
-                className="w-full rounded border border-gray-300 bg-white px-4 py-3"
-              >
-                <option value="Asia/Jakarta">Asia/Jakarta (WIB)</option>
-                <option value="Asia/Makassar">Asia/Makassar (WITA)</option>
-                <option value="Asia/Jayapura">Asia/Jayapura (WIT)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="mb-2 block">Currency</label>
-
-              <div
-                defaultValue="IDR"
-                className="w-full rounded border border-gray-300 bg-white px-4 py-3"
-              >
-                IDR - Indonesian Rupiah
-              </div>
-            </div>
-          </div>
         </section>
 
         {/* Ticket information */}
-        <section className="space-y-7 rounded-md border border-gray-200 bg-white p-6 md:p-10">
+        <section className="space-y-7 rounded-md border border-gray-200 bg-white p-5 md:p-10">
           <h2 className="text-xl font-medium">Ticket information</h2>
 
           <div>

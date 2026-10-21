@@ -26,8 +26,8 @@ function TransactionPage() {
   const { data: pointBalance = 0, isLoading: isPointBalanceLoading } =
     useGetMyPointBalance();
 
-  const [pointsToUse, setPointsToUse] = useState(0);
-
+  // Keep the input as a string so it can start empty.
+  const [pointsInput, setPointsInput] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const selectedTicket = event?.tickets.find(
@@ -35,9 +35,13 @@ function TransactionPage() {
   );
 
   const quantity = Math.min(10, Math.max(1, requestedQuantity));
+
   const total = selectedTicket ? selectedTicket.price * quantity : 0;
+
+  const pointsNumber = pointsInput === "" ? 0 : Number(pointsInput);
+
   const validPointsToUse = Math.min(
-    Math.max(0, Math.floor(pointsToUse)),
+    Math.max(0, Math.floor(pointsNumber)),
     pointBalance,
     total,
   );
@@ -52,7 +56,7 @@ function TransactionPage() {
     onError: (error) => {
       console.error(error);
       setErrorMessage(
-        "We couldn't create your order. Please check ticket availability and try again.",
+        "We couldn't create your order. Please check ticket availability and your points balance, then try again.",
       );
     },
   });
@@ -61,8 +65,8 @@ function TransactionPage() {
     return (
       <>
         <Navbar />
-        <main className="flex min-h-screen items-center justify-center bg-slate-50">
-          Loading checkout...
+        <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+          <p className="text-gray-600">Loading checkout...</p>
         </main>
       </>
     );
@@ -72,12 +76,13 @@ function TransactionPage() {
     return (
       <>
         <Navbar />
-        <main className="p-8 text-center">
-          <p>Unable to load this event.</p>
+        <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 text-center">
+          <p className="text-gray-700">Unable to load this event.</p>
+
           <button
             type="button"
             onClick={() => navigate("/events")}
-            className="mt-4 rounded-lg bg-teal-600 px-5 py-3 text-white"
+            className="mt-4 rounded-lg bg-teal-600 px-5 py-3 text-white hover:bg-teal-700"
           >
             Back to Events
           </button>
@@ -89,17 +94,21 @@ function TransactionPage() {
   if (
     !selectedTicket ||
     !Number.isInteger(requestedQuantity) ||
-    requestedQuantity < 1
+    requestedQuantity < 1 ||
+    requestedQuantity > 10
   ) {
     return (
       <>
         <Navbar />
-        <main className="p-8 text-center">
-          <p>Please select a valid ticket and quantity first.</p>
+        <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 text-center">
+          <p className="text-gray-700">
+            Please select a valid ticket and quantity first.
+          </p>
+
           <button
             type="button"
             onClick={() => navigate(`/events/${event.id}`)}
-            className="mt-4 rounded-lg bg-teal-600 px-5 py-3 text-white"
+            className="mt-4 rounded-lg bg-teal-600 px-5 py-3 text-white hover:bg-teal-700"
           >
             Back to Event
           </button>
@@ -108,55 +117,64 @@ function TransactionPage() {
     );
   }
 
+  const isOutOfStock = selectedTicket.availableQuantity < quantity;
+
+  const canCreateOrder =
+    !createTransactionMutation.isPending &&
+    !isOutOfStock &&
+    !isPointBalanceLoading;
+
   return (
     <main className="min-h-screen bg-[#f0f1fb] text-slate-900">
-      <header className="border-b border-gray-200 bg-white px-6 py-5">
+      <header className="border-b border-gray-200 bg-white px-4 py-5 md:px-8">
         <div className="mx-auto max-w-7xl">
-          <span className="text-2xl font-bold tracking-tight text-teal-700">
+          <span className="text-xl font-bold tracking-tight text-teal-700 md:text-2xl">
             EVENT BOOKINGS
           </span>
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-10 lg:grid-cols-[1.3fr_1fr]">
+      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 md:px-8 md:py-10 lg:grid-cols-[1.3fr_1fr] lg:gap-10">
         <section>
-          <h1 className="mb-6 border-b border-gray-300 pb-5 text-4xl font-semibold">
+          <h1 className="border-b border-gray-300 pb-4 text-3xl font-semibold md:text-4xl">
             Checkout
           </h1>
 
-          <p className="mb-6 text-gray-600">
+          <p className="mb-6 mt-4 text-sm text-gray-600 md:text-base">
             Review your ticket details before creating your order.
           </p>
 
-          <div className="rounded-2xl bg-white p-6 shadow-sm">
-            <h2 className="mb-5 text-xl font-bold">Attendee Details</h2>
+          <div className="rounded-2xl bg-white p-5 shadow-sm md:p-6">
+            <h2 className="mb-4 text-xl font-bold">Attendee Details</h2>
 
-            <p className="text-gray-600">
+            <p className="text-sm leading-6 text-gray-600 md:text-base">
               Your order will be associated with your signed-in account.
             </p>
 
-            <p className="mt-4 text-sm text-gray-500">
+            <p className="mt-4 text-sm leading-6 text-gray-500">
               After confirming, your order will appear in My Orders. Follow the
               payment instructions there to submit your payment proof.
             </p>
           </div>
         </section>
 
-        <aside className="h-fit rounded-3xl bg-white p-6 shadow-lg sm:p-8">
-          <div className="flex gap-4">
+        <aside className="h-fit rounded-2xl bg-white p-5 shadow-lg md:rounded-3xl md:p-8">
+          <div className="flex items-start gap-4">
             {event.image && (
               <img
                 src={event.image}
                 alt={event.name}
-                className="h-24 w-28 rounded-lg object-cover"
+                className="h-20 w-24 shrink-0 rounded-lg object-cover md:h-24 md:w-28"
               />
             )}
 
-            <div>
-              <h2 className="font-bold">{event.name}</h2>
+            <div className="min-w-0">
+              <h2 className="break-words font-bold md:text-lg">{event.name}</h2>
+
               <p className="mt-2 text-sm text-gray-500">
                 {event.type === "ONLINE" ? "Online event" : event.city}
               </p>
+
               <p className="mt-2 text-sm text-gray-500">
                 {new Date(event.startDate).toLocaleDateString("id-ID", {
                   day: "numeric",
@@ -171,80 +189,97 @@ function TransactionPage() {
 
           <h3 className="mb-5 text-lg font-bold">Order Summary</h3>
 
-          <div className="flex justify-between gap-4">
+          <div className="flex items-start justify-between gap-4 text-sm md:text-base">
             <span>
               {quantity} × {selectedTicket.name}
             </span>
-            <span className="font-medium">{formatRupiah(total)}</span>
+
+            <span className="shrink-0 font-medium">{formatRupiah(total)}</span>
           </div>
 
-          <div className="mt-5 flex justify-between text-gray-600">
+          <div className="mt-5 flex justify-between gap-4 text-sm text-gray-600 md:text-base">
             <span>Subtotal</span>
             <span>{formatRupiah(total)}</span>
           </div>
+
           <div className="mt-5 rounded-xl border border-gray-200 p-4">
-            <div className="flex justify-between gap-4">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <label htmlFor="pointsToUse" className="font-medium">
                 Use your points
               </label>
 
               <span className="text-sm text-teal-700">
                 {isPointBalanceLoading
-                  ? "Loading..."
+                  ? "Loading balance..."
                   : `${pointBalance.toLocaleString("id-ID")} points available`}
               </span>
             </div>
 
             <input
               id="pointsToUse"
-              type="number"
-              min={0}
-              max={Math.min(pointBalance, total)}
-              step={1}
-              value={pointsToUse}
-              disabled={isPointBalanceLoading || pointBalance === 0}
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              placeholder="Enter points to use"
+              value={pointsInput}
+              disabled={isPointBalanceLoading || pointBalance <= 0}
               onChange={(e) => {
-                const value = Number(e.target.value);
+                const value = e.target.value
+                  .replace(/\D/g, "")
+                  .replace(/^0+(?=\d)/, "");
 
-                setPointsToUse(
-                  Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0,
-                );
+                setPointsInput(value);
               }}
-              className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-teal-500"
+              className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-3 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-100 disabled:cursor-not-allowed disabled:bg-gray-100"
             />
 
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs leading-5 text-gray-500">
               1 point reduces your payment by Rp 1. Maximum usable:{" "}
               {Math.min(pointBalance, total).toLocaleString("id-ID")} points.
             </p>
 
+            {pointsNumber > Math.min(pointBalance, total) && (
+              <p className="mt-2 text-xs text-amber-700">
+                Your applied points will be limited to the maximum allowed
+                amount.
+              </p>
+            )}
+
             {validPointsToUse > 0 && (
-              <div className="mt-3 flex justify-between text-teal-700">
+              <div className="mt-3 flex justify-between gap-4 text-sm text-teal-700">
                 <span>Points discount</span>
-                <span>-{formatRupiah(validPointsToUse)}</span>
+                <span className="font-medium">
+                  -{formatRupiah(validPointsToUse)}
+                </span>
               </div>
             )}
           </div>
 
           <hr className="my-5 border-gray-200" />
 
-          <div className="flex justify-between text-xl font-bold">
+          <div className="flex items-center justify-between gap-4 text-xl font-bold">
             <span>Total</span>
-            <span>{formatRupiah(finalPrice)}</span>
+            <span className="text-right">{formatRupiah(finalPrice)}</span>
           </div>
 
+          {isOutOfStock && (
+            <p className="mt-4 text-sm text-red-600">
+              Not enough tickets are available for this quantity.
+            </p>
+          )}
+
           {errorMessage && (
-            <p className="mt-4 text-sm text-red-600">{errorMessage}</p>
+            <p role="alert" className="mt-4 text-sm text-red-600">
+              {errorMessage}
+            </p>
           )}
 
           <button
             type="button"
-            disabled={
-              createTransactionMutation.isPending ||
-              selectedTicket.availableQuantity < quantity
-            }
+            disabled={!canCreateOrder}
             onClick={() => {
               setErrorMessage("");
+
               createTransactionMutation.mutate({
                 ticketId: selectedTicket.id,
                 quantity,
@@ -255,13 +290,17 @@ function TransactionPage() {
           >
             {createTransactionMutation.isPending
               ? "Creating order..."
-              : "Proceed to Payment"}
+              : isPointBalanceLoading
+                ? "Loading points..."
+                : isOutOfStock
+                  ? "Tickets Unavailable"
+                  : "Proceed to Payment"}
           </button>
 
           <button
             type="button"
             onClick={() => navigate(`/events/${event.id}`)}
-            className="mt-3 w-full py-2 text-sm font-medium text-gray-500 hover:text-teal-700"
+            className="mt-3 w-full rounded-lg py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-50 hover:text-teal-700"
           >
             Back to Event
           </button>

@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import OrganizerTransactionsTable from "@/components/OrganizerTransactionsTable";
 import UpdateNameForm from "@/components/UpdateNameForm";
 import UpdatePictureForm from "@/components/UpdatePictureForm";
 import { Button } from "@/components/ui/button";
@@ -194,8 +195,7 @@ function ProfilePage() {
           )}
 
           {profile?.role === "ORGANIZER" && (
-            <Link
-              to="/organizer/transactions"
+            <button
               type="button"
               onClick={() => setActiveTab("orders")}
               className={`border-b-2 px-5 py-4 text-sm font-semibold transition ${
@@ -205,6 +205,15 @@ function ProfilePage() {
               }`}
             >
               My Transaction
+            </button>
+          )}
+
+          {profile?.role === "ORGANIZER" && (
+            <Link
+              to="/organizer/dashboard"
+              className="border-b-2 border-transparent px-5 py-4 text-sm font-semibold text-gray-500 transition hover:text-gray-800"
+            >
+              Dashboard
             </Link>
           )}
           <button
@@ -292,6 +301,12 @@ function ProfilePage() {
                                 </span>
                               </p>
                             ))}
+                            <Link
+                              to={`/organizer/events/${event.id}/attendees`}
+                              className="mt-4 block text-center text-sm font-semibold text-[#147D74] underline"
+                            >
+                              View attendees
+                            </Link>
                             <Button
                               type="button"
                               variant="destructive"
@@ -490,6 +505,14 @@ function ProfilePage() {
                 )}
               </div>
             </section>
+          </div>
+        )}
+
+        {/* ORGANIZER TRANSACTIONS TAB */}
+        {activeTab === "orders" && isOrganizer && (
+          <div>
+            <h2 className="mb-4 text-2xl font-bold">My Transactions</h2>
+            <OrganizerTransactionsTable />
           </div>
         )}
 

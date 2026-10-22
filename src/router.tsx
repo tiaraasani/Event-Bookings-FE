@@ -13,6 +13,8 @@ import AccessDeniedPage from "./pages/AccessDeniedPage";
 import MyOrdersPage from "./pages/myOrdersPage";
 import TransactionPage from "./pages/TransactionPage";
 import OrganizerTransactionsPage from "./pages/OrganizerTransactionsPage";
+import OrganizerDashboardPage from "./pages/OrganizerDashboardPage";
+import EventAttendeesPage from "./pages/EventAttendeesPage";
 
 export const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -53,6 +55,14 @@ export const router = createBrowserRouter([
       {
         path: "/organizer/transactions",
         element: <OrganizerTransactionsPage />,
+      },
+      {
+        path: "/organizer/dashboard",
+        element: <OrganizerDashboardPage />,
+      },
+      {
+        path: "/organizer/events/:id/attendees",
+        element: <EventAttendeesPage />,
       },
     ],
   },

@@ -1,23 +1,23 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-
 import Navbar from "@/components/Navbar";
 import UpdateNameForm from "@/components/UpdateNameForm";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import UpdatePictureForm from "@/components/UpdatePictureForm";
 import { Button } from "@/components/ui/button";
-
-import { useGetProfile } from "@/hooks/api/useGetProfile";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useChangePassword } from "@/hooks/api/useChangePassword";
-
+import { useGetProfile } from "@/hooks/api/useGetProfile";
 import {
   changePasswordSchema,
   type ChangePasswordSchema,
 } from "@/schemas/change-password";
+import { deleteEvent, getMyOrganizedEvents } from "@/services/event";
+import { getMyTransactions } from "@/services/transaction";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import UpdatePictureForm from "@/components/UpdatePictureForm";
+import { toast } from "sonner";
 
 type ProfileTab = "home" | "orders" | "settings";
 
@@ -35,7 +35,47 @@ function ProfilePage() {
   const [noOrderId, setNoOrderId] = useState(false);
 
   const { data: profile, isPending, isError } = useGetProfile();
+  const isCustomer = profile?.role === "CUSTOMER";
+  const isOrganizer = profile?.role === "ORGANIZER";
 
+  const {
+    data: transactions,
+    isPending: isTransactionsPending,
+    isError: isTransactionsError,
+  } = useQuery({
+    queryKey: ["my-transactions"],
+    queryFn: getMyTransactions,
+    enabled: isCustomer,
+  });
+  const {
+    data: organizedEvents,
+    isPending: isOrganizedEventsPending,
+    isError: isOrganizedEventsError,
+  } = useQuery({
+    queryKey: ["my-organized-events"],
+    queryFn: getMyOrganizedEvents,
+    enabled: isOrganizer,
+  });
+
+  const queryClient = useQueryClient();
+
+  const deleteEventMutation = useMutation({
+    mutationFn: deleteEvent,
+    onSuccess: () => {
+      toast.success("Event deleted successfully");
+
+      queryClient.invalidateQueries({
+        queryKey: ["my-organized-events"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["events"],
+      });
+    },
+    onError: () => {
+      toast.error("Failed to delete event. Please try again.");
+    },
+  });
   const { register, handleSubmit, formState, reset } =
     useForm<ChangePasswordSchema>({
       resolver: zodResolver(changePasswordSchema),
@@ -138,19 +178,35 @@ function ProfilePage() {
             Home
           </button>
 
-          <Link
-            to="/my-orders"
-            type="button"
-            onClick={() => setActiveTab("orders")}
-            className={`border-b-2 px-5 py-4 text-sm font-semibold transition ${
-              activeTab === "orders"
-                ? "border-[#159E98] text-[#147D74]"
-                : "border-transparent text-gray-500 hover:text-gray-800"
-            }`}
-          >
-            My Orders
-          </Link>
+          {profile?.role === "CUSTOMER" && (
+            <Link
+              to="/my-orders"
+              type="button"
+              onClick={() => setActiveTab("orders")}
+              className={`border-b-2 px-5 py-4 text-sm font-semibold transition ${
+                activeTab === "orders"
+                  ? "border-[#159E98] text-[#147D74]"
+                  : "border-transparent text-gray-500 hover:text-gray-800"
+              }`}
+            >
+              My Orders
+            </Link>
+          )}
 
+          {profile?.role === "ORGANIZER" && (
+            <Link
+              to="/organizer/transactions"
+              type="button"
+              onClick={() => setActiveTab("orders")}
+              className={`border-b-2 px-5 py-4 text-sm font-semibold transition ${
+                activeTab === "orders"
+                  ? "border-[#159E98] text-[#147D74]"
+                  : "border-transparent text-gray-500 hover:text-gray-800"
+              }`}
+            >
+              My Transaction
+            </Link>
+          )}
           <button
             type="button"
             onClick={() => setActiveTab("settings")}
@@ -172,31 +228,202 @@ function ProfilePage() {
                 Your Activity
               </h2>
 
-              <div className="grid gap-5 sm:grid-cols-2">
+              {/* Organizer activity */}
+              {isOrganizer && (
                 <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#DDF4F0] text-xl text-[#147D74]">
-                    ✦
-                  </div>
+                  <h3 className="mb-4 text-lg font-semibold">
+                    Organised Events
+                  </h3>
 
-                  <h3 className="text-lg font-semibold">Organised Events</h3>
+                  {isOrganizedEventsPending ? (
+                    <p className="text-sm text-gray-500">
+                      Loading your events...
+                    </p>
+                  ) : isOrganizedEventsError ? (
+                    <p className="text-sm text-red-500">
+                      Failed to load your events.
+                    </p>
+                  ) : !organizedEvents || organizedEvents.length === 0 ? (
+                    <p className="text-sm text-gray-500">
+                      You haven't organised any events yet.
+                    </p>
+                  ) : (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {organizedEvents.map((event: any) => (
+                        <div
+                          key={event.id}
+                          className="rounded-lg border border-gray-100 p-4"
+                        >
+                          {event.image && (
+                            <img
+                              src={event.image}
+                              alt={event.name}
+                              className="mb-3 h-40 w-full rounded-lg object-cover"
+                            />
+                          )}
 
-                  <p className="mt-2 text-sm leading-6 text-gray-500">
-                    Events you've organised will appear here.
-                  </p>
+                          <h4 className="font-semibold">{event.name}</h4>
+
+                          <p className="mt-1 text-sm text-gray-500">
+                            {event.category?.name ?? "Uncategorized"}
+                          </p>
+
+                          <p className="mt-1 text-sm text-gray-600">
+                            {event.type === "ONLINE" ? "Online" : event.city}
+                          </p>
+
+                          <p className="mt-1 text-sm text-gray-600">
+                            Starts: {formatDate(event.startDate)}
+                          </p>
+
+                          <div className="mt-3 border-t pt-3">
+                            <p className="mb-2 text-sm font-medium">
+                              Ticket Availability
+                            </p>
+
+                            {event.tickets.map((ticket: any) => (
+                              <p
+                                key={ticket.id}
+                                className="flex justify-between gap-3 text-sm"
+                              >
+                                <span>{ticket.name}</span>
+                                <span className="text-[#147D74]">
+                                  {ticket.availableQuantity} / {ticket.quantity}
+                                </span>
+                              </p>
+                            ))}
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              className="mt-4 w-full"
+                              disabled={deleteEventMutation.isPending}
+                              onClick={() => {
+                                const confirmed = window.confirm(
+                                  `Are you sure you want to delete "${event.name}"?`,
+                                );
+
+                                if (confirmed) {
+                                  deleteEventMutation.mutate(event.id);
+                                }
+                              }}
+                            >
+                              {deleteEventMutation.isPending
+                                ? "Deleting..."
+                                : "Delete Event"}
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
+              )}
 
+              {/* Customer activity */}
+              {isCustomer && (
                 <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#DDF4F0] text-xl text-[#147D74]">
-                    ♧
-                  </div>
+                  <h3 className="mb-4 text-lg font-semibold">
+                    Attending Events
+                  </h3>
 
-                  <h3 className="text-lg font-semibold">Attending Events</h3>
+                  {isTransactionsPending ? (
+                    <p className="text-sm text-gray-500">
+                      Loading your bookings...
+                    </p>
+                  ) : isTransactionsError ? (
+                    <p className="text-sm text-red-500">
+                      Failed to load your bookings.
+                    </p>
+                  ) : !transactions || transactions.length === 0 ? (
+                    <p className="text-sm text-gray-500">
+                      You haven't booked any events yet.
+                    </p>
+                  ) : (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {Array.from(
+                        new Map(
+                          transactions
+                            .filter(
+                              (transaction: any) =>
+                                transaction.paymentStatus !== "REJECTED" &&
+                                transaction.ticket?.event,
+                            )
+                            .map((transaction: any) => [
+                              transaction.ticket.event.id,
+                              transaction.ticket.event,
+                            ]),
+                        ).values(),
+                      ).map((event: any) => {
+                        const eventTransactions = transactions.filter(
+                          (transaction: any) =>
+                            transaction.ticket?.event?.id === event.id &&
+                            transaction.paymentStatus !== "REJECTED",
+                        );
 
-                  <p className="mt-2 text-sm leading-6 text-gray-500">
-                    Events you've booked will appear here.
-                  </p>
+                        return (
+                          <div
+                            key={event.id}
+                            className="rounded-lg border border-gray-100 p-4"
+                          >
+                            {event.image && (
+                              <img
+                                src={event.image}
+                                alt={event.name}
+                                className="mb-3 h-40 w-full rounded-lg object-cover"
+                              />
+                            )}
+
+                            <h4 className="font-semibold">{event.name}</h4>
+
+                            <p className="mt-1 text-sm text-gray-500">
+                              {event.category?.name ?? "Uncategorized"}
+                            </p>
+
+                            <p className="mt-1 text-sm text-gray-600">
+                              {event.type === "ONLINE" ? "Online" : event.city}
+                            </p>
+
+                            <p className="mt-1 text-sm text-gray-600">
+                              Starts: {formatDate(event.startDate)}
+                            </p>
+
+                            <div className="mt-3 border-t pt-3">
+                              <p className="mb-2 text-sm font-medium">
+                                Your Bookings
+                              </p>
+
+                              {eventTransactions.map((transaction: any) => (
+                                <div
+                                  key={transaction.id}
+                                  className="mt-2 rounded-md bg-gray-50 p-3"
+                                >
+                                  <p className="text-sm text-gray-600">
+                                    Ticket: {transaction.ticket.name}
+                                  </p>
+
+                                  <p className="text-sm text-gray-600">
+                                    Quantity: {transaction.quantity}
+                                  </p>
+
+                                  <p className="text-sm text-gray-600">
+                                    Status:{" "}
+                                    <span className="font-semibold text-[#147D74]">
+                                      {transaction.paymentStatus.replaceAll(
+                                        "_",
+                                        " ",
+                                      )}
+                                    </span>
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
             </section>
 
             {/* Existing rewards functionality */}

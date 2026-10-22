@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 function Discounting() {
@@ -24,9 +23,14 @@ function Discounting() {
           </p>
 
           <div className="mt-10">
-            <Button className="h-auto rounded-none bg-[#16C172] px-12 py-5 text-xl font-bold text-white hover:bg-[#12A862]">
-              <Link to="/events/create">Create Event</Link>
-            </Button>
+            <div className="mt-8 flex flex-wrap flex-col items-center justify-center gap-4 md:mt-10 md:gap-10">
+              <Link
+                to="/events"
+                className="inline-block bg-[#0CC85A] px-6 py-4 text-base font-bold text-white transition hover:bg-[#0AAF4D] md:px-8 md:py-5 md:text-lg"
+              >
+                Book an Event
+              </Link>
+            </div>
           </div>
         </div>
 

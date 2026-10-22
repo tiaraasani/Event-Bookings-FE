@@ -57,6 +57,11 @@ export const uploadPaymentProof = async (orderId: number, image: File) => {
   return response.data;
 };
 
+export const getMyOrganizedEvents = async () => {
+  const response = await axiosInstance.get("/events/my");
+  return response.data.data;
+};
+
 export interface CreateTransactionData {
   ticketId: number;
   quantity: number;

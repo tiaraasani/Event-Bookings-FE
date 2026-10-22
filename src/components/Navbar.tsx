@@ -23,6 +23,15 @@ function Navbar() {
         <div className="flex items-center gap-3 md:gap-6">
           {user ? (
             <div className="flex items-center gap-3 md:gap-4">
+              {user.role === "ORGANIZER" && (
+                <Link
+                  to="/organizer/dashboard"
+                  className="hidden text-sm font-semibold hover:underline md:inline md:text-base"
+                >
+                  Dashboard
+                </Link>
+              )}
+
               <Link
                 to="/profile"
                 className="max-w-24 truncate text-sm font-semibold hover:underline md:max-w-none md:text-base"
@@ -73,9 +82,8 @@ function Navbar() {
               to="/events/create"
               className="flex shrink-0 items-center justify-center bg-green-500 px-3 py-3 text-sm font-bold text-white transition hover:bg-green-600 md:h-14 md:px-8 md:text-lg"
             >
-              <span className="mr-1 md:mr-3 md:text-xl">▣</span>
-              Create
-              <span className="ml-1 hidden md:inline">Event</span>
+              <span className="md:mr-3 md:text-xl">▣</span>
+              <span className="hidden md:inline">Create Event</span>
             </Link>
           )}
         </div>

@@ -25,7 +25,7 @@ function UpdatePictureForm({ currentPicture, name }: Props) {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         {preview ? (
           <img
             src={preview}
@@ -38,7 +38,7 @@ function UpdatePictureForm({ currentPicture, name }: Props) {
           </div>
         )}
 
-        <div className="space-y-2">
+        <div className="min-w-0 flex-1 space-y-2">
           <Label htmlFor="picture">Choose image</Label>
           <Input
             id="picture"

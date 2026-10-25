@@ -17,3 +17,21 @@ axiosInstance.interceptors.request.use(
   },
   (error) => Promise.reject(error),
 );
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const message = error.response?.data?.message;
+    const isLoggedIn = Boolean(useAuth.getState().user);
+
+    const isTokenProblem =
+      message === "Token expired" || message === "Invalid token";
+
+    if (status === 401 && isTokenProblem && isLoggedIn) {
+      useAuth.getState().logout();
+    }
+
+    return Promise.reject(error);
+  },
+);

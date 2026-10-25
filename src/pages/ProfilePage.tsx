@@ -1,3 +1,4 @@
+import ConfirmDialog from "@/components/ConfirmDialog";
 import Navbar from "@/components/Navbar";
 import OrganizerTransactionsTable from "@/components/OrganizerTransactionsTable";
 import UpdateNameForm from "@/components/UpdateNameForm";
@@ -32,8 +33,6 @@ function formatDate(value: string) {
 
 function ProfilePage() {
   const [activeTab, setActiveTab] = useState<ProfileTab>("home");
-  const [orderId, setOrderId] = useState("");
-  const [noOrderId, setNoOrderId] = useState(false);
 
   const { data: profile, isPending, isError } = useGetProfile();
   const isCustomer = profile?.role === "CUSTOMER";
@@ -84,11 +83,25 @@ function ProfilePage() {
 
   const changePassword = useChangePassword();
 
+  const [pendingPassword, setPendingPassword] =
+    useState<ChangePasswordSchema | null>(null);
+  const [eventToDelete, setEventToDelete] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+
   const onSubmitPassword = (values: ChangePasswordSchema) => {
-    changePassword.mutate(values, {
+    setPendingPassword(values);
+  };
+
+  const onConfirmPassword = () => {
+    if (!pendingPassword) return;
+
+    changePassword.mutate(pendingPassword, {
       onSuccess: () => {
         reset();
       },
+      onSettled: () => setPendingPassword(null),
     });
   };
 
@@ -97,8 +110,8 @@ function ProfilePage() {
 
     navigator.clipboard
       .writeText(profile.referralCode)
-      .then(() => toast.success("Kode referral disalin"))
-      .catch(() => toast.error("Gagal menyalin kode referral"));
+      .then(() => toast.success("Referral code copied"))
+      .catch(() => toast.error("Failed to copy referral code"));
   };
 
   if (isPending) {
@@ -301,26 +314,31 @@ function ProfilePage() {
                                 </span>
                               </p>
                             ))}
-                            <Link
-                              to={`/organizer/events/${event.id}/attendees`}
-                              className="mt-4 block text-center text-sm font-semibold text-[#147D74] underline"
-                            >
-                              View attendees
-                            </Link>
+                            <div className="mt-4 flex justify-center gap-4 text-sm font-semibold text-[#147D74]">
+                              <Link
+                                to={`/events/${event.id}/edit`}
+                                className="underline"
+                              >
+                                Edit event
+                              </Link>
+                              <Link
+                                to={`/organizer/events/${event.id}/attendees`}
+                                className="underline"
+                              >
+                                View attendees
+                              </Link>
+                            </div>
                             <Button
                               type="button"
                               variant="destructive"
                               className="mt-4 w-full"
                               disabled={deleteEventMutation.isPending}
-                              onClick={() => {
-                                const confirmed = window.confirm(
-                                  `Are you sure you want to delete "${event.name}"?`,
-                                );
-
-                                if (confirmed) {
-                                  deleteEventMutation.mutate(event.id);
-                                }
-                              }}
+                              onClick={() =>
+                                setEventToDelete({
+                                  id: event.id,
+                                  name: event.name,
+                                })
+                              }
                             >
                               {deleteEventMutation.isPending
                                 ? "Deleting..."
@@ -515,6 +533,32 @@ function ProfilePage() {
             <OrganizerTransactionsTable />
           </div>
         )}
+
+        <ConfirmDialog
+          open={eventToDelete !== null}
+          title="Delete this event?"
+          description={`"${eventToDelete?.name}" will be removed from the event list. This cannot be undone.`}
+          confirmText="Delete"
+          destructive
+          isPending={deleteEventMutation.isPending}
+          onConfirm={() => {
+            if (!eventToDelete) return;
+            deleteEventMutation.mutate(eventToDelete.id, {
+              onSettled: () => setEventToDelete(null),
+            });
+          }}
+          onCancel={() => setEventToDelete(null)}
+        />
+
+        <ConfirmDialog
+          open={pendingPassword !== null}
+          title="Change your password?"
+          description="You will need the new password the next time you login."
+          confirmText="Change Password"
+          isPending={changePassword.isPending}
+          onConfirm={onConfirmPassword}
+          onCancel={() => setPendingPassword(null)}
+        />
 
         {/* SETTINGS TAB */}
         {activeTab === "settings" && (

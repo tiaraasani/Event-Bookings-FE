@@ -26,7 +26,7 @@ function ForgotPasswordPage() {
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-md space-y-5 rounded-lg bg-white p-8"
       >
-        <h1 className="text-2xl font-bold">Frogot Password</h1>
+        <h1 className="text-2xl font-bold">Forgot Password</h1>
         <p className="text-sm text-gray-600">
           Enter your email, and we will send you a link to reset your password.
         </p>
@@ -42,7 +42,7 @@ function ForgotPasswordPage() {
         </div>
 
         <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? "Mengirim..." : "Kirim Link Reset"}
+          {isPending ? "Sending..." : "Send Reset Link"}
         </Button>
 
         <p className="text-center text-sm">

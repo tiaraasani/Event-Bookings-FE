@@ -11,7 +11,6 @@ import {
   YAxis,
 } from "recharts";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/stores/useAuth";
 import useGetMyOrganization from "@/hooks/api/useGetMyOrganization";
 
 type Period = "year" | "month" | "day";

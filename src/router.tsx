@@ -15,6 +15,8 @@ import TransactionPage from "./pages/TransactionPage";
 import OrganizerTransactionsPage from "./pages/OrganizerTransactionsPage";
 import OrganizerDashboardPage from "./pages/OrganizerDashboardPage";
 import EventAttendeesPage from "./pages/EventAttendeesPage";
+import EditEvent from "./pages/EditEvent";
+import NotFoundPage from "./pages/NotFoundPage";
 import OrganizerReviewsPage from "./pages/OrganizerReviewsPage";
 import PromotionPageForOrganizer from "@/pages/PromotionPageForOrganizer";
 import PromotionsPage from "./pages/PromotionPage";
@@ -64,6 +66,10 @@ export const router = createBrowserRouter([
         element: <CreateEvent />,
       },
       {
+        path: "/events/:id/edit",
+        element: <EditEvent />,
+      },
+      {
         path: "/organizer/transactions",
         element: <OrganizerTransactionsPage />,
       },
@@ -84,4 +90,5 @@ export const router = createBrowserRouter([
 
   { path: "/forgot-password", element: <ForgotPasswordPage /> },
   { path: "/reset-password", element: <ResetPasswordPage /> },
+  { path: "*", element: <NotFoundPage /> },
 ]);

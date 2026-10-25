@@ -1,7 +1,8 @@
+import EventReviews from "@/components/EventReviews";
 import Navbar from "@/components/Navbar";
 import useGetEventsById from "@/hooks/api/event/useGetEventById";
-import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 function EventDetail() {
   const { id } = useParams();
@@ -104,9 +105,21 @@ function EventDetail() {
             <p className="mb-3 text-sm font-medium text-gray-500">
               Organized by
             </p>
-            <h2 className="text-xl font-semibold">
+
+            <button
+              type="button"
+              onClick={() =>
+                navigate(`/organizers/${event.organization?.id}/reviews`)
+              }
+              disabled={!event.organization?.id}
+              className="text-left text-xl font-semibold text-teal-700 transition hover:text-teal-800 hover:underline disabled:cursor-default disabled:no-underline"
+            >
               {event.organization?.name ?? "Event Organizer"}
-            </h2>
+            </button>
+
+            <p className="mt-2 text-sm text-gray-500">
+              Click to view organizer reviews
+            </p>
           </div>
 
           <div>
@@ -168,6 +181,7 @@ function EventDetail() {
           </button>
         </aside>
       </section>
+      <EventReviews />
 
       {/* Ticket selection modal */}
       {isTicketModalOpen && (

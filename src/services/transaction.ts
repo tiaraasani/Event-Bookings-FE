@@ -29,6 +29,9 @@ export interface Transaction {
       startDate: string;
       endDate: string;
       type: "VENUE" | "ONLINE";
+      organization: {
+        id: number;
+      };
     };
   };
 }
@@ -66,6 +69,7 @@ export interface CreateTransactionData {
   ticketId: number;
   quantity: number;
   pointsToUse?: number;
+  voucherCode?: string;
 }
 
 export const createTransaction = async (data: CreateTransactionData) => {

@@ -29,7 +29,7 @@ function RegisterPage() {
         <h1 className="text-2xl font-bold">Register</h1>
 
         <div className="space-y-2">
-          <Label htmlFor="name">Nama</Label>
+          <Label htmlFor="name">Name</Label>
           <Input id="name" {...register("name")} />
           {formState.errors.name && (
             <p className="text-sm text-red-500">
@@ -59,7 +59,7 @@ function RegisterPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="role">Daftar sebagai</Label>
+          <Label htmlFor="role">Register as</Label>
           <select
             id="role"
             {...register("role")}
@@ -72,24 +72,24 @@ function RegisterPage() {
 
         {role === "ORGANIZER" && (
           <div className="space-y-2">
-            <Label htmlFor="organizationName">Nama organisasi</Label>
+            <Label htmlFor="organizationName">Organization name</Label>
             <Input id="organizationName" {...register("organizationName")} />
           </div>
         )}
 
         {role === "CUSTOMER" && (
           <div className="space-y-2">
-            <Label htmlFor="referralCode">Kode referral (opsional)</Label>
+            <Label htmlFor="referralCode">Referral code (optional)</Label>
             <Input id="referralCode" {...register("referralCode")} />
           </div>
         )}
 
         <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? "Loading..." : "Daftar"}
+          {isPending ? "Loading..." : "Register"}
         </Button>
 
         <p className="text-center text-sm">
-          Sudah punya akun?{" "}
+          Already have an account?{" "}
           <Link to="/login" className="font-semibold text-[#2bb3b3]">
             Login
           </Link>

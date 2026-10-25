@@ -20,7 +20,7 @@ export function useForgotPassword() {
     },
 
     onError: (error: AxiosError<{ message: string }>) => {
-      toast.error(error.response?.data.message || "Gagal mengirim email");
+      toast.error(error.response?.data.message || "Failed to send email");
     },
   });
 }

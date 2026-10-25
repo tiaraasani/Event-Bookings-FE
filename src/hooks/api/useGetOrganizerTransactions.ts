@@ -1,15 +1,27 @@
 import { axiosInstance } from "@/lib/axios";
-import type { OrganizerTransaction } from "@/types/organizer-transaction";
-import { useQuery } from "@tanstack/react-query";
+import type {
+  OrganizerTransaction,
+  PaymentStatus,
+} from "@/types/organizer-transaction";
+import type {
+  PaginationQueryParams,
+  PaginationResponse,
+} from "@/types/pagination";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-export function useGetOrganizerTransactions() {
+type OrganizerTransactionQuery = PaginationQueryParams & {
+  status?: PaymentStatus | "";
+};
+
+export function useGetOrganizerTransactions(query?: OrganizerTransactionQuery) {
   return useQuery({
-    queryKey: ["organizer-transactions"],
+    queryKey: ["organizer-transactions", query],
     queryFn: async () => {
-      const { data } = await axiosInstance.get<OrganizerTransaction[]>(
-        "/organizer/transactions",
-      );
+      const { data } = await axiosInstance.get<
+        PaginationResponse<OrganizerTransaction>
+      >("/organizer/transactions", { params: query });
       return data;
     },
+    placeholderData: keepPreviousData,
   });
 }

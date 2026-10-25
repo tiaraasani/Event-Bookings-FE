@@ -5,9 +5,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/stores/useAuth";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import { useState } from "react";
 
 function Navbar() {
   const { user, logout } = useAuth();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   return (
     <nav className="absolute left-0 top-0 z-50 w-full bg-[#003238] text-white">
@@ -39,7 +42,7 @@ function Navbar() {
                 Hi, {user.name}
               </Link>
               <button
-                onClick={logout}
+                onClick={() => setShowLogoutConfirm(true)}
                 className="text-sm font-semibold underline underline-offset-4"
               >
                 Logout
@@ -88,6 +91,17 @@ function Navbar() {
           )}
         </div>
       </div>
+      <ConfirmDialog
+        open={showLogoutConfirm}
+        title="Log out?"
+        description="You will need to login again to access your account."
+        confirmText="Logout"
+        onConfirm={() => {
+          logout();
+          setShowLogoutConfirm(false);
+        }}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </nav>
   );
 }

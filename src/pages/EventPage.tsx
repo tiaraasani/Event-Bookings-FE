@@ -23,6 +23,10 @@ function EventsPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
+  type EventPeriod = "UPCOMING" | "ONGOING" | "ENDED";
+
+  const [period, setPeriod] = useState<EventPeriod>("UPCOMING");
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedSearch(search);
@@ -50,6 +54,17 @@ function EventsPage() {
   const categories = ["All", ...standardCategories, ...customCategories];
 
   const filteredEvents = (events ?? []).filter((event) => {
+    const now = new Date();
+    const startDate = new Date(event.startDate);
+    const endDate = new Date(event.endDate);
+
+    const matchesPeriod =
+      period === "UPCOMING"
+        ? startDate > now
+        : period === "ONGOING"
+          ? startDate <= now && endDate > now
+          : endDate <= now;
+
     const matchesName = event.name
       .toLowerCase()
       .includes(debouncedSearch.toLowerCase());
@@ -68,7 +83,7 @@ function EventsPage() {
             category.toLowerCase() === event.category?.name.toLowerCase(),
         ));
 
-    return matchesName && matchesLocation && matchesCategory;
+    return matchesPeriod && matchesName && matchesLocation && matchesCategory;
   });
 
   return (
@@ -150,7 +165,41 @@ function EventsPage() {
               {filteredEvents.length} events
             </span>
           </div>
+          <div className="mb-6 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => setPeriod("UPCOMING")}
+              className={`rounded-full px-5 py-2 ${
+                period === "UPCOMING"
+                  ? "bg-teal-600 text-white"
+                  : "bg-gray-100 text-gray-700"
+              }`}
+            >
+              Upcoming
+            </button>
 
+            <button
+              onClick={() => setPeriod("ONGOING")}
+              className={`rounded-full px-5 py-2 ${
+                period === "ONGOING"
+                  ? "bg-teal-600 text-white"
+                  : "bg-gray-100 text-gray-700"
+              }`}
+            >
+              Ongoing
+            </button>
+
+            <button
+              onClick={() => setPeriod("ENDED")}
+              className={`rounded-full px-5 py-2 ${
+                period === "ENDED"
+                  ? "bg-teal-600 text-white"
+                  : "bg-gray-100 text-gray-700"
+              }`}
+            >
+              Ended
+            </button>
+          </div>
           {isPending && <p>Loading events...</p>}
 
           {isError && (

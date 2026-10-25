@@ -58,6 +58,8 @@ function CreateEvent() {
 
   const eventName = watch("name");
   const eventType = watch("type");
+  const startDate = watch("startDate");
+  const endDate = watch("endDate");
 
   function createSlug(name: string) {
     return name
@@ -367,7 +369,19 @@ function CreateEvent() {
 
               <input
                 type="datetime-local"
-                {...register("startDate")}
+                {...register("startDate", {
+                  onChange: (e) => {
+                    const newStartDate = e.target.value;
+
+                    if (endDate && endDate < newStartDate) {
+                      setValue("endDate", "", {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    }
+                  },
+                })}
+                max={endDate || undefined}
                 className="w-full rounded border border-gray-300 px-4 py-3 outline-none focus:border-teal-500"
               />
 
@@ -384,6 +398,7 @@ function CreateEvent() {
               <input
                 type="datetime-local"
                 {...register("endDate")}
+                min={startDate || undefined}
                 className="w-full rounded border border-gray-300 px-4 py-3 outline-none focus:border-teal-500"
               />
 

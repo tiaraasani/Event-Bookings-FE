@@ -10,6 +10,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/stores/useAuth";
+import useGetMyOrganization from "@/hooks/api/useGetMyOrganization";
 
 type Period = "year" | "month" | "day";
 type Metric = "revenue" | "tickets";
@@ -44,6 +47,8 @@ function formatAxis(value: number) {
 }
 
 function OrganizerDashboardPage() {
+  const navigate = useNavigate();
+  const { data: organization } = useGetMyOrganization();
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
@@ -94,8 +99,30 @@ function OrganizerDashboardPage() {
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-6 pb-16 pt-32 sm:px-10">
-        <h1 className="mb-6 text-3xl font-bold text-gray-900">Dashboard</h1>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
 
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() =>
+                navigate(`/organizers/${organization?.id}/reviews`)
+              }
+              disabled={!organization?.id}
+              className="rounded-lg bg-teal-600 px-5 py-3 font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              View Organizer Reviews
+            </button>
+
+            <button
+              type="button"
+              onClick={() => navigate("/organizer/promotions")}
+              className="rounded-lg bg-teal-600 px-5 py-3 font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Manage Promotions
+            </button>
+          </div>
+        </div>
         <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
             <p className="text-sm text-gray-500">Total Events</p>

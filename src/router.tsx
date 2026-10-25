@@ -15,6 +15,9 @@ import TransactionPage from "./pages/TransactionPage";
 import OrganizerTransactionsPage from "./pages/OrganizerTransactionsPage";
 import OrganizerDashboardPage from "./pages/OrganizerDashboardPage";
 import EventAttendeesPage from "./pages/EventAttendeesPage";
+import OrganizerReviewsPage from "./pages/OrganizerReviewsPage";
+import PromotionPageForOrganizer from "@/pages/PromotionPageForOrganizer";
+import PromotionsPage from "./pages/PromotionPage";
 
 export const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -35,6 +38,14 @@ export const router = createBrowserRouter([
   {
     path: "/transaction/:eventId",
     element: <TransactionPage />,
+  },
+  {
+    path: "/promotions",
+    element: <PromotionsPage />,
+  },
+  {
+    path: "/organizers/:organizationId/reviews",
+    element: <OrganizerReviewsPage />,
   },
   {
     element: <ProtectedRoute />,
@@ -63,6 +74,10 @@ export const router = createBrowserRouter([
       {
         path: "/organizer/events/:id/attendees",
         element: <EventAttendeesPage />,
+      },
+      {
+        path: "/organizer/promotions",
+        element: <PromotionPageForOrganizer />,
       },
     ],
   },

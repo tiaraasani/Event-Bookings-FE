@@ -25,10 +25,10 @@ function Discounting() {
           <div className="mt-10">
             <div className="mt-8 flex flex-wrap flex-col items-center justify-center gap-4 md:mt-10 md:gap-10">
               <Link
-                to="/events"
+                to="/promotions"
                 className="inline-block bg-[#0CC85A] px-6 py-4 text-base font-bold text-white transition hover:bg-[#0AAF4D] md:px-8 md:py-5 md:text-lg"
               >
-                Book an Event
+                View Promotions
               </Link>
             </div>
           </div>

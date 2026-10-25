@@ -47,6 +47,14 @@ export const createEventSchema = z
         path: ["endDate"],
       });
     }
+
+    if (new Date(data.startDate) < new Date()) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Start date cannot be in the past",
+        path: ["startDate"],
+      });
+    }
   });
 
 export type CreateEventSchema = z.infer<typeof createEventSchema>;

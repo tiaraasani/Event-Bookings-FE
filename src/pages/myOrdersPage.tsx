@@ -1,7 +1,7 @@
 import { useGetMyTransactions } from "@/hooks/api/useGetMyTransaction";
 import { uploadPaymentProof } from "@/services/transaction";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const formatRupiah = (amount: number) => {
@@ -70,12 +70,29 @@ function MyOrdersPage() {
 
   const queryClient = useQueryClient();
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [refetch]);
+
   const [selectedImages, setSelectedImages] = useState<
     Record<number, File | undefined>
   >({});
 
   const [uploadErrors, setUploadErrors] = useState<Record<number, string>>({});
 
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
   const paymentProofMutation = useMutation({
     mutationFn: ({ orderId, image }: { orderId: number; image: File }) =>
       uploadPaymentProof(orderId, image),
@@ -210,6 +227,43 @@ function MyOrdersPage() {
                     <p className="mt-1 text-sm text-gray-500">
                       Ordered on {formatDate(order.createdAt)}
                     </p>
+
+                    {order.paymentStatus === "WAITING_FOR_PAYMENT" &&
+                      order.expiresAt &&
+                      (() => {
+                        const remainingTime = Math.max(
+                          0,
+                          new Date(order.expiresAt).getTime() - currentTime,
+                        );
+
+                        const totalSeconds = Math.floor(remainingTime / 1000);
+                        const hours = Math.floor(totalSeconds / 3600);
+                        const minutes = Math.floor((totalSeconds % 3600) / 60);
+                        const seconds = totalSeconds % 60;
+
+                        return remainingTime > 0 ? (
+                          <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3">
+                            <p className="text-sm font-medium text-amber-800">
+                              Time remaining to pay
+                            </p>
+
+                            <p className="mt-1 font-mono text-xl font-bold text-amber-700">
+                              {String(hours).padStart(2, "0")}:
+                              {String(minutes).padStart(2, "0")}:
+                              {String(seconds).padStart(2, "0")}
+                            </p>
+
+                            <p className="mt-1 text-xs text-amber-700">
+                              Please upload your payment proof before the
+                              deadline.
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="mt-3 text-sm font-semibold text-red-600">
+                            Payment deadline reached. Updating order status...
+                          </p>
+                        );
+                      })()}
                   </div>
 
                   <div className="sm:min-w-40">

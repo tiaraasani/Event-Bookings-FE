@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import useGetEventsById from "@/hooks/api/event/useGetEventById";
 import { createTransaction } from "@/services/transaction";
 import { useGetMyPointBalance } from "@/hooks/api/useGetMyPointsBalance";
+import { axiosInstance } from "@/lib/axios";
 
 const formatRupiah = (amount: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -12,6 +13,12 @@ const formatRupiah = (amount: number) =>
     currency: "IDR",
     maximumFractionDigits: 0,
   }).format(amount);
+
+interface PublicVoucher {
+  code: string;
+  eventId: number;
+  discountValue: number;
+}
 
 function TransactionPage() {
   const { eventId } = useParams();
@@ -26,9 +33,17 @@ function TransactionPage() {
   const { data: pointBalance = 0, isLoading: isPointBalanceLoading } =
     useGetMyPointBalance();
 
-  // Keep the input as a string so it can start empty.
+  // Existing points and error states
   const [pointsInput, setPointsInput] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  // Voucher states
+  const [voucherInput, setVoucherInput] = useState("");
+  const [appliedVoucher, setAppliedVoucher] = useState<PublicVoucher | null>(
+    null,
+  );
+  const [voucherMessage, setVoucherMessage] = useState("");
+  const [isApplyingVoucher, setIsApplyingVoucher] = useState(false);
 
   const selectedTicket = event?.tickets.find(
     (ticket) => ticket.id === ticketId,
@@ -38,15 +53,22 @@ function TransactionPage() {
 
   const total = selectedTicket ? selectedTicket.price * quantity : 0;
 
+  // Calculate voucher discount before applying points
+  const voucherDiscount = appliedVoucher
+    ? Math.floor((total * appliedVoucher.discountValue) / 100)
+    : 0;
+
+  const totalAfterVoucher = total - voucherDiscount;
+
   const pointsNumber = pointsInput === "" ? 0 : Number(pointsInput);
 
   const validPointsToUse = Math.min(
     Math.max(0, Math.floor(pointsNumber)),
     pointBalance,
-    total,
+    totalAfterVoucher,
   );
 
-  const finalPrice = total - validPointsToUse;
+  const finalPrice = totalAfterVoucher - validPointsToUse;
 
   const createTransactionMutation = useMutation({
     mutationFn: createTransaction,
@@ -60,6 +82,50 @@ function TransactionPage() {
       );
     },
   });
+
+  // Apply voucher
+  const handleApplyVoucher = async () => {
+    const code = voucherInput.trim().toUpperCase();
+
+    if (!code) {
+      setVoucherMessage("Please enter a voucher code.");
+      return;
+    }
+
+    setIsApplyingVoucher(true);
+    setVoucherMessage("");
+
+    try {
+      const response = await axiosInstance.get<{
+        message: string;
+        data: PublicVoucher[];
+      }>("/vouchers/public");
+
+      const voucher = response.data.data.find(
+        (item) =>
+          item.code.toUpperCase() === code && item.eventId === event?.id,
+      );
+
+      if (!voucher) {
+        setAppliedVoucher(null);
+        setVoucherMessage(
+          "This voucher is invalid, expired, or unavailable for this event.",
+        );
+        return;
+      }
+
+      setAppliedVoucher(voucher);
+      setVoucherMessage(
+        `Voucher applied successfully! You save ${voucher.discountValue}%.`,
+      );
+    } catch (error) {
+      console.error(error);
+      setAppliedVoucher(null);
+      setVoucherMessage("Unable to check the voucher. Please try again.");
+    } finally {
+      setIsApplyingVoucher(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -202,6 +268,70 @@ function TransactionPage() {
             <span>{formatRupiah(total)}</span>
           </div>
 
+          {/* Voucher section */}
+          <div className="mt-5 rounded-xl border border-gray-200 p-4">
+            <label htmlFor="voucherCode" className="font-medium">
+              Have a voucher?
+            </label>
+
+            <div className="mt-3 flex gap-2">
+              <input
+                id="voucherCode"
+                type="text"
+                autoComplete="off"
+                placeholder="Enter voucher code"
+                value={voucherInput}
+                disabled={!!appliedVoucher || isApplyingVoucher}
+                onChange={(e) => setVoucherInput(e.target.value.toUpperCase())}
+                className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-3 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 disabled:bg-gray-100"
+              />
+
+              <button
+                type="button"
+                onClick={handleApplyVoucher}
+                disabled={isApplyingVoucher || !!appliedVoucher}
+                className="rounded-lg bg-teal-600 px-4 py-3 font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+              >
+                {isApplyingVoucher ? "Checking..." : "Apply"}
+              </button>
+            </div>
+
+            {voucherMessage && (
+              <p
+                role="status"
+                className={`mt-2 text-sm ${
+                  appliedVoucher ? "text-teal-700" : "text-red-600"
+                }`}
+              >
+                {voucherMessage}
+              </p>
+            )}
+
+            {appliedVoucher && (
+              <button
+                type="button"
+                onClick={() => {
+                  setAppliedVoucher(null);
+                  setVoucherInput("");
+                  setVoucherMessage("");
+                }}
+                className="mt-2 text-sm font-medium text-gray-500 hover:text-red-600"
+              >
+                Remove voucher
+              </button>
+            )}
+
+            {appliedVoucher && (
+              <div className="mt-3 flex justify-between gap-4 text-sm text-teal-700">
+                <span>Voucher discount ({appliedVoucher.discountValue}%)</span>
+                <span className="font-medium">
+                  -{formatRupiah(voucherDiscount)}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Existing points section */}
           <div className="mt-5 rounded-xl border border-gray-200 p-4">
             <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <label htmlFor="pointsToUse" className="font-medium">
@@ -235,10 +365,13 @@ function TransactionPage() {
 
             <p className="mt-2 text-xs leading-5 text-gray-500">
               1 point reduces your payment by Rp 1. Maximum usable:{" "}
-              {Math.min(pointBalance, total).toLocaleString("id-ID")} points.
+              {Math.min(pointBalance, totalAfterVoucher).toLocaleString(
+                "id-ID",
+              )}{" "}
+              points.
             </p>
 
-            {pointsNumber > Math.min(pointBalance, total) && (
+            {pointsNumber > Math.min(pointBalance, totalAfterVoucher) && (
               <p className="mt-2 text-xs text-amber-700">
                 Your applied points will be limited to the maximum allowed
                 amount.
@@ -284,6 +417,7 @@ function TransactionPage() {
                 ticketId: selectedTicket.id,
                 quantity,
                 pointsToUse: validPointsToUse,
+                ...(appliedVoucher ? { voucherCode: appliedVoucher.code } : {}),
               });
             }}
             className="mt-7 w-full rounded-lg bg-teal-600 px-6 py-4 font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"

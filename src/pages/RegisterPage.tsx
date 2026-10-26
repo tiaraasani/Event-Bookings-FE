@@ -7,9 +7,11 @@ import { Label } from "@/components/ui/label";
 import { useRegister } from "@/hooks/api/useRegister";
 import { registerSchema, type RegisterSchema } from "@/schemas/register";
 import AuthLayout from "@/components/AuthLayout";
+import PasswordInput from "@/components/PasswordInput";
+import { Select } from "@/components/ui/select";
 
 function RegisterPage() {
-  const { register, handleSubmit, formState, control } =
+  const { register, handleSubmit, formState, control, setValue } =
     useForm<RegisterSchema>({
       resolver: zodResolver(registerSchema),
       defaultValues: { role: "CUSTOMER" },
@@ -62,9 +64,8 @@ function RegisterPage() {
 
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="new-password"
             placeholder="Create a secure password"
             {...register("password")}
@@ -77,15 +78,36 @@ function RegisterPage() {
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="confirmPassword">Confirm password</Label>
+          <PasswordInput
+            id="confirmPassword"
+            autoComplete="new-password"
+            placeholder="Repeat your password"
+            {...register("confirmPassword")}
+          />
+          {formState.errors.confirmPassword && (
+            <p className="text-sm font-medium text-red-600">
+              {formState.errors.confirmPassword.message}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="role">Register as</Label>
-          <select
+          <input type="hidden" {...register("role")} />
+          <Select
             id="role"
-            {...register("role")}
-            className="h-11 w-full rounded-lg border border-brand-disabled/80 bg-white px-3.5 text-sm text-brand-text shadow-sm outline-none transition focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/15"
-          >
-            <option value="CUSTOMER">Customer</option>
-            <option value="ORGANIZER">Organizer</option>
-          </select>
+            value={role}
+            onValueChange={(v) =>
+              setValue("role", v as RegisterSchema["role"], {
+                shouldValidate: true,
+              })
+            }
+            options={[
+              { value: "CUSTOMER", label: "Customer" },
+              { value: "ORGANIZER", label: "Organizer" },
+            ]}
+          />
         </div>
 
         {role === "ORGANIZER" && (

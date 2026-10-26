@@ -1,6 +1,8 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import OrganizerLayout from "./components/OrganizerLayout";
+import AttendeesRedirect from "./components/AttendeesRedirect";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import EventPage from "./pages/EventPage";
@@ -14,7 +16,10 @@ import MyOrdersPage from "./pages/myOrdersPage";
 import TransactionPage from "./pages/TransactionPage";
 import OrganizerTransactionsPage from "./pages/OrganizerTransactionsPage";
 import OrganizerDashboardPage from "./pages/OrganizerDashboardPage";
+import OrganizerEventsPage from "./pages/OrganizerEventsPage";
 import EventAttendeesPage from "./pages/EventAttendeesPage";
+import EditEvent from "./pages/EditEvent";
+import NotFoundPage from "./pages/NotFoundPage";
 import OrganizerReviewsPage from "./pages/OrganizerReviewsPage";
 import PromotionPageForOrganizer from "@/pages/PromotionPageForOrganizer";
 import PromotionsPage from "./pages/PromotionPage";
@@ -64,24 +69,35 @@ export const router = createBrowserRouter([
         element: <CreateEvent />,
       },
       {
-        path: "/organizer/transactions",
-        element: <OrganizerTransactionsPage />,
-      },
-      {
-        path: "/organizer/dashboard",
-        element: <OrganizerDashboardPage />,
+        path: "/organizer/promotions",
+        element: <PromotionPageForOrganizer />,
       },
       {
         path: "/organizer/events/:id/attendees",
-        element: <EventAttendeesPage />,
+        element: <AttendeesRedirect />,
       },
       {
-        path: "/organizer/promotions",
-        element: <PromotionPageForOrganizer />,
+        // Pages that share the organizer sidebar
+        element: <OrganizerLayout />,
+        children: [
+          {
+            path: "/organizer",
+            element: <Navigate to="/organizer/dashboard" replace />,
+          },
+          { path: "/organizer/dashboard", element: <OrganizerDashboardPage /> },
+          { path: "/organizer/events", element: <OrganizerEventsPage /> },
+          {
+            path: "/organizer/transactions",
+            element: <OrganizerTransactionsPage />,
+          },
+          { path: "/organizer/attendees", element: <EventAttendeesPage /> },
+          { path: "/events/:id/edit", element: <EditEvent /> },
+        ],
       },
     ],
   },
 
   { path: "/forgot-password", element: <ForgotPasswordPage /> },
   { path: "/reset-password", element: <ResetPasswordPage /> },
+  { path: "*", element: <NotFoundPage /> },
 ]);

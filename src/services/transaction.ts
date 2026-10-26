@@ -74,6 +74,7 @@ export interface CreateTransactionData {
   quantity: number;
   pointsToUse?: number;
   voucherCode?: string;
+  couponCode?: string;
 }
 
 export const createTransaction = async (data: CreateTransactionData) => {

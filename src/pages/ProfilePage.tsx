@@ -1,8 +1,8 @@
+import ConfirmDialog from "@/components/ConfirmDialog";
 import Navbar from "@/components/Navbar";
-import OrganizerTransactionsTable from "@/components/OrganizerTransactionsTable";
 import UpdateNameForm from "@/components/UpdateNameForm";
 import UpdatePictureForm from "@/components/UpdatePictureForm";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useChangePassword } from "@/hooks/api/useChangePassword";
@@ -11,16 +11,19 @@ import {
   changePasswordSchema,
   type ChangePasswordSchema,
 } from "@/schemas/change-password";
-import { deleteEvent, getMyOrganizedEvents } from "@/services/event";
 import { getMyTransactions } from "@/services/transaction";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
-type ProfileTab = "home" | "orders" | "settings";
+type ProfileTab = "home" | "settings";
+
+const TAB_BASE = "border-b-2 px-5 py-4 text-sm font-semibold transition";
+const TAB_ACTIVE = "border-brand-orange text-brand-navy";
+const TAB_INACTIVE = "border-transparent text-brand-muted hover:text-brand-navy";
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString("id-ID", {
@@ -46,35 +49,7 @@ function ProfilePage() {
     queryFn: getMyTransactions,
     enabled: isCustomer,
   });
-  const {
-    data: organizedEvents,
-    isPending: isOrganizedEventsPending,
-    isError: isOrganizedEventsError,
-  } = useQuery({
-    queryKey: ["my-organized-events"],
-    queryFn: getMyOrganizedEvents,
-    enabled: isOrganizer,
-  });
 
-  const queryClient = useQueryClient();
-
-  const deleteEventMutation = useMutation({
-    mutationFn: deleteEvent,
-    onSuccess: () => {
-      toast.success("Event deleted successfully");
-
-      queryClient.invalidateQueries({
-        queryKey: ["my-organized-events"],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["events"],
-      });
-    },
-    onError: () => {
-      toast.error("Failed to delete event. Please try again.");
-    },
-  });
   const { register, handleSubmit, formState, reset } =
     useForm<ChangePasswordSchema>({
       resolver: zodResolver(changePasswordSchema),
@@ -82,11 +57,21 @@ function ProfilePage() {
 
   const changePassword = useChangePassword();
 
+  const [pendingPassword, setPendingPassword] =
+    useState<ChangePasswordSchema | null>(null);
+
   const onSubmitPassword = (values: ChangePasswordSchema) => {
-    changePassword.mutate(values, {
+    setPendingPassword(values);
+  };
+
+  const onConfirmPassword = () => {
+    if (!pendingPassword) return;
+
+    changePassword.mutate(pendingPassword, {
       onSuccess: () => {
         reset();
       },
+      onSettled: () => setPendingPassword(null),
     });
   };
 
@@ -95,8 +80,8 @@ function ProfilePage() {
 
     navigator.clipboard
       .writeText(profile.referralCode)
-      .then(() => toast.success("Kode referral disalin"))
-      .catch(() => toast.error("Gagal menyalin kode referral"));
+      .then(() => toast.success("Referral code copied"))
+      .catch(() => toast.error("Failed to copy referral code"));
   };
 
   if (isPending) {
@@ -168,57 +153,24 @@ function ProfilePage() {
           <button
             type="button"
             onClick={() => setActiveTab("home")}
-            className={`border-b-2 px-5 py-4 text-sm font-semibold transition ${
-              activeTab === "home"
-                ? "border-brand-orange text-brand-navy"
-                : "border-transparent text-brand-muted hover:text-brand-navy"
+            className={`${TAB_BASE} ${
+              activeTab === "home" ? TAB_ACTIVE : TAB_INACTIVE
             }`}
           >
             Home
           </button>
 
-          {profile?.role === "CUSTOMER" && (
-            <Link
-              to="/my-orders"
-              className={`border-b-2 px-5 py-4 text-sm font-semibold transition ${
-                activeTab === "orders"
-                  ? "border-brand-orange text-brand-navy"
-                  : "border-transparent text-brand-muted hover:text-brand-navy"
-              }`}
-            >
+          {isCustomer && (
+            <Link to="/my-orders" className={`${TAB_BASE} ${TAB_INACTIVE}`}>
               My Orders
             </Link>
           )}
 
-          {profile?.role === "ORGANIZER" && (
-            <button
-              type="button"
-              onClick={() => setActiveTab("orders")}
-              className={`border-b-2 px-5 py-4 text-sm font-semibold transition ${
-                activeTab === "orders"
-                  ? "border-brand-orange text-brand-navy"
-                  : "border-transparent text-brand-muted hover:text-brand-navy"
-              }`}
-            >
-              My Transaction
-            </button>
-          )}
-
-          {profile?.role === "ORGANIZER" && (
-            <Link
-              to="/organizer/dashboard"
-              className="border-b-2 border-transparent px-5 py-4 text-sm font-semibold text-brand-muted transition hover:text-brand-navy"
-            >
-              Dashboard
-            </Link>
-          )}
           <button
             type="button"
             onClick={() => setActiveTab("settings")}
-            className={`border-b-2 px-5 py-4 text-sm font-semibold transition ${
-              activeTab === "settings"
-                ? "border-brand-orange text-brand-navy"
-                : "border-transparent text-brand-muted hover:text-brand-navy"
+            className={`${TAB_BASE} ${
+              activeTab === "settings" ? TAB_ACTIVE : TAB_INACTIVE
             }`}
           >
             Settings
@@ -228,110 +180,40 @@ function ProfilePage() {
         {/* HOME TAB */}
         {activeTab === "home" && (
           <div className="space-y-8">
-            <section>
-              <h2 className="mb-5 text-2xl font-bold text-brand-navy">
-                Your Activity
-              </h2>
+            {/* Organizer: everything event-related lives in the dashboard */}
+            {isOrganizer && (
+              <section>
+                <h2 className="mb-5 text-2xl font-bold text-brand-navy">
+                  Your Organization
+                </h2>
 
-              {/* Organizer activity */}
-              {isOrganizer && (
-                <div className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm">
-                  <h3 className="mb-4 text-lg font-semibold">
-                    Organised Events
-                  </h3>
-
-                  {isOrganizedEventsPending ? (
-                    <p className="text-sm text-brand-muted">
-                      Loading your events...
+                <div className="flex flex-col gap-4 rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="font-semibold text-brand-navy">
+                      {profile.organization?.name ?? "Organizer dashboard"}
                     </p>
-                  ) : isOrganizedEventsError ? (
-                    <p className="text-sm text-red-600">
-                      Failed to load your events.
+                    <p className="mt-1 text-sm text-brand-muted">
+                      Manage events, confirm payments, and track sales from
+                      your dashboard.
                     </p>
-                  ) : !organizedEvents || organizedEvents.length === 0 ? (
-                    <p className="text-sm text-brand-muted">
-                      You haven't organised any events yet.
-                    </p>
-                  ) : (
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      {organizedEvents.map((event) => (
-                        <div
-                          key={event.id}
-                          className="rounded-lg border border-brand-navy/10 p-4"
-                        >
-                          {event.image && (
-                            <img
-                              src={event.image}
-                              alt={event.name}
-                              className="mb-3 h-40 w-full rounded-lg object-cover"
-                            />
-                          )}
-
-                          <h4 className="font-semibold">{event.name}</h4>
-
-                          <p className="mt-1 text-sm text-brand-muted">
-                            {event.category?.name ?? "Uncategorized"}
-                          </p>
-
-                          <p className="mt-1 text-sm text-brand-text">
-                            {event.type === "ONLINE" ? "Online" : event.city}
-                          </p>
-
-                          <p className="mt-1 text-sm text-brand-text">
-                            Starts: {formatDate(event.startDate)}
-                          </p>
-
-                          <div className="mt-3 border-t pt-3">
-                            <p className="mb-2 text-sm font-medium">
-                              Ticket Availability
-                            </p>
-
-                            {event.tickets.map((ticket) => (
-                              <p
-                                key={ticket.id}
-                                className="flex justify-between gap-3 text-sm"
-                              >
-                                <span>{ticket.name}</span>
-                                <span className="text-brand-navy">
-                                  {ticket.availableQuantity} / {ticket.quantity}
-                                </span>
-                              </p>
-                            ))}
-                            <Link
-                              to={`/organizer/events/${event.id}/attendees`}
-                              className="mt-4 block text-center text-sm font-semibold text-brand-navy underline"
-                            >
-                              View attendees
-                            </Link>
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              className="mt-4 w-full"
-                              disabled={deleteEventMutation.isPending}
-                              onClick={() => {
-                                const confirmed = window.confirm(
-                                  `Are you sure you want to delete "${event.name}"?`,
-                                );
-
-                                if (confirmed) {
-                                  deleteEventMutation.mutate(event.id);
-                                }
-                              }}
-                            >
-                              {deleteEventMutation.isPending
-                                ? "Deleting..."
-                                : "Delete Event"}
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  </div>
+                  <Link
+                    to="/organizer/dashboard"
+                    className={buttonVariants({ className: "shrink-0" })}
+                  >
+                    Open dashboard
+                  </Link>
                 </div>
-              )}
+              </section>
+            )}
 
-              {/* Customer activity */}
-              {isCustomer && (
+            {/* Customer activity */}
+            {isCustomer && (
+              <section>
+                <h2 className="mb-5 text-2xl font-bold text-brand-navy">
+                  Your Activity
+                </h2>
+
                 <div className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm">
                   <h3 className="mb-4 text-lg font-semibold">
                     Attending Events
@@ -434,10 +316,10 @@ function ProfilePage() {
                     </div>
                   )}
                 </div>
-              )}
-            </section>
+              </section>
+            )}
 
-            {/* Existing rewards functionality */}
+            {/* Rewards */}
             <section>
               <h2 className="mb-5 text-2xl font-bold text-brand-navy">
                 Your Rewards
@@ -504,13 +386,15 @@ function ProfilePage() {
           </div>
         )}
 
-        {/* ORGANIZER TRANSACTIONS TAB */}
-        {activeTab === "orders" && isOrganizer && (
-          <div>
-            <h2 className="mb-4 text-2xl font-bold">My Transactions</h2>
-            <OrganizerTransactionsTable />
-          </div>
-        )}
+        <ConfirmDialog
+          open={pendingPassword !== null}
+          title="Change your password?"
+          description="You will need the new password the next time you login."
+          confirmText="Change Password"
+          isPending={changePassword.isPending}
+          onConfirm={onConfirmPassword}
+          onCancel={() => setPendingPassword(null)}
+        />
 
         {/* SETTINGS TAB */}
         {activeTab === "settings" && (

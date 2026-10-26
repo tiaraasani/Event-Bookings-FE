@@ -21,6 +21,9 @@ export function useConfirmTransaction() {
 
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["organizer-transactions"] });
+      // Accepting a payment changes revenue, ticket counts, and attendees.
+      queryClient.invalidateQueries({ queryKey: ["organizer-statistics"] });
+      queryClient.invalidateQueries({ queryKey: ["event-attendees"] });
       toast.success(data.message);
     },
 

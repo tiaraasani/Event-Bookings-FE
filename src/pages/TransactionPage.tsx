@@ -5,6 +5,8 @@ import Navbar from "@/components/Navbar";
 import useGetEventsById from "@/hooks/api/event/useGetEventById";
 import { createTransaction } from "@/services/transaction";
 import { useGetMyPointBalance } from "@/hooks/api/useGetMyPointsBalance";
+import { useGetProfile } from "@/hooks/api/useGetProfile";
+import type { Coupon } from "@/types/profile";
 import { axiosInstance } from "@/lib/axios";
 
 const formatRupiah = (amount: number) =>
@@ -43,6 +45,10 @@ function TransactionPage() {
   const [voucherMessage, setVoucherMessage] = useState("");
   const [isApplyingVoucher, setIsApplyingVoucher] = useState(false);
 
+  // Coupons come from the profile (only unused, unexpired ones are returned)
+  const { data: profile } = useGetProfile();
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+
   const selectedTicket = event?.tickets.find(
     (ticket) => ticket.id === ticketId,
   );
@@ -57,15 +63,22 @@ function TransactionPage() {
 
   const totalAfterVoucher = total - voucherDiscount;
 
+  // A coupon is a fixed rupiah amount and can never go below zero
+  const couponDiscount = appliedCoupon
+    ? Math.min(appliedCoupon.discountValue, totalAfterVoucher)
+    : 0;
+
+  const totalAfterDiscounts = totalAfterVoucher - couponDiscount;
+
   const pointsNumber = pointsInput === "" ? 0 : Number(pointsInput);
 
   const validPointsToUse = Math.min(
     Math.max(0, Math.floor(pointsNumber)),
     pointBalance,
-    totalAfterVoucher,
+    totalAfterDiscounts,
   );
 
-  const finalPrice = totalAfterVoucher - validPointsToUse;
+  const finalPrice = totalAfterDiscounts - validPointsToUse;
 
   const createTransactionMutation = useMutation({
     mutationFn: createTransaction,
@@ -366,6 +379,74 @@ function TransactionPage() {
           </div>
 
           <div className="mt-4 rounded-2xl border border-brand-navy/10 bg-brand-neutral/50 p-4">
+            <p className="text-sm font-semibold text-brand-navy">
+              Your coupons
+            </p>
+
+            {!profile || profile.coupons.length === 0 ? (
+              <p className="mt-1 text-xs text-brand-muted">
+                No active coupons. Coupons are earned by registering with a
+                referral code.
+              </p>
+            ) : (
+              <>
+                <p className="mt-1 text-xs text-brand-muted">
+                  Tap a coupon to apply it. Only one coupon per order.
+                </p>
+
+                <ul className="mt-3 space-y-2">
+                  {profile.coupons.map((coupon) => {
+                    const selected = appliedCoupon?.id === coupon.id;
+                    return (
+                      <li key={coupon.id}>
+                        <button
+                          type="button"
+                          aria-pressed={selected}
+                          onClick={() =>
+                            setAppliedCoupon(selected ? null : coupon)
+                          }
+                          className={`flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left text-sm transition ${
+                            selected
+                              ? "border-brand-orange bg-white ring-4 ring-brand-orange/15"
+                              : "border-brand-disabled/80 bg-white hover:border-brand-navy/40"
+                          }`}
+                        >
+                          <span className="min-w-0">
+                            <span className="block font-mono font-semibold text-brand-navy">
+                              {coupon.code}
+                            </span>
+                            <span className="block text-xs text-brand-muted">
+                              Expires{" "}
+                              {new Date(coupon.expiresAt).toLocaleDateString(
+                                "id-ID",
+                                {
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                },
+                              )}
+                            </span>
+                          </span>
+                          <span className="shrink-0 font-semibold text-brand-navy">
+                            -{formatRupiah(coupon.discountValue)}
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </>
+            )}
+
+            {appliedCoupon && (
+              <div className="mt-3 flex justify-between gap-4 text-sm font-medium text-emerald-600">
+                <span>Coupon discount</span>
+                <span>-{formatRupiah(couponDiscount)}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-brand-navy/10 bg-brand-neutral/50 p-4">
             <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <label
                 htmlFor="pointsToUse"
@@ -401,11 +482,13 @@ function TransactionPage() {
 
             <p className="mt-2 text-xs leading-5 text-brand-muted">
               1 point reduces your payment by Rp 1. Maximum usable:{" "}
-              {Math.min(pointBalance, totalAfterVoucher).toLocaleString("id-ID")}{" "}
+              {Math.min(pointBalance, totalAfterDiscounts).toLocaleString(
+                "id-ID",
+              )}{" "}
               points.
             </p>
 
-            {pointsNumber > Math.min(pointBalance, totalAfterVoucher) && (
+            {pointsNumber > Math.min(pointBalance, totalAfterDiscounts) && (
               <p className="mt-2 text-xs font-medium text-amber-700">
                 Your applied points will be limited to the maximum allowed
                 amount.
@@ -450,6 +533,7 @@ function TransactionPage() {
                 quantity,
                 pointsToUse: validPointsToUse,
                 ...(appliedVoucher ? { voucherCode: appliedVoucher.code } : {}),
+                ...(appliedCoupon ? { couponCode: appliedCoupon.code } : {}),
               });
             }}
             className="mt-6 w-full rounded-xl bg-brand-orange px-6 py-4 text-sm font-bold text-white shadow-lg shadow-brand-orange/20 transition hover:bg-brand-orange-dark disabled:cursor-not-allowed disabled:bg-brand-disabled disabled:text-[#5b6b88] disabled:shadow-none"

@@ -12,6 +12,7 @@ import {
   type Resolver,
 } from "react-hook-form";
 import { useState } from "react";
+import { Select } from "@/components/ui/select";
 
 const categoryOptions = [
   "Sports",
@@ -173,9 +174,7 @@ function CreateEvent() {
               className={inputClass}
             />
 
-            {errors.name && (
-              <p className={errorClass}>{errors.name.message}</p>
-            )}
+            {errors.name && <p className={errorClass}>{errors.name.message}</p>}
           </div>
 
           {/* Category dropdown */}
@@ -184,12 +183,10 @@ function CreateEvent() {
               Category <span className="text-red-600">*</span>
             </label>
 
-            <select
+            <Select
               id="event-category"
               value={selectedCategory}
-              onChange={(e) => {
-                const value = e.target.value;
-
+              onValueChange={(value) => {
                 setSelectedCategory(value);
 
                 setValue("customCategory", value === "Others" ? "" : value, {
@@ -198,16 +195,12 @@ function CreateEvent() {
 
                 setValue("categoryId", undefined, { shouldValidate: true });
               }}
-              className={inputClass}
-            >
-              <option value="">Select a category</option>
-
-              {categoryOptions.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+              placeholder="Select a category"
+              options={categoryOptions.map((category) => ({
+                value: category,
+                label: category,
+              }))}
+            />
 
             {selectedCategory === "Others" && (
               <div className="mt-4">
@@ -458,7 +451,9 @@ function CreateEvent() {
 
         {/* Ticket information */}
         <section className={sectionClass}>
-          <h2 className="text-xl font-bold text-brand-navy">Ticket information</h2>
+          <h2 className="text-xl font-bold text-brand-navy">
+            Ticket information
+          </h2>
 
           <div>
             <label htmlFor="ticket-name" className={labelClass}>
@@ -473,9 +468,7 @@ function CreateEvent() {
             />
 
             {errors.tickets?.[0]?.name && (
-              <p className={errorClass}>
-                {errors.tickets[0].name.message}
-              </p>
+              <p className={errorClass}>{errors.tickets[0].name.message}</p>
             )}
           </div>
 
@@ -494,9 +487,7 @@ function CreateEvent() {
               />
 
               {errors.tickets?.[0]?.price && (
-                <p className={errorClass}>
-                  {errors.tickets[0].price.message}
-                </p>
+                <p className={errorClass}>{errors.tickets[0].price.message}</p>
               )}
             </div>
 

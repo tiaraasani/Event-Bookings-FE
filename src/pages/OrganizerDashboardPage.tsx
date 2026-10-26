@@ -1,6 +1,12 @@
-import Navbar from "@/components/Navbar";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
+import { useConfirmTransaction } from "@/hooks/api/useConfirmTransaction";
+import useGetMyOrganization from "@/hooks/api/useGetMyOrganization";
 import { useGetOrganizerStatistics } from "@/hooks/api/useGetOrganizerStatistics";
+import { useGetOrganizerTransactions } from "@/hooks/api/useGetOrganizerTransactions";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Bar,
   BarChart,
@@ -10,11 +16,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useNavigate } from "react-router-dom";
-import useGetMyOrganization from "@/hooks/api/useGetMyOrganization";
 
 type Period = "year" | "month" | "day";
 type Metric = "revenue" | "tickets";
+
+type PendingAction = {
+  orderId: number;
+  action: "accept" | "reject";
+};
 
 const MONTH_NAMES = [
   "January",
@@ -31,6 +40,18 @@ const MONTH_NAMES = [
   "December",
 ];
 
+const PERIOD_OPTIONS: { value: Period; label: string }[] = [
+  { value: "year", label: "Year" },
+  { value: "month", label: "Month" },
+  { value: "day", label: "Day" },
+];
+
+const CARD =
+  "rounded-2xl border border-brand-navy/10 bg-white p-5 shadow-sm shadow-brand-navy/5";
+
+// Compact variant for the chart filters
+const FILTER_SELECT = "h-10 w-24 font-medium text-brand-navy";
+
 function formatRupiah(amount: number) {
   return "Rp " + amount.toLocaleString("id-ID");
 }
@@ -45,11 +66,7 @@ function formatAxis(value: number) {
   return String(value);
 }
 
-const selectClass =
-  "h-10 rounded-lg border border-brand-disabled/80 bg-white px-3 text-sm font-medium text-brand-navy outline-none transition focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/15";
-
 function OrganizerDashboardPage() {
-  const navigate = useNavigate();
   const { data: organization } = useGetMyOrganization();
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
@@ -62,38 +79,36 @@ function OrganizerDashboardPage() {
     month,
   );
 
+  // Orders that need the organizer's decision: shown on the overview so the
+  // most important daily task is visible without opening Transactions.
+  const pending = useGetOrganizerTransactions({
+    page: 1,
+    take: 5,
+    status: "WAITING_FOR_CONFIRMATION",
+  });
+  const confirm = useConfirmTransaction();
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(
+    null,
+  );
+
   const yearOptions: number[] = [];
   for (let y = now.getFullYear() - 4; y <= now.getFullYear(); y++) {
     yearOptions.push(y);
   }
 
   if (isPending) {
-    return (
-      <div className="min-h-screen bg-brand-neutral">
-        <Navbar />
-        <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center">
-          <p className="text-brand-muted">Loading statistics...</p>
-        </div>
-      </div>
-    );
+    return <p className="text-brand-muted">Loading statistics...</p>;
   }
 
   if (isError || !data) {
     return (
-      <div className="min-h-screen bg-brand-neutral">
-        <Navbar />
-        <div className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center gap-3 px-4 text-center">
-          <p className="font-medium text-brand-text">
-            Failed to load statistics.
-          </p>
-          <button
-            type="button"
-            onClick={() => refetch()}
-            className="rounded-lg bg-brand-orange px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-orange-dark"
-          >
-            Try again
-          </button>
-        </div>
+      <div className="flex flex-col items-start gap-3">
+        <p className="font-medium text-brand-text">
+          Failed to load statistics.
+        </p>
+        <Button type="button" onClick={() => refetch()}>
+          Try again
+        </Button>
       </div>
     );
   }
@@ -112,131 +127,139 @@ function OrganizerDashboardPage() {
         ? `Per month in ${year}`
         : `Per day in ${MONTH_NAMES[month - 1]} ${year}`;
 
-  const summaryCards = [
-    { label: "Total Events", value: data.summary.totalEvents },
-    { label: "Paid Orders", value: data.summary.totalOrders },
-    { label: "Tickets Sold", value: data.summary.totalTickets },
-    {
-      label: "Total Revenue",
-      value: formatRupiah(data.summary.totalRevenue),
-    },
-  ];
+  const pendingCount = pending.data?.meta.total ?? 0;
+  const pendingRows = pending.data?.data ?? [];
 
   return (
-    <div className="min-h-screen bg-brand-neutral">
-      <Navbar />
+    <div>
+      <header className="mb-8">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+          Organizer dashboard
+        </p>
+        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-brand-navy sm:text-4xl">
+          Overview
+        </h1>
+        <p className="mt-2 text-sm leading-6 text-brand-text">
+          {organization?.name
+            ? `How ${organization.name} is doing.`
+            : "Track ticket sales and revenue across your events."}
+        </p>
+      </header>
 
-      <main className="mx-auto max-w-7xl px-5 pb-16 pt-8 sm:px-8 md:pt-10">
-        <header className="mb-8 flex flex-wrap items-end justify-between gap-5">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
-              Organizer dashboard
-            </p>
-
-            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-brand-navy sm:text-4xl">
-              Dashboard
-            </h1>
-
-            <p className="mt-2 text-sm leading-6 text-brand-text">
-              Track ticket sales and revenue across your events.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() =>
-                navigate(`/organizers/${organization?.id}/reviews`)
-              }
-              disabled={!organization?.id}
-              className="rounded-lg border border-brand-navy/25 bg-white px-5 py-2.5 text-sm font-semibold text-brand-navy shadow-sm transition hover:border-brand-navy hover:bg-brand-navy hover:text-white disabled:cursor-not-allowed disabled:border-brand-disabled disabled:bg-brand-disabled disabled:text-[#5b6b88]"
-            >
-              View Organizer Reviews
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate("/organizer/promotions")}
-              className="rounded-lg bg-brand-orange px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-brand-orange/20 transition hover:bg-brand-orange-dark"
-            >
-              Manage Promotions
-            </button>
-          </div>
-        </header>
-
-        <div className="mb-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {summaryCards.map((card) => (
-            <div
-              key={card.label}
-              className="rounded-2xl border border-brand-navy/10 bg-white p-5 shadow-sm shadow-brand-navy/5"
-            >
-              <p className="text-sm font-medium text-brand-muted">
-                {card.label}
-              </p>
-              <p className="mt-2 break-words text-2xl font-extrabold text-brand-navy">
-                {card.value}
-              </p>
-            </div>
-          ))}
+      {/* Summary stats */}
+      <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div
+          className={`${CARD} ${
+            pendingCount > 0
+              ? "border-brand-orange/40 bg-brand-orange-soft/60"
+              : ""
+          }`}
+        >
+          <p className="text-sm font-medium text-brand-muted">
+            Awaiting confirmation
+          </p>
+          <p className="mt-2 text-2xl font-extrabold text-brand-navy">
+            {pendingCount}
+          </p>
+          <Link
+            to="/organizer/transactions"
+            className="mt-2 inline-block text-xs font-semibold text-brand-navy underline underline-offset-4 hover:text-brand-orange"
+          >
+            Review transactions
+          </Link>
         </div>
+        <div className={CARD}>
+          <p className="text-sm font-medium text-brand-muted">Events</p>
+          <p className="mt-2 text-2xl font-extrabold text-brand-navy">
+            {data.summary.totalEvents}
+          </p>
+          <p className="mt-2 text-xs text-brand-muted">Published by you</p>
+        </div>
+        <div className={CARD}>
+          <p className="text-sm font-medium text-brand-muted">Tickets sold</p>
+          <p className="mt-2 text-2xl font-extrabold text-brand-navy">
+            {data.summary.totalTickets}
+          </p>
+          <p className="mt-2 text-xs text-brand-muted">
+            from {data.summary.totalOrders} paid orders
+          </p>
+        </div>
+        <div className={CARD}>
+          <p className="text-sm font-medium text-brand-muted">Total revenue</p>
+          <p className="mt-2 break-words text-2xl font-extrabold text-brand-navy">
+            {formatRupiah(data.summary.totalRevenue)}
+          </p>
+          <p className="mt-2 text-xs text-brand-muted">Paid orders only</p>
+        </div>
+      </div>
 
-        <div className="rounded-2xl border border-brand-navy/10 bg-white p-5 shadow-sm shadow-brand-navy/5 sm:p-6">
-          <div className="mb-6 flex flex-wrap items-center gap-3">
-            <select
-              value={period}
-              onChange={(e) => setPeriod(e.target.value as Period)}
-              className={selectClass}
-              aria-label="Chart period"
-            >
-              <option value="year">Per year</option>
-              <option value="month">Per month</option>
-              <option value="day">Per day</option>
-            </select>
+      <div className="grid gap-5 xl:grid-cols-3">
+        {/* Chart */}
+        <div className={`${CARD} sm:p-6 xl:col-span-2`}>
+          <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold text-brand-navy">
+                {metric === "revenue" ? "Revenue" : "Tickets sold"}
+              </h2>
+              <p className="mt-1 text-sm text-brand-muted">{chartTitle}</p>
+            </div>
 
-            {period !== "year" && (
-              <select
-                value={year}
-                onChange={(e) => setYear(Number(e.target.value))}
-                className={selectClass}
-                aria-label="Chart year"
-              >
-                {yearOptions.map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex rounded-lg border border-brand-disabled/80 bg-brand-neutral/70 p-1">
+                {PERIOD_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setPeriod(option.value)}
+                    className={`rounded-md px-3 py-1.5 text-sm font-semibold transition ${
+                      period === option.value
+                        ? "bg-white text-brand-navy shadow-sm"
+                        : "text-brand-muted hover:text-brand-navy"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
                 ))}
-              </select>
-            )}
+              </div>
 
-            {period === "day" && (
-              <select
-                value={month}
-                onChange={(e) => setMonth(Number(e.target.value))}
-                className={selectClass}
-                aria-label="Chart month"
-              >
-                {MONTH_NAMES.map((name, index) => (
-                  <option key={name} value={index + 1}>
-                    {name}
-                  </option>
-                ))}
-              </select>
-            )}
+              {period !== "year" && (
+                <Select
+                  aria-label="Chart year"
+                  value={String(year)}
+                  onValueChange={(v) => setYear(Number(v))}
+                  className={FILTER_SELECT}
+                  options={yearOptions.map((y) => ({
+                    value: String(y),
+                    label: String(y),
+                  }))}
+                />
+              )}
 
-            <select
-              value={metric}
-              onChange={(e) => setMetric(e.target.value as Metric)}
-              className={selectClass}
-              aria-label="Chart metric"
-            >
-              <option value="revenue">Revenue</option>
-              <option value="tickets">Tickets sold</option>
-            </select>
+              {period === "day" && (
+                <Select
+                  aria-label="Chart month"
+                  value={String(month)}
+                  onValueChange={(v) => setMonth(Number(v))}
+                  className={`${FILTER_SELECT} w-36`}
+                  options={MONTH_NAMES.map((name, index) => ({
+                    value: String(index + 1),
+                    label: name,
+                  }))}
+                />
+              )}
+
+              <Select
+                aria-label="Chart metric"
+                value={metric}
+                onValueChange={(v) => setMetric(v as Metric)}
+                className={`${FILTER_SELECT} w-36`}
+                options={[
+                  { value: "revenue", label: "Revenue" },
+                  { value: "tickets", label: "Tickets sold" },
+                ]}
+              />
+            </div>
           </div>
-
-          <h2 className="mb-4 text-lg font-bold text-brand-navy">
-            {chartTitle}
-          </h2>
 
           <div className="h-64 sm:h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -286,7 +309,128 @@ function OrganizerDashboardPage() {
             </ResponsiveContainer>
           </div>
         </div>
-      </main>
+
+        {/* Pending confirmations */}
+        <div className={CARD}>
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-bold text-brand-navy">
+                Needs your confirmation
+              </h2>
+              <p className="mt-1 text-sm text-brand-muted">
+                Customers who uploaded payment proof.
+              </p>
+            </div>
+          </div>
+
+          {pending.isPending ? (
+            <p className="text-sm text-brand-muted">Loading...</p>
+          ) : pendingRows.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-brand-disabled px-4 py-8 text-center">
+              <p className="text-sm font-semibold text-brand-navy">
+                All caught up
+              </p>
+              <p className="mt-1 text-xs text-brand-muted">
+                No payments are waiting for review.
+              </p>
+            </div>
+          ) : (
+            <ul className="divide-y divide-brand-navy/10">
+              {pendingRows.map((trx) => (
+                <li key={trx.id} className="py-3 first:pt-0 last:pb-0">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-brand-navy">
+                        {trx.user.name}
+                      </p>
+                      <p className="truncate text-xs text-brand-muted">
+                        {trx.ticket.event.name} · {trx.ticket.name} ×{" "}
+                        {trx.quantity}
+                      </p>
+                    </div>
+                    <p className="shrink-0 text-sm font-semibold text-brand-navy">
+                      {formatRupiah(trx.finalPrice)}
+                    </p>
+                  </div>
+
+                  <div className="mt-2 flex items-center gap-2">
+                    {trx.paymentProofUrl && (
+                      <a
+                        href={trx.paymentProofUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mr-auto text-xs font-semibold text-brand-navy underline underline-offset-4 hover:text-brand-orange"
+                      >
+                        View proof
+                      </a>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      disabled={confirm.isPending}
+                      onClick={() =>
+                        setPendingAction({
+                          orderId: trx.id,
+                          action: "accept",
+                        })
+                      }
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      disabled={confirm.isPending}
+                      onClick={() =>
+                        setPendingAction({
+                          orderId: trx.id,
+                          action: "reject",
+                        })
+                      }
+                    >
+                      Reject
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <Link
+            to="/organizer/transactions"
+            className={buttonVariants({
+              variant: "outline",
+              className: "mt-5 w-full",
+            })}
+          >
+            Go to transactions
+          </Link>
+        </div>
+      </div>
+
+      <ConfirmDialog
+        open={pendingAction !== null}
+        title={
+          pendingAction?.action === "accept"
+            ? "Accept this payment?"
+            : "Reject this payment?"
+        }
+        description={
+          pendingAction?.action === "accept"
+            ? "This order will be marked as paid and the customer will receive a confirmation email."
+            : "This order will be rejected. The customer's seats, points, and coupon will be returned."
+        }
+        confirmText={pendingAction?.action === "accept" ? "Accept" : "Reject"}
+        destructive={pendingAction?.action === "reject"}
+        isPending={confirm.isPending}
+        onConfirm={() => {
+          if (!pendingAction) return;
+          confirm.mutate(pendingAction, {
+            onSettled: () => setPendingAction(null),
+          });
+        }}
+        onCancel={() => setPendingAction(null)}
+      />
     </div>
   );
 }

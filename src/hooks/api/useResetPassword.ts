@@ -24,7 +24,7 @@ export function useResetPassword(token: string | null) {
     },
 
     onError: (error: AxiosError<{ message: string }>) => {
-      toast.error(error.response?.data.message || "Reset password gagal");
+      toast.error(error.response?.data.message || "Failed to reset password");
     },
   });
 }

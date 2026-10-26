@@ -16,7 +16,7 @@ const buttonVariants = cva(
         ghost:
           "text-brand-navy hover:bg-brand-neutral hover:text-brand-navy-dark",
         destructive:
-          "border-red-200 bg-red-50 text-red-600 hover:border-red-300 hover:bg-red-100 focus-visible:ring-red-200",
+          "bg-brand-red text-white shadow-sm shadow-brand-red/20 hover:bg-brand-red-dark focus-visible:ring-brand-red/25",
         link: "h-auto rounded-none p-0 text-brand-navy underline-offset-4 hover:text-brand-orange hover:underline",
       },
       size: {

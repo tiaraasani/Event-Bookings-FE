@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { useGetMyTransactions } from "@/hooks/api/useGetMyTransaction";
 import useCreateReview from "@/hooks/api/useCreateReviews";
+import { Select } from "@/components/ui/select";
 
 const inputClass =
   "h-11 w-full rounded-lg border border-brand-disabled/80 bg-white px-3.5 text-sm text-brand-text shadow-sm outline-none transition placeholder:text-brand-muted/60 focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/15";
@@ -107,20 +108,16 @@ function OrganizerReviewsPage() {
                 >
                   Select event
                 </label>
-                <select
+                <Select
                   id="review-event"
-                  required
                   value={selectedEventId}
-                  onChange={(e) => setSelectedEventId(e.target.value)}
-                  className={inputClass}
-                >
-                  <option value="">Choose an event</option>
-                  {eligibleEvents.map((order) => (
-                    <option key={order.id} value={order.ticket.event.id}>
-                      {order.ticket.event.name}
-                    </option>
-                  ))}
-                </select>
+                  onValueChange={setSelectedEventId}
+                  placeholder="Choose an event"
+                  options={eligibleEvents.map((order) => ({
+                    value: String(order.ticket.event.id),
+                    label: order.ticket.event.name,
+                  }))}
+                />
               </div>
 
               <div>

@@ -1,4 +1,5 @@
-import { Link, NavLink } from "react-router-dom";
+import { useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { useAuth } from "@/stores/useAuth";
 import { cn } from "cn";
 
@@ -31,25 +33,53 @@ function MenuIcon() {
   );
 }
 
-function ChevronDownIcon() {
+function LoginIcon() {
   return (
     <svg
-      viewBox="0 0 20 20"
-      fill="currentColor"
-      className="size-4 opacity-80"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="size-5"
       aria-hidden="true"
     >
-      <path
-        fillRule="evenodd"
-        d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z"
-        clipRule="evenodd"
-      />
+      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+      <path d="M10 17l5-5-5-5" />
+      <path d="M15 12H3" />
+    </svg>
+  );
+}
+
+function LogoutIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="size-5"
+      aria-hidden="true"
+    >
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <path d="M16 17l5-5-5-5" />
+      <path d="M21 12H9" />
     </svg>
   );
 }
 
 function Navbar() {
   const { user, logout } = useAuth();
+  const { pathname } = useLocation();
+
+  // The organizer area spans several URLs (/organizer/*, plus edit event),
+  // so the Dashboard link stays underlined on all of them.
+  const isOrganizerArea =
+    pathname.startsWith("/organizer") || /^\/events\/\d+\/edit$/.test(pathname);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-brand-navy text-white shadow-lg shadow-brand-navy/10">
@@ -76,7 +106,10 @@ function Navbar() {
             Promotions
           </NavLink>
           {user?.role === "ORGANIZER" && (
-            <NavLink to="/organizer/dashboard" className={navLinkClass}>
+            <NavLink
+              to="/organizer/dashboard"
+              className={() => navLinkClass({ isActive: isOrganizerArea })}
+            >
               Dashboard
             </NavLink>
           )}
@@ -89,7 +122,10 @@ function Navbar() {
                 to="/profile"
                 className="hidden max-w-40 truncate text-sm font-medium text-white/85 transition hover:text-white md:inline"
               >
-                Hi, {user.name}
+                Hi,{" "}
+                <span className="capitalize">
+                  {user.name.trim().split(/\s+/)[0]}
+                </span>
               </Link>
 
               {user.role === "ORGANIZER" && (
@@ -103,17 +139,22 @@ function Navbar() {
 
               <button
                 type="button"
-                onClick={logout}
-                className="hidden rounded-lg border border-white/20 px-3 py-2 text-sm font-medium text-white/85 transition hover:border-white/40 hover:bg-white/10 hover:text-white lg:inline-flex"
+                onClick={() => setShowLogoutConfirm(true)}
+                aria-label="Logout"
+                title="Logout"
+                className="hidden size-10 items-center justify-center rounded-lg border border-white/20 text-white/85 transition hover:border-white/40 hover:bg-white/10 hover:text-white lg:inline-flex"
               >
-                Logout
+                <LogoutIcon />
               </button>
             </>
           ) : (
             <DropdownMenu>
-              <DropdownMenuTrigger className="hidden items-center gap-1.5 rounded-lg border border-white/20 px-4 py-2.5 text-sm font-semibold text-white outline-none transition hover:border-white/40 hover:bg-white/10 sm:flex">
-                Sign in
-                <ChevronDownIcon />
+              <DropdownMenuTrigger
+                aria-label="Sign in"
+                title="Sign in"
+                className="hidden size-10 items-center justify-center rounded-lg border border-white/20 text-white outline-none transition hover:border-white/40 hover:bg-white/10 sm:flex"
+              >
+                <LoginIcon />
               </DropdownMenuTrigger>
 
               <DropdownMenuContent
@@ -204,7 +245,7 @@ function Navbar() {
                   )}
 
                   <DropdownMenuItem
-                    onClick={logout}
+                    onClick={() => setShowLogoutConfirm(true)}
                     className="min-h-10 rounded-lg px-3 text-sm font-medium text-red-600 focus:bg-red-50 focus:text-red-600"
                   >
                     Logout
@@ -230,6 +271,19 @@ function Navbar() {
           </DropdownMenu>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={showLogoutConfirm}
+        title="Log out?"
+        description="You will need to login again to access your account."
+        confirmText="Logout"
+        destructive
+        onConfirm={() => {
+          logout();
+          setShowLogoutConfirm(false);
+        }}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </nav>
   );
 }

@@ -20,4 +20,9 @@ export type EventAttendeesResponse = {
     totalRevenue: number;
   };
   attendees: EventAttendee[];
+  meta: {
+    page: number;
+    take: number;
+    total: number;
+  };
 };

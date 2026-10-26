@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import useGetEventsById from "@/hooks/api/event/useGetEventById";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Select } from "@/components/ui/select";
 
 function EventDetail() {
   const { id } = useParams();
@@ -102,12 +103,12 @@ function EventDetail() {
       </section>
 
       <section className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-8 md:px-8 md:py-12 lg:grid-cols-[1.6fr_1fr]">
-        <div className="rounded-3xl border border-brand-navy/10 bg-white p-6 shadow-sm shadow-brand-navy/5 md:p-9">
+        <div className="min-w-0 rounded-3xl border border-brand-navy/10 bg-white p-6 shadow-sm shadow-brand-navy/5 md:p-9">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-orange">
             {event.category?.name ?? "Event"}
           </p>
 
-          <h1 className="mt-3 text-3xl font-extrabold leading-tight tracking-tight text-brand-navy md:text-5xl">
+          <h1 className="mt-3 wrap-anywhere text-3xl font-extrabold leading-tight tracking-tight text-brand-navy md:text-5xl">
             {event.name}
           </h1>
 
@@ -136,7 +137,7 @@ function EventDetail() {
             <h2 className="text-2xl font-extrabold text-brand-navy">
               About this event
             </h2>
-            <p className="mt-3 whitespace-pre-line leading-8 text-brand-text">
+            <p className="mt-3 whitespace-pre-line wrap-anywhere leading-8 text-brand-text">
               {event.description || "No event description available."}
             </p>
           </div>
@@ -244,22 +245,22 @@ function EventDetail() {
                   Select ticket
                 </p>
 
-                <select
-                  value={selectedTicketId ?? ""}
-                  onChange={(e) => {
-                    setSelectedTicketId(Number(e.target.value));
+                <Select
+                  aria-label="Select ticket"
+                  value={selectedTicketId ? String(selectedTicketId) : ""}
+                  onValueChange={(value) => {
+                    setSelectedTicketId(Number(value));
                     setQuantity(1);
                   }}
-                  className="w-full rounded-xl border border-white/15 bg-brand-navy-dark p-3 text-sm text-white outline-none focus:border-brand-orange"
-                >
-                  {event.tickets
+                  placeholder="Select a ticket"
+                  className="h-12 rounded-xl border-white/15 bg-brand-navy-dark text-white shadow-none hover:border-white/40 data-[popup-open]:ring-brand-orange/25 [&_[data-placeholder]]:text-white/60 [&_svg]:text-white/70"
+                  options={event.tickets
                     .filter((ticket) => ticket.availableQuantity > 0)
-                    .map((ticket) => (
-                      <option key={ticket.id} value={ticket.id}>
-                        {ticket.name} — {formatRupiah(ticket.price)}
-                      </option>
-                    ))}
-                </select>
+                    .map((ticket) => ({
+                      value: String(ticket.id),
+                      label: `${ticket.name} — ${formatRupiah(ticket.price)}`,
+                    }))}
+                />
               </div>
             </div>
 

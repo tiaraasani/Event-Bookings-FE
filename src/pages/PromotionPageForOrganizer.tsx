@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Select } from "@/components/ui/select";
 import { axiosInstance } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
@@ -106,6 +107,12 @@ function PromotionPageForOrganizer() {
     const discountValue = Number(form.discountValue);
     const quota = Number(form.quota);
 
+    // The custom Select has no native "required", so guard it here.
+    if (!editingVoucher && !form.eventId) {
+      alert("Please choose an event for this promotion.");
+      return;
+    }
+
     if (endDate <= startDate) {
       alert("End date must be after start date.");
       return;
@@ -194,26 +201,19 @@ function PromotionPageForOrganizer() {
                   Event <span className="text-red-600">*</span>
                 </label>
 
-                <select
+                <Select
                   id="eventId"
                   value={form.eventId}
-                  onChange={(event) =>
-                    handleChange("eventId", event.target.value)
-                  }
-                  required
+                  onValueChange={(value) => handleChange("eventId", value)}
                   disabled={eventsLoading || isSaving}
-                  className={inputClass}
-                >
-                  <option value="">
-                    {eventsLoading ? "Loading events..." : "Select an event"}
-                  </option>
-
-                  {events?.map((event) => (
-                    <option key={event.id} value={event.id}>
-                      {event.name}
-                    </option>
-                  ))}
-                </select>
+                  placeholder={
+                    eventsLoading ? "Loading events..." : "Select an event"
+                  }
+                  options={(events ?? []).map((event) => ({
+                    value: String(event.id),
+                    label: event.name,
+                  }))}
+                />
 
                 <p className={hintClass}>
                   Choose the event this promotion applies to.
@@ -273,9 +273,7 @@ function PromotionPageForOrganizer() {
                   className={inputClass}
                 />
 
-                <p className={hintClass}>
-                  Enter a value between 1% and 100%.
-                </p>
+                <p className={hintClass}>Enter a value between 1% and 100%.</p>
               </div>
 
               <div>
@@ -416,8 +414,7 @@ function PromotionPageForOrganizer() {
               const used = voucher._count?.orders ?? 0;
 
               let status = "Upcoming";
-              let statusClass =
-                "border-blue-200 bg-blue-50 text-blue-700";
+              let statusClass = "border-blue-200 bg-blue-50 text-blue-700";
 
               if (now >= start && now <= end) {
                 status = "Active";
@@ -431,8 +428,7 @@ function PromotionPageForOrganizer() {
 
               if (used >= voucher.quota) {
                 status = "Quota reached";
-                statusClass =
-                  "border-amber-200 bg-amber-50 text-amber-700";
+                statusClass = "border-amber-200 bg-amber-50 text-amber-700";
               }
 
               return (

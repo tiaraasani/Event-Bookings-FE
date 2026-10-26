@@ -3,6 +3,14 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import useGetEvents from "@/hooks/api/event/useGetEvents";
 import { useEffect, useState } from "react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const standardCategories = [
   "Sports",
@@ -27,6 +35,9 @@ function EventsPage() {
 
   const [period, setPeriod] = useState<EventPeriod>("UPCOMING");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const eventsPerPage = 4;
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedSearch(search);
@@ -35,8 +46,6 @@ function EventsPage() {
     return () => clearTimeout(timeout);
   }, [search]);
 
-  // Keep the standard categories visible even when they have no events.
-  // Also include custom category names entered through "Others".
   const customCategories = [
     ...new Set(
       (events ?? [])
@@ -85,6 +94,21 @@ function EventsPage() {
 
     return matchesPeriod && matchesName && matchesLocation && matchesCategory;
   });
+
+  // Calculate pagination after filtering the events.
+  const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
+
+  const startIndex = (currentPage - 1) * eventsPerPage;
+
+  const paginatedEvents = filteredEvents.slice(
+    startIndex,
+    startIndex + eventsPerPage,
+  );
+
+  // Reset to page 1 when the search or filters change.
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, location, selectedCategory, period]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -165,6 +189,7 @@ function EventsPage() {
               {filteredEvents.length} events
             </span>
           </div>
+
           <div className="mb-6 flex flex-wrap gap-3">
             <button
               type="button"
@@ -179,6 +204,7 @@ function EventsPage() {
             </button>
 
             <button
+              type="button"
               onClick={() => setPeriod("ONGOING")}
               className={`rounded-full px-5 py-2 ${
                 period === "ONGOING"
@@ -190,6 +216,7 @@ function EventsPage() {
             </button>
 
             <button
+              type="button"
               onClick={() => setPeriod("ENDED")}
               className={`rounded-full px-5 py-2 ${
                 period === "ENDED"
@@ -200,6 +227,7 @@ function EventsPage() {
               Ended
             </button>
           </div>
+
           {isPending && <p>Loading events...</p>}
 
           {isError && (
@@ -215,11 +243,59 @@ function EventsPage() {
           )}
 
           {!isPending && !isError && filteredEvents.length > 0 && (
-            <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
-              {filteredEvents.map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+                {paginatedEvents.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <Pagination className="mt-10">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#events"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCurrentPage((page) => Math.max(1, page - 1));
+                        }}
+                      />
+                    </PaginationItem>
+
+                    {Array.from(
+                      { length: totalPages },
+                      (_, index) => index + 1,
+                    ).map((page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          href="#events"
+                          isActive={currentPage === page}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(page);
+                          }}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#events"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCurrentPage((page) =>
+                            Math.min(totalPages, page + 1),
+                          );
+                        }}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
+            </>
           )}
         </section>
       </div>

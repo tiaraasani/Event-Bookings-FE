@@ -10,6 +10,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import AuthLayout from "@/components/AuthLayout";
 
 function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,70 +28,73 @@ function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#002F36] px-4">
-        <div className="w-full max-w-md space-y-4 rounded-lg bg-white p-8 text-center">
-          <h1 className="text-2xl font-bold">Invalid link</h1>
-          <p className="text-sm text-gray-600">
-            The reset token was not found in the URL.
-          </p>
-          <Link to="/forgot-password" className="font-semibold text-[#2bb3b3]">
-            Requesting a new link
-          </Link>
-        </div>
-      </div>
+      <AuthLayout
+        title="Invalid reset link"
+        subtitle="The reset token was not found. Request a new link to continue."
+      >
+        <Link
+          to="/forgot-password"
+          className="flex h-11 w-full items-center justify-center rounded-lg bg-brand-orange text-sm font-semibold text-white transition hover:bg-brand-orange-dark"
+        >
+          Request a new link
+        </Link>
+      </AuthLayout>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#002F36] px-4">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-md space-y-5 rounded-lg bg-white p-8"
-      >
-        <h1 className="text-2xl font-bold">Reset Password</h1>
-
+    <AuthLayout
+      title="Set a new password"
+      subtitle="Choose a secure password to protect your account."
+    >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div className="space-y-2">
-          <Label htmlFor="password">New Password</Label>
+          <Label htmlFor="password">New password</Label>
           <Input
             id="password"
             type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
+            placeholder="Enter your new password"
             {...register("password")}
           />
           {formState.errors.password && (
-            <p className="text-sm text-red-500">
+            <p className="text-sm font-medium text-red-600">
               {formState.errors.password.message}
             </p>
           )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Label htmlFor="confirmPassword">Confirm password</Label>
           <Input
             id="confirmPassword"
             type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
+            placeholder="Repeat your new password"
             {...register("confirmPassword")}
           />
           {formState.errors.confirmPassword && (
-            <p className="text-sm text-red-500">
+            <p className="text-sm font-medium text-red-600">
               {formState.errors.confirmPassword.message}
             </p>
           )}
         </div>
 
-        <label className="flex items-center gap-2 text-sm">
+        <label className="flex items-center gap-2 text-sm text-brand-text">
           <input
             type="checkbox"
             checked={showPassword}
             onChange={() => setShowPassword(!showPassword)}
+            className="size-4 rounded border-brand-disabled accent-brand-orange"
           />
           Show password
         </label>
 
         <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? "Saving..." : "Save New Password"}
+          {isPending ? "Saving..." : "Save new password"}
         </Button>
       </form>
-    </div>
+    </AuthLayout>
   );
 }
 

@@ -29,6 +29,10 @@ export interface Transaction {
       startDate: string;
       endDate: string;
       type: "VENUE" | "ONLINE";
+      category?: {
+        id: number;
+        name: string;
+      } | null;
       organization: {
         id: number;
       };

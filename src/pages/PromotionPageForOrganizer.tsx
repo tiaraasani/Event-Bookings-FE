@@ -44,6 +44,13 @@ function toDateTimeLocal(date: string) {
   return new Date(value.getTime() - offset).toISOString().slice(0, 16);
 }
 
+const inputClass =
+  "h-11 w-full rounded-lg border border-brand-disabled/80 bg-white px-3.5 text-sm text-brand-text shadow-sm outline-none transition placeholder:text-brand-muted/60 focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/15 disabled:cursor-not-allowed disabled:bg-brand-disabled/30 disabled:text-brand-muted";
+
+const labelClass = "mb-2 block text-sm font-semibold text-brand-navy";
+
+const hintClass = "mt-2 text-xs leading-5 text-brand-muted";
+
 function PromotionPageForOrganizer() {
   const [form, setForm] = useState<FormData>(emptyForm);
   const [editingVoucher, setEditingVoucher] = useState<Voucher | null>(null);
@@ -150,35 +157,32 @@ function PromotionPageForOrganizer() {
     }
   };
 
-  const inputClass =
-    "w-full rounded-md border border-slate-300 bg-white px-4 py-3 text-base text-[#123B43] placeholder:text-slate-400 outline-none transition focus:border-teal-500 focus:ring-1 focus:ring-teal-500 disabled:bg-slate-100";
-
-  const labelClass = "mb-2 block text-base font-medium text-[#123B43]";
-
   return (
-    <div className="min-h-screen bg-[#F3F6F8] text-[#123B43]">
+    <div className="min-h-screen bg-brand-neutral">
       <Navbar />
 
-      <main className="mx-auto max-w-7xl px-5 pb-16 pt-8 sm:px-8">
-        <div className="mb-8 border-b border-slate-200 pb-6">
-          <p className="mb-2 text-sm font-medium text-teal-600">
-            ORGANIZER DASHBOARD
+      <main className="mx-auto max-w-7xl px-5 pb-16 pt-8 sm:px-8 md:pt-10">
+        <div className="mb-8">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+            Organizer dashboard
           </p>
 
-          <h1 className="text-3xl font-semibold sm:text-4xl">Promotions</h1>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-brand-navy sm:text-4xl">
+            Promotions
+          </h1>
 
-          <p className="mt-3 text-base text-slate-500">
+          <p className="mt-3 max-w-2xl text-base leading-7 text-brand-text">
             Create and manage voucher discounts for your events.
           </p>
         </div>
 
-        <section className="mb-10 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+        <section className="mb-10 rounded-2xl border border-brand-navy/10 bg-white p-5 shadow-sm shadow-brand-navy/5 sm:p-8">
           <div className="mb-7">
-            <h2 className="text-2xl font-medium">
+            <h2 className="text-2xl font-bold text-brand-navy">
               {editingVoucher ? "Edit Promotion" : "Create New Promotion"}
             </h2>
 
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-brand-muted">
               Fill in the details below to set up your event promotion.
             </p>
           </div>
@@ -187,7 +191,7 @@ function PromotionPageForOrganizer() {
             {!editingVoucher && (
               <div>
                 <label htmlFor="eventId" className={labelClass}>
-                  Event <span className="text-red-500">*</span>
+                  Event <span className="text-red-600">*</span>
                 </label>
 
                 <select
@@ -211,12 +215,12 @@ function PromotionPageForOrganizer() {
                   ))}
                 </select>
 
-                <p className="mt-2 text-sm text-slate-500">
+                <p className={hintClass}>
                   Choose the event this promotion applies to.
                 </p>
 
                 {!eventsLoading && events?.length === 0 && (
-                  <p className="mt-2 text-sm text-amber-700">
+                  <p className="mt-2 text-sm font-medium text-amber-700">
                     Create an event first before adding a promotion.
                   </p>
                 )}
@@ -225,7 +229,7 @@ function PromotionPageForOrganizer() {
 
             <div>
               <label htmlFor="code" className={labelClass}>
-                Voucher Code <span className="text-red-500">*</span>
+                Voucher Code <span className="text-red-600">*</span>
               </label>
 
               <input
@@ -242,7 +246,7 @@ function PromotionPageForOrganizer() {
                 className={inputClass}
               />
 
-              <p className="mt-2 text-sm text-slate-500">
+              <p className={hintClass}>
                 Example: EARLYBIRD20. Customers enter this code at checkout.
               </p>
             </div>
@@ -250,7 +254,7 @@ function PromotionPageForOrganizer() {
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
                 <label htmlFor="discountValue" className={labelClass}>
-                  Discount (%) <span className="text-red-500">*</span>
+                  Discount (%) <span className="text-red-600">*</span>
                 </label>
 
                 <input
@@ -269,14 +273,14 @@ function PromotionPageForOrganizer() {
                   className={inputClass}
                 />
 
-                <p className="mt-2 text-sm text-slate-500">
+                <p className={hintClass}>
                   Enter a value between 1% and 100%.
                 </p>
               </div>
 
               <div>
                 <label htmlFor="quota" className={labelClass}>
-                  Voucher Quota <span className="text-red-500">*</span>
+                  Voucher Quota <span className="text-red-600">*</span>
                 </label>
 
                 <input
@@ -294,7 +298,7 @@ function PromotionPageForOrganizer() {
                   className={inputClass}
                 />
 
-                <p className="mt-2 text-sm text-slate-500">
+                <p className={hintClass}>
                   Set the maximum number of uses for this voucher.
                 </p>
               </div>
@@ -303,7 +307,7 @@ function PromotionPageForOrganizer() {
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
                 <label htmlFor="startDate" className={labelClass}>
-                  Start Date & Time <span className="text-red-500">*</span>
+                  Start Date &amp; Time <span className="text-red-600">*</span>
                 </label>
 
                 <input
@@ -321,7 +325,7 @@ function PromotionPageForOrganizer() {
 
               <div>
                 <label htmlFor="endDate" className={labelClass}>
-                  End Date & Time <span className="text-red-500">*</span>
+                  End Date &amp; Time <span className="text-red-600">*</span>
                 </label>
 
                 <input
@@ -338,13 +342,13 @@ function PromotionPageForOrganizer() {
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-end gap-3 border-t border-slate-200 pt-6">
+            <div className="flex flex-wrap justify-end gap-3 border-t border-brand-navy/10 pt-6">
               {editingVoucher && (
                 <button
                   type="button"
                   onClick={resetForm}
                   disabled={isSaving}
-                  className="rounded-md bg-slate-100 px-6 py-3 font-medium text-[#123B43] transition hover:bg-slate-200 disabled:opacity-50"
+                  className="rounded-lg border border-brand-navy/25 bg-white px-6 py-2.5 text-sm font-semibold text-brand-navy transition hover:border-brand-navy hover:bg-brand-neutral/70 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-brand-disabled disabled:text-[#5b6b88]"
                 >
                   Cancel
                 </button>
@@ -357,7 +361,7 @@ function PromotionPageForOrganizer() {
                   eventsLoading ||
                   (!editingVoucher && !events?.length)
                 }
-                className="rounded-md bg-[#20AAA8] px-7 py-3 font-semibold text-white transition hover:bg-[#189896] disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg bg-brand-orange px-7 py-2.5 text-sm font-semibold text-white shadow-sm shadow-brand-orange/20 transition hover:bg-brand-orange-dark disabled:cursor-not-allowed disabled:bg-brand-disabled disabled:text-[#5b6b88] disabled:shadow-none"
               >
                 {isSaving
                   ? "Saving..."
@@ -371,36 +375,40 @@ function PromotionPageForOrganizer() {
 
         <section>
           <div className="mb-6">
-            <h2 className="text-2xl font-medium">Your Promotions</h2>
+            <h2 className="text-2xl font-bold text-brand-navy">
+              Your Promotions
+            </h2>
 
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-brand-muted">
               View and manage the voucher codes you have created.
             </p>
           </div>
 
           {isLoading && (
-            <div className="rounded-lg border border-slate-200 bg-white p-8 text-center text-slate-500">
+            <div className="rounded-2xl border border-brand-navy/10 bg-white p-8 text-center text-brand-muted shadow-sm shadow-brand-navy/5">
               Loading promotions...
             </div>
           )}
 
           {isError && (
-            <div className="rounded-lg border border-red-200 bg-white p-5 text-red-600">
+            <div className="rounded-2xl border border-red-200 bg-white p-5 font-medium text-red-600 shadow-sm shadow-brand-navy/5">
               Failed to load promotions. Please refresh and try again.
             </div>
           )}
 
           {!isLoading && !isError && vouchers?.length === 0 && (
-            <div className="rounded-lg border border-slate-200 bg-white px-5 py-12 text-center shadow-sm">
-              <h3 className="text-lg font-medium">No promotions yet</h3>
+            <div className="rounded-2xl border border-brand-navy/10 bg-white px-5 py-12 text-center shadow-sm shadow-brand-navy/5">
+              <h3 className="text-lg font-bold text-brand-navy">
+                No promotions yet
+              </h3>
 
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-brand-muted">
                 Create your first promotion using the form above.
               </p>
             </div>
           )}
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {vouchers?.map((voucher) => {
               const now = new Date();
               const start = new Date(voucher.startDate);
@@ -408,85 +416,89 @@ function PromotionPageForOrganizer() {
               const used = voucher._count?.orders ?? 0;
 
               let status = "Upcoming";
-              let statusClass = "border-slate-200 bg-slate-50 text-slate-600";
+              let statusClass =
+                "border-blue-200 bg-blue-50 text-blue-700";
 
               if (now >= start && now <= end) {
                 status = "Active";
-                statusClass = "border-teal-200 bg-teal-50 text-teal-700";
+                statusClass =
+                  "border-brand-orange/20 bg-brand-orange-soft text-brand-orange-dark";
               } else if (now > end) {
                 status = "Expired";
-                statusClass = "border-slate-200 bg-slate-100 text-slate-500";
+                statusClass =
+                  "border-brand-disabled/60 bg-brand-neutral text-brand-muted";
               }
 
               if (used >= voucher.quota) {
                 status = "Quota reached";
-                statusClass = "border-amber-200 bg-amber-50 text-amber-700";
+                statusClass =
+                  "border-amber-200 bg-amber-50 text-amber-700";
               }
 
               return (
                 <article
                   key={voucher.id}
-                  className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md"
+                  className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm shadow-brand-navy/5 transition duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-navy/10"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate text-sm text-slate-500">
+                      <p className="truncate text-sm text-brand-muted">
                         {voucher.event.name}
                       </p>
 
-                      <h3 className="mt-2 break-all text-xl font-semibold text-[#123B43]">
+                      <h3 className="mt-2 break-all text-xl font-bold text-brand-navy">
                         {voucher.code}
                       </h3>
                     </div>
 
                     <span
-                      className={`shrink-0 rounded-md border px-2.5 py-1 text-xs font-medium ${statusClass}`}
+                      className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold ${statusClass}`}
                     >
                       {status}
                     </span>
                   </div>
 
-                  <div className="my-5 border-b border-slate-200 pb-5">
-                    <span className="text-4xl font-semibold text-teal-600">
+                  <div className="my-5 border-b border-brand-navy/10 pb-5">
+                    <span className="text-4xl font-extrabold tracking-tight text-brand-orange">
                       {voucher.discountValue}%
                     </span>
 
-                    <span className="ml-2 text-sm text-slate-500">
+                    <span className="ml-2 text-sm font-medium text-brand-muted">
                       discount
                     </span>
                   </div>
 
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between gap-3">
-                      <span className="text-slate-500">Voucher usage</span>
+                      <span className="text-brand-muted">Voucher usage</span>
 
-                      <span className="font-medium text-[#123B43]">
+                      <span className="font-semibold text-brand-navy">
                         {used} / {voucher.quota}
                       </span>
                     </div>
 
                     <div className="flex flex-col gap-1">
-                      <span className="text-slate-500">Starts</span>
+                      <span className="text-brand-muted">Starts</span>
 
-                      <span className="text-[#123B43]">
+                      <span className="text-brand-text">
                         {formatDate(voucher.startDate)}
                       </span>
                     </div>
 
                     <div className="flex flex-col gap-1">
-                      <span className="text-slate-500">Ends</span>
+                      <span className="text-brand-muted">Ends</span>
 
-                      <span className="text-[#123B43]">
+                      <span className="text-brand-text">
                         {formatDate(voucher.endDate)}
                       </span>
                     </div>
                   </div>
 
-                  <div className="mt-6 flex gap-3 border-t border-slate-200 pt-5">
+                  <div className="mt-6 flex gap-3 border-t border-brand-navy/10 pt-5">
                     <button
                       type="button"
                       onClick={() => handleEdit(voucher)}
-                      className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-[#123B43] transition hover:border-teal-500 hover:bg-teal-50"
+                      className="rounded-lg border border-brand-navy/25 bg-white px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white"
                     >
                       Edit
                     </button>
@@ -495,7 +507,7 @@ function PromotionPageForOrganizer() {
                       type="button"
                       onClick={() => handleDelete(voucher)}
                       disabled={deleteVoucher.isPending}
-                      className="rounded-md border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+                      className="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50 disabled:cursor-not-allowed disabled:border-transparent disabled:bg-brand-disabled disabled:text-[#5b6b88]"
                     >
                       Delete
                     </button>

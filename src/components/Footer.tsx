@@ -2,27 +2,38 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#1C2233] px-5 py-14 text-white md:px-10 md:py-20">
-      <div className="mx-auto max-w-[1600px]">
+    <footer className="bg-brand-navy px-5 py-14 text-white md:px-10 md:py-20">
+      <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-          {/* Logo */}
           <div>
-            <Link to="/" className="inline-block">
-              <div className="text-3xl font-bold tracking-tight">EVENT</div>
-              <p className="ml-8 text-sm tracking-[0.25em] text-gray-300">
-                BOOKINGS
-              </p>
+            <Link to="/" className="inline-flex items-center gap-3">
+              <span className="flex size-11 items-center justify-center rounded-xl bg-brand-orange text-sm font-extrabold text-white shadow-sm shadow-brand-orange/20">
+                EB
+              </span>
+              <span className="leading-none">
+                <span className="block text-lg font-extrabold tracking-[0.16em]">
+                  EVENT
+                </span>
+                <span className="mt-1.5 block text-[0.68rem] font-semibold tracking-[0.28em] text-white/60">
+                  BOOKINGS
+                </span>
+              </span>
             </Link>
+
+            <p className="mt-5 max-w-xs text-sm leading-6 text-white/60">
+              Simple event ticketing with fair pricing and real human support.
+            </p>
           </div>
 
-          {/* EventBookings */}
           <div>
-            <h3 className="mb-6 text-xl font-medium">EventBookings</h3>
-            <ul className="space-y-4 text-gray-300">
+            <h3 className="mb-6 text-base font-semibold text-white">
+              EventBookings
+            </h3>
+            <ul className="space-y-4 text-sm text-white/65">
               <li>
                 <Link
                   to="/register"
-                  className="transition-colors hover:text-teal-400"
+                  className="transition-colors hover:text-brand-orange"
                 >
                   Sign in
                 </Link>
@@ -30,7 +41,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/login"
-                  className="transition-colors hover:text-teal-400"
+                  className="transition-colors hover:text-brand-orange"
                 >
                   Login
                 </Link>
@@ -38,7 +49,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/events"
-                  className="transition-colors hover:text-teal-400"
+                  className="transition-colors hover:text-brand-orange"
                 >
                   Events
                 </Link>
@@ -46,7 +57,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/events/create"
-                  className="transition-colors hover:text-teal-400"
+                  className="transition-colors hover:text-brand-orange"
                 >
                   Create
                 </Link>
@@ -55,12 +66,14 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="mb-6 text-xl font-medium">Help & Support</h3>
-            <ul className="space-y-4 text-gray-300">
+            <h3 className="mb-6 text-base font-semibold text-white">
+              Help & Support
+            </h3>
+            <ul className="space-y-4 text-sm text-white/65">
               <li>
                 <Link
                   to="/help"
-                  className="transition-colors hover:text-teal-400"
+                  className="transition-colors hover:text-brand-orange"
                 >
                   Help Center
                 </Link>
@@ -68,7 +81,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/contact"
-                  className="transition-colors hover:text-teal-400"
+                  className="transition-colors hover:text-brand-orange"
                 >
                   Contact Us
                 </Link>
@@ -76,7 +89,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/developers"
-                  className="transition-colors hover:text-teal-400"
+                  className="transition-colors hover:text-brand-orange"
                 >
                   Developers
                 </Link>
@@ -85,12 +98,14 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="mb-6 text-xl font-medium">Follow Us</h3>
+            <h3 className="mb-6 text-base font-semibold text-white">
+              Follow Us
+            </h3>
             <div className="flex flex-wrap gap-3">
               <a
                 href="https://www.facebook.com/"
                 aria-label="Facebook"
-                className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-white text-lg font-bold transition-colors hover:border-teal-400 hover:text-teal-400"
+                className="flex size-11 items-center justify-center rounded-full border border-white/20 text-sm font-bold text-white/80 transition-colors hover:border-brand-orange hover:bg-brand-orange hover:text-white"
               >
                 f
               </a>
@@ -98,15 +113,15 @@ const Footer = () => {
               <a
                 href="https://www.instagram.com/"
                 aria-label="Instagram"
-                className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-white text-lg font-bold transition-colors hover:border-teal-400 hover:text-teal-400"
+                className="flex size-11 items-center justify-center rounded-full border border-white/20 text-sm font-bold text-white/80 transition-colors hover:border-brand-orange hover:bg-brand-orange hover:text-white"
               >
-                🅾
+                ig
               </a>
 
               <a
                 href="https://x.com/"
                 aria-label="X"
-                className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-white text-lg font-bold transition-colors hover:border-teal-400 hover:text-teal-400"
+                className="flex size-11 items-center justify-center rounded-full border border-white/20 text-sm font-bold text-white/80 transition-colors hover:border-brand-orange hover:bg-brand-orange hover:text-white"
               >
                 X
               </a>
@@ -114,7 +129,7 @@ const Footer = () => {
               <a
                 href="https://www.linkedin.com/"
                 aria-label="LinkedIn"
-                className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-white text-sm font-bold transition-colors hover:border-teal-400 hover:text-teal-400"
+                className="flex size-11 items-center justify-center rounded-full border border-white/20 text-sm font-bold text-white/80 transition-colors hover:border-brand-orange hover:bg-brand-orange hover:text-white"
               >
                 in
               </a>
@@ -122,9 +137,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom divider and copyright */}
-        <div className="mt-10 border-t border-gray-600/60 pt-5 md:mt-14 md:pt-6">
-          <p className="text-xs text-gray-400 md:text-sm">
+        <div className="mt-10 border-t border-white/10 pt-5 md:mt-14 md:pt-6">
+          <p className="text-xs text-white/50 md:text-sm">
             © {new Date().getFullYear()} EventBookings. All rights reserved.
           </p>
         </div>

@@ -25,7 +25,7 @@ function EventDetail() {
     return (
       <>
         <Navbar />
-        <div className="flex min-h-screen items-center justify-center bg-white text-gray-700">
+        <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-brand-neutral text-brand-muted">
           Loading event...
         </div>
       </>
@@ -36,12 +36,14 @@ function EventDetail() {
     return (
       <>
         <Navbar />
-        <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-white text-gray-700">
-          <p>Failed to load event. Please try again.</p>
+        <div className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center gap-4 bg-brand-neutral px-4 text-center">
+          <p className="font-medium text-brand-text">
+            Failed to load event. Please try again.
+          </p>
           <button
             type="button"
             onClick={() => navigate("/events")}
-            className="rounded-lg bg-green-600 px-5 py-3 font-semibold text-white hover:bg-green-700"
+            className="rounded-lg bg-brand-orange px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-orange-dark"
           >
             Back to Events
           </button>
@@ -71,38 +73,46 @@ function EventDetail() {
   });
 
   return (
-    <main className="min-h-screen bg-white text-gray-900">
+    <main className="min-h-screen bg-brand-neutral pb-16">
       <Navbar />
 
-      {/* Event image */}
-      <section className="mt-6 h-[40vh] w-full bg-gray-100 md:h-[70vh]">
-        {event.image ? (
-          <img
-            src={event.image}
-            alt={event.name}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-gray-500">
-            No event image available
+      <section className="mx-auto max-w-7xl px-4 pt-6 md:px-8">
+        <div className="relative h-[38vh] overflow-hidden rounded-[2rem] bg-brand-navy/10 shadow-sm md:h-[56vh]">
+          {event.image ? (
+            <img
+              src={event.image}
+              alt={event.name}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-brand-muted">
+              No event image available
+            </div>
+          )}
+
+          <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-brand-navy/85 to-transparent p-5 pt-20 md:p-8 md:pt-28">
+            <span className="rounded-full bg-brand-orange px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white">
+              {event.category?.name ?? "Event"}
+            </span>
+            <p className="mt-3 text-sm font-medium text-white/80">
+              {event.type === "ONLINE" ? "Online event" : event.city}
+            </p>
           </div>
-        )}
+        </div>
       </section>
 
-      {/* Event information */}
-      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-12 md:min-h-[70vh] md:grid-cols-[1.5fr_1fr] md:gap-16 md:px-12 md:py-16">
-        {/* Left column */}
-        <div className="flex flex-col">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-green-700">
+      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-8 md:px-8 md:py-12 lg:grid-cols-[1.6fr_1fr]">
+        <div className="rounded-3xl border border-brand-navy/10 bg-white p-6 shadow-sm shadow-brand-navy/5 md:p-9">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-orange">
             {event.category?.name ?? "Event"}
           </p>
 
-          <h1 className="mb-8 text-3xl font-bold leading-tight md:text-5xl">
+          <h1 className="mt-3 text-3xl font-extrabold leading-tight tracking-tight text-brand-navy md:text-5xl">
             {event.name}
           </h1>
 
-          <div className="mb-10 border-b border-gray-200 pb-8">
-            <p className="mb-3 text-sm font-medium text-gray-500">
+          <div className="mt-8 rounded-2xl bg-brand-neutral/70 p-5">
+            <p className="text-xs font-semibold uppercase tracking-wider text-brand-muted">
               Organized by
             </p>
 
@@ -112,29 +122,30 @@ function EventDetail() {
                 navigate(`/organizers/${event.organization?.id}/reviews`)
               }
               disabled={!event.organization?.id}
-              className="text-left text-xl font-semibold text-teal-700 transition hover:text-teal-800 hover:underline disabled:cursor-default disabled:no-underline"
+              className="mt-2 text-left text-lg font-bold text-brand-navy underline-offset-4 transition hover:text-brand-orange hover:underline disabled:cursor-default disabled:no-underline"
             >
               {event.organization?.name ?? "Event Organizer"}
             </button>
 
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-1 text-xs text-brand-muted">
               Click to view organizer reviews
             </p>
           </div>
 
-          <div>
-            <h2 className="mb-4 text-2xl font-bold">About this event</h2>
-            <p className="whitespace-pre-line leading-8 text-gray-600">
+          <div className="mt-8">
+            <h2 className="text-2xl font-extrabold text-brand-navy">
+              About this event
+            </h2>
+            <p className="mt-3 whitespace-pre-line leading-8 text-brand-text">
               {event.description || "No event description available."}
             </p>
           </div>
 
-          {/* Back button pushed to the bottom */}
-          <div className="mt-10 pt-6 md:mt-auto md:pt-10">
+          <div className="mt-9 border-t border-brand-navy/10 pt-6">
             <button
               type="button"
               onClick={() => navigate("/events")}
-              className="inline-flex items-center gap-2 font-semibold text-green-700 transition hover:text-green-800"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy underline underline-offset-4 transition hover:text-brand-orange"
             >
               <span aria-hidden="true">←</span>
               Back to Events
@@ -142,27 +153,41 @@ function EventDetail() {
           </div>
         </div>
 
-        {/* Right column: Event details and purchase button */}
-        <aside className="h-fit rounded-2xl border border-gray-200 bg-white p-6 shadow-sm md:p-8">
-          <h2 className="mb-8 text-2xl font-bold">Event Details</h2>
+        <aside className="h-fit rounded-3xl border border-brand-navy/10 bg-white p-6 shadow-xl shadow-brand-navy/10 md:p-8 lg:sticky lg:top-24">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+            Event details
+          </p>
+          <h2 className="mt-2 text-2xl font-extrabold text-brand-navy">
+            Plan your visit
+          </h2>
 
-          <div className="mb-7">
-            <p className="mb-2 text-sm font-medium text-gray-500">Date</p>
-            <p className="font-semibold">{date}</p>
-          </div>
+          <div className="mt-6 space-y-3">
+            <div className="rounded-2xl bg-brand-neutral/70 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-brand-muted">
+                Date
+              </p>
+              <p className="mt-1.5 text-sm font-semibold text-brand-navy">
+                {date}
+              </p>
+            </div>
 
-          <div className="mb-7">
-            <p className="mb-2 text-sm font-medium text-gray-500">Time</p>
-            <p className="font-semibold">
-              {startTime} – {endTime}
-            </p>
-          </div>
+            <div className="rounded-2xl bg-brand-neutral/70 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-brand-muted">
+                Time
+              </p>
+              <p className="mt-1.5 text-sm font-semibold text-brand-navy">
+                {startTime} – {endTime}
+              </p>
+            </div>
 
-          <div className="mb-8">
-            <p className="mb-2 text-sm font-medium text-gray-500">Location</p>
-            <p className="font-semibold">
-              {event.type === "ONLINE" ? "Online Event" : event.city}
-            </p>
+            <div className="rounded-2xl bg-brand-neutral/70 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-brand-muted">
+                Location
+              </p>
+              <p className="mt-1.5 text-sm font-semibold text-brand-navy">
+                {event.type === "ONLINE" ? "Online Event" : event.city}
+              </p>
+            </div>
           </div>
 
           <button
@@ -175,25 +200,31 @@ function EventDetail() {
             disabled={
               !event.tickets?.some((ticket) => ticket.availableQuantity > 0)
             }
-            className="w-full rounded-lg bg-green-600 px-6 py-4 font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="mt-6 w-full rounded-xl bg-brand-orange px-6 py-4 text-sm font-bold text-white shadow-lg shadow-brand-orange/20 transition hover:bg-brand-orange-dark disabled:cursor-not-allowed disabled:bg-brand-disabled disabled:text-[#5b6b88] disabled:shadow-none"
           >
             Purchase Ticket
           </button>
+
+          <p className="mt-3 text-center text-xs text-brand-muted">
+            Secure checkout · Instant confirmation
+          </p>
         </aside>
       </section>
-      <EventReviews />
 
-      {/* Ticket selection modal */}
+      <div className="mx-auto max-w-7xl px-4 md:px-8">
+        <EventReviews />
+      </div>
+
       {isTicketModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4 backdrop-blur-sm">
-          <div className="my-auto w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl">
-            <div className="bg-slate-800 p-5 text-white md:p-6">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-brand-navy/60 p-4 backdrop-blur-sm">
+          <div className="my-auto w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl">
+            <div className="bg-brand-navy p-5 text-white md:p-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <h2 className="break-words text-xl font-bold">
+                  <h2 className="break-words text-xl font-extrabold text-white">
                     {event.name}
                   </h2>
-                  <p className="mt-2 text-sm text-slate-300">
+                  <p className="mt-2 text-sm text-white/60">
                     {event.type === "ONLINE" ? "Online event" : event.city}
                   </p>
                 </div>
@@ -201,15 +232,15 @@ function EventDetail() {
                 <button
                   type="button"
                   onClick={() => setIsTicketModalOpen(false)}
-                  className="shrink-0 text-2xl text-white hover:text-teal-300"
+                  className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-2xl leading-none text-white transition hover:bg-brand-orange"
                   aria-label="Close ticket selection"
                 >
                   &times;
                 </button>
               </div>
 
-              <div className="mt-6 rounded-xl border border-teal-400 bg-teal-900/40 p-4">
-                <p className="mb-2 font-semibold text-teal-300">
+              <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-brand-orange">
                   Select ticket
                 </p>
 
@@ -219,7 +250,7 @@ function EventDetail() {
                     setSelectedTicketId(Number(e.target.value));
                     setQuantity(1);
                   }}
-                  className="w-full rounded-lg border border-slate-500 bg-slate-700 p-3 text-white"
+                  className="w-full rounded-xl border border-white/15 bg-brand-navy-dark p-3 text-sm text-white outline-none focus:border-brand-orange"
                 >
                   {event.tickets
                     .filter((ticket) => ticket.availableQuantity > 0)
@@ -239,7 +270,7 @@ function EventDetail() {
 
               if (!ticket) {
                 return (
-                  <div className="p-8 text-center text-gray-500">
+                  <div className="p-8 text-center text-brand-muted">
                     No tickets are currently available.
                   </div>
                 );
@@ -248,13 +279,15 @@ function EventDetail() {
               return (
                 <>
                   <div className="p-5 md:p-6">
-                    <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+                    <div className="flex flex-col justify-between gap-4 rounded-2xl bg-brand-neutral/70 p-4 md:flex-row md:items-center">
                       <div>
-                        <h3 className="text-lg font-bold">{ticket.name}</h3>
-                        <p className="mt-1 font-semibold text-teal-700">
+                        <h3 className="text-lg font-bold text-brand-navy">
+                          {ticket.name}
+                        </h3>
+                        <p className="mt-1 font-extrabold text-brand-orange">
                           {formatRupiah(ticket.price)}
                         </p>
-                        <p className="mt-1 text-sm text-gray-500">
+                        <p className="mt-1 text-sm text-brand-muted">
                           {ticket.availableQuantity} tickets available
                         </p>
                       </div>
@@ -264,13 +297,13 @@ function EventDetail() {
                           type="button"
                           onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                           disabled={quantity <= 1}
-                          className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 text-xl disabled:opacity-40"
+                          className="flex size-10 items-center justify-center rounded-full border border-brand-navy/20 bg-white text-xl font-semibold text-brand-navy transition hover:border-brand-navy disabled:cursor-not-allowed disabled:border-brand-disabled disabled:text-brand-disabled"
                           aria-label="Decrease quantity"
                         >
                           −
                         </button>
 
-                        <span className="min-w-5 text-center font-semibold">
+                        <span className="min-w-5 text-center font-bold text-brand-navy">
                           {quantity}
                         </span>
 
@@ -284,7 +317,7 @@ function EventDetail() {
                           disabled={
                             quantity >= Math.min(10, ticket.availableQuantity)
                           }
-                          className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-300 text-xl disabled:opacity-40"
+                          className="flex size-10 items-center justify-center rounded-full border border-brand-navy/20 bg-white text-xl font-semibold text-brand-navy transition hover:border-brand-navy disabled:cursor-not-allowed disabled:border-brand-disabled disabled:text-brand-disabled"
                           aria-label="Increase quantity"
                         >
                           +
@@ -293,12 +326,12 @@ function EventDetail() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-4 border-t border-gray-200 p-5 md:flex-row md:items-center md:justify-between">
+                  <div className="flex flex-col gap-4 border-t border-brand-navy/10 p-5 md:flex-row md:items-center md:justify-between">
                     <div>
-                      <p className="text-xl font-bold">
+                      <p className="text-xl font-extrabold text-brand-navy">
                         {formatRupiah(ticket.price * quantity)}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-brand-muted">
                         {quantity} ticket{quantity > 1 ? "s" : ""}
                       </p>
                     </div>
@@ -310,7 +343,7 @@ function EventDetail() {
                           `/transaction/${event.id}?ticketId=${ticket.id}&quantity=${quantity}`,
                         );
                       }}
-                      className="w-full rounded-lg bg-teal-600 px-8 py-3 font-semibold text-white hover:bg-teal-700 md:w-auto"
+                      className="w-full rounded-xl bg-brand-orange px-8 py-3 text-sm font-bold text-white shadow-lg shadow-brand-orange/20 transition hover:bg-brand-orange-dark md:w-auto"
                     >
                       Continue
                     </button>

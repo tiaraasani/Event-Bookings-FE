@@ -26,12 +26,12 @@ function UpdateNameForm({ currentName }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <h2 className="text-lg font-semibold">Change Name</h2>
+      <h2 className="text-lg font-bold text-brand-navy">Change Name</h2>
       <div className="space-y-2">
         <Label htmlFor="name">Name</Label>
         <Input id="name" {...register("name")} />
         {formState.errors.name && (
-          <p className="text-sm text-red-500">
+          <p className="text-sm font-medium text-red-600">
             {formState.errors.name.message}
           </p>
         )}

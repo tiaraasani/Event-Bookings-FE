@@ -3,6 +3,7 @@ import { uploadPaymentProof } from "@/services/transaction";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Navbar from "@/components/Navbar";
 
 const formatRupiah = (amount: number) => {
   return new Intl.NumberFormat("id-ID", {
@@ -25,18 +26,18 @@ const formatDate = (date: string) => {
 const getStatusStyle = (status: string) => {
   switch (status) {
     case "PAID":
-      return "bg-green-100 text-green-700";
+      return "bg-emerald-50 text-emerald-700 ring-emerald-200";
     case "WAITING_FOR_CONFIRMATION":
-      return "bg-blue-100 text-blue-700";
+      return "bg-blue-50 text-blue-700 ring-blue-200";
     case "WAITING_FOR_PAYMENT":
-      return "bg-amber-100 text-amber-700";
+      return "bg-amber-50 text-amber-700 ring-amber-200";
     case "REJECTED":
-      return "bg-red-100 text-red-700";
+      return "bg-red-50 text-red-700 ring-red-200";
     case "EXPIRED":
     case "CANCELED":
-      return "bg-gray-100 text-gray-600";
+      return "bg-brand-neutral text-brand-muted ring-brand-disabled/60";
     default:
-      return "bg-gray-100 text-gray-600";
+      return "bg-brand-neutral text-brand-muted ring-brand-disabled/60";
   }
 };
 
@@ -84,7 +85,7 @@ function MyOrdersPage() {
 
   const [uploadErrors, setUploadErrors] = useState<Record<number, string>>({});
 
-  const [currentTime, setCurrentTime] = useState(Date.now());
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -93,6 +94,7 @@ function MyOrdersPage() {
 
     return () => clearInterval(interval);
   }, []);
+
   const paymentProofMutation = useMutation({
     mutationFn: ({ orderId, image }: { orderId: number; image: File }) =>
       uploadPaymentProof(orderId, image),
@@ -109,92 +111,111 @@ function MyOrdersPage() {
 
   if (isPending) {
     return (
-      <main className="min-h-screen bg-gray-50 px-4 py-10">
-        <div className="mx-auto max-w-5xl">
-          <h1 className="mb-6 text-3xl font-bold">My Orders</h1>
-          <p className="text-gray-500">Loading your orders...</p>
-        </div>
-      </main>
+      <>
+        <Navbar />
+        <main className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-brand-neutral px-4">
+          <p className="text-brand-muted">Loading your orders...</p>
+        </main>
+      </>
     );
   }
 
   if (isError) {
     return (
-      <main className="min-h-screen bg-gray-50 px-4 py-10">
-        <div className="mx-auto max-w-5xl">
-          <h1 className="mb-4 text-3xl font-bold">My Orders</h1>
+      <>
+        <Navbar />
+        <main className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-brand-neutral px-4">
+          <div className="w-full max-w-lg rounded-3xl border border-brand-navy/10 bg-white p-8 text-center shadow-sm">
+            <h1 className="text-2xl font-extrabold text-brand-navy">
+              My Orders
+            </h1>
 
-          <p className="mb-4 text-red-600">
-            {error instanceof Error
-              ? error.message
-              : "Failed to load your orders."}
-          </p>
+            <p className="mb-5 mt-3 text-sm font-medium text-red-600">
+              {error instanceof Error
+                ? error.message
+                : "Failed to load your orders."}
+            </p>
 
-          <button
-            type="button"
-            onClick={() => refetch()}
-            className="rounded-lg bg-teal-600 px-5 py-2 text-white hover:bg-teal-700"
-          >
-            Try again
-          </button>
-        </div>
-      </main>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="rounded-lg bg-brand-orange px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-orange-dark"
+            >
+              Try again
+            </button>
+          </div>
+        </main>
+      </>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 px-4 py-10">
-      <div className="mx-auto max-w-5xl">
-        <div className="mb-8">
-          <p className="mb-2 font-medium text-teal-600">YOUR ACCOUNT</p>
+    <main className="min-h-screen bg-brand-neutral pb-16">
+      <Navbar />
 
-          <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+      <div className="mx-auto max-w-6xl px-4 py-8 md:px-8 md:py-12">
+        <div className="mb-8">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+            Your account
+          </p>
+
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-brand-navy sm:text-4xl">
             My Orders
           </h1>
 
-          <p className="mt-2 text-gray-500">
+          <p className="mt-2 text-sm text-brand-muted">
             View your event tickets and track your payments.
           </p>
         </div>
 
         {!transactions || transactions.length === 0 ? (
-          <div className="rounded-2xl border border-gray-200 bg-white px-6 py-16 text-center">
-            <h2 className="text-xl font-semibold text-gray-900">
+          <div className="rounded-3xl border border-brand-navy/10 bg-white px-6 py-16 text-center shadow-sm">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-brand-orange-soft text-3xl">
+              🎟️
+            </div>
+            <h2 className="mt-5 text-xl font-bold text-brand-navy">
               No orders yet
             </h2>
 
-            <p className="mt-2 text-gray-500">
+            <p className="mt-2 text-sm text-brand-muted">
               When you book an event, your orders will appear here.
             </p>
+
+            <Link
+              to="/events"
+              className="mt-6 inline-flex h-10 items-center justify-center rounded-lg bg-brand-orange px-5 text-sm font-semibold text-white transition hover:bg-brand-orange-dark"
+            >
+              Explore Events
+            </Link>
           </div>
         ) : (
           <div className="space-y-5">
             {transactions.map((order) => (
               <article
                 key={order.id}
-                className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
+                className="overflow-hidden rounded-3xl border border-brand-navy/10 bg-white shadow-sm shadow-brand-navy/5"
               >
-                <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-start">
+                <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-start md:p-6">
                   {order.ticket.event.image ? (
                     <img
                       src={order.ticket.event.image}
                       alt={order.ticket.event.name}
-                      className="h-48 w-full rounded-xl object-cover sm:h-32 sm:w-44"
+                      className="h-48 w-full rounded-2xl object-cover sm:h-32 sm:w-44"
                     />
                   ) : (
-                    <div className="flex h-32 w-full items-center justify-center rounded-xl bg-gray-100 text-gray-400 sm:w-44">
+                    <div className="flex h-32 w-full items-center justify-center rounded-2xl bg-brand-neutral text-brand-muted sm:w-44">
                       No event image
                     </div>
                   )}
 
                   <div className="min-w-0 flex-1">
                     <div className="mb-3 flex flex-wrap items-center gap-2">
-                      <span className="text-sm text-gray-500">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-brand-muted">
                         Order #{order.id}
                       </span>
 
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(
+                        className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 ${getStatusStyle(
                           order.paymentStatus,
                         )}`}
                       >
@@ -202,29 +223,29 @@ function MyOrdersPage() {
                       </span>
                     </div>
 
-                    <h2 className="text-xl font-bold text-gray-900">
+                    <h2 className="text-xl font-bold text-brand-navy">
                       {order.ticket.event.name}
                     </h2>
 
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-brand-muted">
                       {order.ticket.event.city} ·{" "}
                       {order.ticket.event.type === "ONLINE"
                         ? "Online event"
                         : "Venue event"}
                     </p>
 
-                    <p className="mt-3 text-sm text-gray-600">
+                    <p className="mt-3 text-sm text-brand-text">
                       Ticket:{" "}
-                      <span className="font-medium text-gray-900">
+                      <span className="font-semibold text-brand-navy">
                         {order.ticket.name}
                       </span>
                     </p>
 
-                    <p className="mt-1 text-sm text-gray-600">
+                    <p className="mt-1 text-sm text-brand-text">
                       Quantity: {order.quantity}
                     </p>
 
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-xs text-brand-muted">
                       Ordered on {formatDate(order.createdAt)}
                     </p>
 
@@ -242,8 +263,8 @@ function MyOrdersPage() {
                         const seconds = totalSeconds % 60;
 
                         return remainingTime > 0 ? (
-                          <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3">
-                            <p className="text-sm font-medium text-amber-800">
+                          <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                            <p className="text-xs font-semibold text-amber-800">
                               Time remaining to pay
                             </p>
 
@@ -266,12 +287,12 @@ function MyOrdersPage() {
                       })()}
                   </div>
 
-                  <div className="sm:min-w-40">
-                    <p className="text-sm text-gray-500 sm:text-right">
+                  <div className="sm:min-w-44">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-brand-muted sm:text-right">
                       Total payment
                     </p>
 
-                    <p className="mt-1 text-xl font-bold text-teal-700 sm:text-right">
+                    <p className="mt-1 text-xl font-extrabold text-brand-navy sm:text-right">
                       {formatRupiah(order.finalPrice)}
                     </p>
 
@@ -279,7 +300,7 @@ function MyOrdersPage() {
                       <div className="mt-4 space-y-3">
                         <label
                           htmlFor={`payment-proof-${order.id}`}
-                          className="block text-sm font-medium text-gray-700"
+                          className="block text-sm font-medium text-brand-navy"
                         >
                           Upload payment proof
                         </label>
@@ -301,11 +322,11 @@ function MyOrdersPage() {
                               [order.id]: "",
                             }));
                           }}
-                          className="block w-full text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-teal-50 file:px-3 file:py-2 file:font-medium file:text-teal-700 hover:file:bg-teal-100"
+                          className="block w-full rounded-lg border border-brand-disabled/80 bg-white text-sm text-brand-muted file:mr-3 file:rounded-l-lg file:border-0 file:bg-brand-orange-soft file:px-3 file:py-2.5 file:text-xs file:font-semibold file:text-brand-navy hover:file:bg-brand-orange/20"
                         />
 
                         {uploadErrors[order.id] && (
-                          <p className="text-sm text-red-600">
+                          <p className="text-sm font-medium text-red-600">
                             {uploadErrors[order.id]}
                           </p>
                         )}
@@ -354,7 +375,7 @@ function MyOrdersPage() {
                               image,
                             });
                           }}
-                          className="w-full rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="w-full rounded-lg bg-brand-orange px-4 py-2.5 text-xs font-semibold text-white shadow-sm shadow-brand-orange/20 transition hover:bg-brand-orange-dark disabled:cursor-not-allowed disabled:bg-brand-disabled disabled:text-[#5b6b88] disabled:shadow-none"
                         >
                           {paymentProofMutation.isPending
                             ? "Uploading..."
@@ -362,7 +383,7 @@ function MyOrdersPage() {
                         </button>
 
                         {paymentProofMutation.isError && (
-                          <p className="text-sm text-red-600">
+                          <p className="text-sm font-medium text-red-600">
                             Upload failed. Check the order deadline and try
                             again.
                           </p>
@@ -378,7 +399,7 @@ function MyOrdersPage() {
                     )}
 
                     {order.paymentStatus === "PAID" && (
-                      <p className="mt-3 text-sm font-medium text-green-700">
+                      <p className="mt-3 text-sm font-medium text-emerald-700">
                         Payment completed. Your order is confirmed.
                       </p>
                     )}
@@ -386,7 +407,7 @@ function MyOrdersPage() {
                     {["REJECTED", "EXPIRED", "CANCELED"].includes(
                       order.paymentStatus,
                     ) && (
-                      <p className="mt-3 text-sm text-gray-600">
+                      <p className="mt-3 text-sm text-brand-muted">
                         This order is no longer active. Status:{" "}
                         {getStatusLabel(order.paymentStatus)}.
                       </p>
@@ -397,7 +418,7 @@ function MyOrdersPage() {
                         href={order.paymentProofUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-3 inline-block text-sm font-medium text-teal-700 underline hover:text-teal-900"
+                        className="mt-3 inline-block text-sm font-semibold text-brand-navy underline underline-offset-4 hover:text-brand-orange"
                       >
                         View payment proof
                       </a>
@@ -405,8 +426,8 @@ function MyOrdersPage() {
                   </div>
                 </div>
 
-                <div className="border-t border-gray-100 px-5 py-3">
-                  <p className="text-xs text-gray-500">
+                <div className="border-t border-brand-navy/10 bg-brand-neutral/40 px-5 py-3 md:px-6">
+                  <p className="text-xs text-brand-muted">
                     Event date: {formatDate(order.ticket.event.startDate)}
                   </p>
                 </div>
@@ -414,16 +435,16 @@ function MyOrdersPage() {
             ))}
           </div>
         )}
-      </div>
-      <div className="mx-auto max-w-7xl px-6 pt-6 md:px-12">
-        <Link
-          to="/profile"
-          type="button"
-          className="inline-flex items-center gap-2 font-semibold text-green-700 transition hover:text-green-800 py-40"
-        >
-          <span aria-hidden="true">←</span>
-          Back to Profile
-        </Link>
+
+        <div className="pt-8">
+          <Link
+            to="/profile"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy underline underline-offset-4 transition hover:text-brand-orange"
+          >
+            <span aria-hidden="true">←</span>
+            Back to Profile
+          </Link>
+        </div>
       </div>
     </main>
   );

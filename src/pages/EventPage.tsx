@@ -41,6 +41,7 @@ function EventsPage() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedSearch(search);
+      setCurrentPage(1);
     }, 300);
 
     return () => clearTimeout(timeout);
@@ -95,85 +96,127 @@ function EventsPage() {
     return matchesPeriod && matchesName && matchesLocation && matchesCategory;
   });
 
-  // Calculate pagination after filtering the events.
   const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
-
   const startIndex = (currentPage - 1) * eventsPerPage;
-
   const paginatedEvents = filteredEvents.slice(
     startIndex,
     startIndex + eventsPerPage,
   );
 
-  // Reset to page 1 when the search or filters change.
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [debouncedSearch, location, selectedCategory, period]);
+  const periods: { label: string; value: EventPeriod }[] = [
+    { label: "Upcoming", value: "UPCOMING" },
+    { label: "Ongoing", value: "ONGOING" },
+    { label: "Ended", value: "ENDED" },
+  ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-brand-neutral">
       <Navbar />
 
-      <div className="relative flex min-h-[620px] items-center overflow-hidden px-5 pb-12 pt-32 text-white md:px-12">
+      <section className="relative isolate overflow-hidden bg-brand-navy px-5 py-16 text-white md:px-10 md:py-24">
         <img
           src="/events.png"
           alt="People attending an event"
-          className="absolute inset-0 h-full w-full object-cover object-center"
+          className="absolute inset-0 -z-20 h-full w-full object-cover object-center opacity-35"
         />
+        <div className="absolute inset-0 -z-10 bg-linear-to-r from-brand-navy via-brand-navy/95 to-brand-navy/55" />
 
-        <div className="relative z-10 w-full max-w-4xl">
-          <p className="font-semibold tracking-widest text-teal-300">
-            FIND YOUR NEXT EXPERIENCE
+        <div className="mx-auto max-w-7xl">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-orange">
+            Find your next experience
           </p>
 
-          <h1 className="my-5 max-w-3xl text-4xl font-bold leading-tight md:text-6xl">
-            Discover Events For All The Things You Love
+          <h1 className="mt-4 max-w-3xl text-4xl font-extrabold leading-tight tracking-tight text-white md:text-6xl">
+            Discover events for all the things you love
           </h1>
 
+          <p className="mt-4 max-w-2xl text-base leading-7 text-white/70 md:text-lg">
+            Search by city or event name and find your next unforgettable
+            experience.
+          </p>
+
           <form
-            className="flex max-w-4xl flex-col bg-white text-gray-800 md:flex-row"
+            className="mt-8 flex max-w-4xl flex-col gap-2 rounded-2xl border border-white/20 bg-white p-2 text-brand-text shadow-2xl shadow-brand-navy/25 md:flex-row"
             onSubmit={(e) => e.preventDefault()}
           >
-            <input
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="⌖  Enter Location"
-              aria-label="Search by location"
-              className="min-w-0 flex-1 border-b px-5 py-5 outline-none focus:ring-2 focus:ring-teal-500 md:border-b-0 md:border-r"
-            />
+            <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl px-3 py-2 focus-within:bg-brand-neutral/60 md:py-0">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="size-4 shrink-0 text-brand-muted"
+                aria-hidden="true"
+              >
+                <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <input
+                value={location}
+                onChange={(e) => {
+                  setLocation(e.target.value);
+                  setCurrentPage(1);
+                }}
+                placeholder="Enter location"
+                aria-label="Search by location"
+                className="min-w-0 flex-1 bg-transparent py-2 text-sm outline-none placeholder:text-brand-muted/70"
+              />
+            </div>
 
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="⌕  Search Event"
-              aria-label="Search event name"
-              className="min-w-0 flex-1 px-5 py-5 outline-none focus:ring-2 focus:ring-teal-500"
-            />
+            <div className="hidden w-px bg-brand-navy/10 md:block" />
+
+            <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl px-3 py-2 focus-within:bg-brand-neutral/60 md:py-0">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="size-4 shrink-0 text-brand-muted"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search event"
+                aria-label="Search event name"
+                className="min-w-0 flex-1 bg-transparent py-2 text-sm outline-none placeholder:text-brand-muted/70"
+              />
+            </div>
 
             <Button
               type="submit"
-              className="h-auto rounded-none bg-green-500 px-8 py-5 text-base font-bold text-white hover:bg-green-600"
+              className="h-12 shrink-0 rounded-xl px-7 text-sm font-bold md:h-12"
             >
               Find Events
             </Button>
           </form>
         </div>
-      </div>
+      </section>
 
-      <div className="px-5 py-8 md:px-10">
+      <div className="mx-auto max-w-7xl px-5 py-8 md:px-10 md:py-10">
         <div
           id="categories"
-          className="flex gap-7 overflow-x-auto border-b pb-4"
+          className="flex gap-6 overflow-x-auto border-b border-brand-navy/10 pb-0"
         >
           {categories.map((category) => (
             <button
               key={category}
               type="button"
-              onClick={() => setSelectedCategory(category)}
-              className={`shrink-0 pb-2 ${
+              onClick={() => {
+                setSelectedCategory(category);
+                setCurrentPage(1);
+              }}
+              className={`relative shrink-0 pb-3 pt-1 text-sm font-medium transition-colors ${
                 selectedCategory === category
-                  ? "border-b-2 border-teal-500 font-semibold text-teal-600"
-                  : "text-gray-700 hover:text-teal-600"
+                  ? "text-brand-navy after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:rounded-full after:bg-brand-orange"
+                  : "text-brand-muted hover:text-brand-navy"
               }`}
             >
               {category}
@@ -181,70 +224,66 @@ function EventsPage() {
           ))}
         </div>
 
-        <section id="events">
-          <div className="mb-6 flex items-center justify-between py-4">
-            <h2 className="text-2xl font-bold">Explore Events</h2>
+        <section id="events" className="pt-8">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+                Browse events
+              </p>
+              <h2 className="mt-1 text-2xl font-extrabold text-brand-navy md:text-3xl">
+                Explore Events
+              </h2>
+            </div>
 
-            <span className="text-sm text-gray-500">
+            <span className="rounded-full bg-brand-orange px-3 py-1.5 text-xs font-semibold text-white shadow-sm shadow-brand-orange/20">
               {filteredEvents.length} events
             </span>
           </div>
 
-          <div className="mb-6 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() => setPeriod("UPCOMING")}
-              className={`rounded-full px-5 py-2 ${
-                period === "UPCOMING"
-                  ? "bg-teal-600 text-white"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-            >
-              Upcoming
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setPeriod("ONGOING")}
-              className={`rounded-full px-5 py-2 ${
-                period === "ONGOING"
-                  ? "bg-teal-600 text-white"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-            >
-              Ongoing
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setPeriod("ENDED")}
-              className={`rounded-full px-5 py-2 ${
-                period === "ENDED"
-                  ? "bg-teal-600 text-white"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-            >
-              Ended
-            </button>
+          <div className="mb-6 flex flex-wrap gap-2">
+            {periods.map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                onClick={() => {
+                  setPeriod(item.value);
+                  setCurrentPage(1);
+                }}
+                className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
+                  period === item.value
+                    ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
+                    : "border border-brand-navy/10 bg-white text-brand-text hover:border-brand-navy/25 hover:text-brand-navy"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
 
-          {isPending && <p>Loading events...</p>}
+          {isPending && (
+            <div className="rounded-2xl border border-brand-navy/10 bg-white p-8 text-sm text-brand-muted">
+              Loading events...
+            </div>
+          )}
 
           {isError && (
-            <p className="text-red-600">
+            <div className="rounded-2xl border border-red-200 bg-white p-6 text-sm font-medium text-red-600">
               Unable to load events. Check that your backend is running.
-            </p>
+            </div>
           )}
 
           {!isPending && !isError && filteredEvents.length === 0 && (
-            <p className="py-8 text-gray-500">
-              No events found. Try another search.
-            </p>
+            <div className="rounded-2xl border border-brand-navy/10 bg-white p-10 text-center">
+              <p className="font-semibold text-brand-navy">No events found</p>
+              <p className="mt-2 text-sm text-brand-muted">
+                Try another search or choose a different category.
+              </p>
+            </div>
           )}
 
           {!isPending && !isError && filteredEvents.length > 0 && (
             <>
-              <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 {paginatedEvents.map((event) => (
                   <EventCard key={event.id} event={event} />
                 ))}

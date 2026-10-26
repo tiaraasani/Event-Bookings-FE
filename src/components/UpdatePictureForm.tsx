@@ -30,10 +30,10 @@ function UpdatePictureForm({ currentPicture, name }: Props) {
           <img
             src={preview}
             alt={name}
-            className="h-20 w-20 rounded-full object-cover"
+            className="size-20 rounded-xl border border-brand-navy/10 object-cover shadow-sm"
           />
         ) : (
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#BCE7DF] text-2xl font-bold text-[#147D74]">
+          <div className="flex size-20 items-center justify-center rounded-xl border border-brand-navy/10 bg-brand-neutral text-2xl font-bold text-brand-navy">
             {name.charAt(0).toUpperCase()}
           </div>
         )}

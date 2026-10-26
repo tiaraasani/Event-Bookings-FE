@@ -33,11 +33,9 @@ function TransactionPage() {
   const { data: pointBalance = 0, isLoading: isPointBalanceLoading } =
     useGetMyPointBalance();
 
-  // Existing points and error states
   const [pointsInput, setPointsInput] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Voucher states
   const [voucherInput, setVoucherInput] = useState("");
   const [appliedVoucher, setAppliedVoucher] = useState<PublicVoucher | null>(
     null,
@@ -53,7 +51,6 @@ function TransactionPage() {
 
   const total = selectedTicket ? selectedTicket.price * quantity : 0;
 
-  // Calculate voucher discount before applying points
   const voucherDiscount = appliedVoucher
     ? Math.floor((total * appliedVoucher.discountValue) / 100)
     : 0;
@@ -83,7 +80,6 @@ function TransactionPage() {
     },
   });
 
-  // Apply voucher
   const handleApplyVoucher = async () => {
     const code = voucherInput.trim().toUpperCase();
 
@@ -131,8 +127,8 @@ function TransactionPage() {
     return (
       <>
         <Navbar />
-        <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-          <p className="text-gray-600">Loading checkout...</p>
+        <main className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-brand-neutral px-4">
+          <p className="text-brand-muted">Loading checkout...</p>
         </main>
       </>
     );
@@ -142,13 +138,15 @@ function TransactionPage() {
     return (
       <>
         <Navbar />
-        <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 text-center">
-          <p className="text-gray-700">Unable to load this event.</p>
+        <main className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center bg-brand-neutral px-4 text-center">
+          <p className="font-medium text-brand-text">
+            Unable to load this event.
+          </p>
 
           <button
             type="button"
             onClick={() => navigate("/events")}
-            className="mt-4 rounded-lg bg-teal-600 px-5 py-3 text-white hover:bg-teal-700"
+            className="mt-4 rounded-lg bg-brand-orange px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-orange-dark"
           >
             Back to Events
           </button>
@@ -166,15 +164,15 @@ function TransactionPage() {
     return (
       <>
         <Navbar />
-        <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 text-center">
-          <p className="text-gray-700">
+        <main className="flex min-h-[calc(100vh-5rem)] flex-col items-center justify-center bg-brand-neutral px-4 text-center">
+          <p className="font-medium text-brand-text">
             Please select a valid ticket and quantity first.
           </p>
 
           <button
             type="button"
             onClick={() => navigate(`/events/${event.id}`)}
-            className="mt-4 rounded-lg bg-teal-600 px-5 py-3 text-white hover:bg-teal-700"
+            className="mt-4 rounded-lg bg-brand-orange px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-orange-dark"
           >
             Back to Event
           </button>
@@ -191,57 +189,87 @@ function TransactionPage() {
     !isPointBalanceLoading;
 
   return (
-    <main className="min-h-screen bg-[#f0f1fb] text-slate-900">
-      <header className="border-b border-gray-200 bg-white px-4 py-5 md:px-8">
-        <div className="mx-auto max-w-7xl">
-          <span className="text-xl font-bold tracking-tight text-teal-700 md:text-2xl">
-            EVENT BOOKINGS
-          </span>
-        </div>
-      </header>
+    <main className="min-h-screen bg-brand-neutral pb-16">
+      <Navbar />
 
-      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 md:px-8 md:py-10 lg:grid-cols-[1.3fr_1fr] lg:gap-10">
+      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 md:px-8 md:py-12 lg:grid-cols-[1.2fr_1fr] lg:gap-10">
         <section>
-          <h1 className="border-b border-gray-300 pb-4 text-3xl font-semibold md:text-4xl">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+            Secure checkout
+          </p>
+
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-brand-navy md:text-4xl">
             Checkout
           </h1>
 
-          <p className="mb-6 mt-4 text-sm text-gray-600 md:text-base">
+          <p className="mb-6 mt-3 text-sm leading-6 text-brand-text md:text-base">
             Review your ticket details before creating your order.
           </p>
 
-          <div className="rounded-2xl bg-white p-5 shadow-sm md:p-6">
-            <h2 className="mb-4 text-xl font-bold">Attendee Details</h2>
+          <div className="rounded-3xl border border-brand-navy/10 bg-white p-6 shadow-sm shadow-brand-navy/5 md:p-8">
+            <h2 className="text-xl font-bold text-brand-navy">
+              Attendee Details
+            </h2>
 
-            <p className="text-sm leading-6 text-gray-600 md:text-base">
+            <p className="mt-3 text-sm leading-6 text-brand-text md:text-base">
               Your order will be associated with your signed-in account.
             </p>
 
-            <p className="mt-4 text-sm leading-6 text-gray-500">
+            <p className="mt-3 rounded-xl bg-brand-neutral/80 px-4 py-3 text-sm leading-6 text-brand-muted">
               After confirming, your order will appear in My Orders. Follow the
               payment instructions there to submit your payment proof.
             </p>
           </div>
+
+          <div className="mt-5 rounded-3xl border border-brand-navy/10 bg-white p-6 shadow-sm shadow-brand-navy/5 md:p-8">
+            <h2 className="text-lg font-bold text-brand-navy">
+              Before you continue
+            </h2>
+
+            <ul className="mt-4 space-y-3 text-sm leading-6 text-brand-text">
+              <li className="flex gap-3">
+                <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-orange-soft text-xs font-bold text-brand-orange-dark">
+                  1
+                </span>
+                Confirm the ticket type and quantity in the order summary.
+              </li>
+              <li className="flex gap-3">
+                <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-orange-soft text-xs font-bold text-brand-orange-dark">
+                  2
+                </span>
+                Upload your payment proof from My Orders once the order is
+                created.
+              </li>
+              <li className="flex gap-3">
+                <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-orange-soft text-xs font-bold text-brand-orange-dark">
+                  3
+                </span>
+                Your booking is confirmed after the organizer verifies payment.
+              </li>
+            </ul>
+          </div>
         </section>
 
-        <aside className="h-fit rounded-2xl bg-white p-5 shadow-lg md:rounded-3xl md:p-8">
+        <aside className="h-fit rounded-3xl border border-brand-navy/10 bg-white p-5 shadow-xl shadow-brand-navy/10 md:p-8 lg:sticky lg:top-24">
           <div className="flex items-start gap-4">
             {event.image && (
               <img
                 src={event.image}
                 alt={event.name}
-                className="h-20 w-24 shrink-0 rounded-lg object-cover md:h-24 md:w-28"
+                className="h-20 w-24 shrink-0 rounded-xl object-cover md:h-24 md:w-28"
               />
             )}
 
             <div className="min-w-0">
-              <h2 className="break-words font-bold md:text-lg">{event.name}</h2>
+              <h2 className="break-words text-base font-bold text-brand-navy md:text-lg">
+                {event.name}
+              </h2>
 
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-brand-muted">
                 {event.type === "ONLINE" ? "Online event" : event.city}
               </p>
 
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-brand-muted">
                 {new Date(event.startDate).toLocaleDateString("id-ID", {
                   day: "numeric",
                   month: "short",
@@ -251,26 +279,34 @@ function TransactionPage() {
             </div>
           </div>
 
-          <hr className="my-6 border-gray-200" />
+          <hr className="my-6 border-brand-navy/10" />
 
-          <h3 className="mb-5 text-lg font-bold">Order Summary</h3>
+          <h3 className="mb-5 text-lg font-bold text-brand-navy">
+            Order Summary
+          </h3>
 
           <div className="flex items-start justify-between gap-4 text-sm md:text-base">
-            <span>
+            <span className="text-brand-text">
               {quantity} × {selectedTicket.name}
             </span>
 
-            <span className="shrink-0 font-medium">{formatRupiah(total)}</span>
+            <span className="shrink-0 font-semibold text-brand-navy">
+              {formatRupiah(total)}
+            </span>
           </div>
 
-          <div className="mt-5 flex justify-between gap-4 text-sm text-gray-600 md:text-base">
+          <div className="mt-4 flex justify-between gap-4 text-sm text-brand-muted md:text-base">
             <span>Subtotal</span>
-            <span>{formatRupiah(total)}</span>
+            <span className="font-medium text-brand-text">
+              {formatRupiah(total)}
+            </span>
           </div>
 
-          {/* Voucher section */}
-          <div className="mt-5 rounded-xl border border-gray-200 p-4">
-            <label htmlFor="voucherCode" className="font-medium">
+          <div className="mt-5 rounded-2xl border border-brand-navy/10 bg-brand-neutral/50 p-4">
+            <label
+              htmlFor="voucherCode"
+              className="text-sm font-semibold text-brand-navy"
+            >
               Have a voucher?
             </label>
 
@@ -283,14 +319,14 @@ function TransactionPage() {
                 value={voucherInput}
                 disabled={!!appliedVoucher || isApplyingVoucher}
                 onChange={(e) => setVoucherInput(e.target.value.toUpperCase())}
-                className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-3 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 disabled:bg-gray-100"
+                className="h-10 min-w-0 flex-1 rounded-lg border border-brand-disabled/80 bg-white px-3 text-sm text-brand-text outline-none transition placeholder:text-brand-muted/70 focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/15 disabled:bg-brand-disabled/30 disabled:text-brand-muted"
               />
 
               <button
                 type="button"
                 onClick={handleApplyVoucher}
                 disabled={isApplyingVoucher || !!appliedVoucher}
-                className="rounded-lg bg-teal-600 px-4 py-3 font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+                className="rounded-lg border border-brand-navy/25 bg-white px-4 py-2 text-sm font-semibold text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white disabled:cursor-not-allowed disabled:border-transparent disabled:bg-brand-disabled disabled:text-[#5b6b88]"
               >
                 {isApplyingVoucher ? "Checking..." : "Apply"}
               </button>
@@ -299,8 +335,8 @@ function TransactionPage() {
             {voucherMessage && (
               <p
                 role="status"
-                className={`mt-2 text-sm ${
-                  appliedVoucher ? "text-teal-700" : "text-red-600"
+                className={`mt-2 text-sm font-medium ${
+                  appliedVoucher ? "text-emerald-600" : "text-red-600"
                 }`}
               >
                 {voucherMessage}
@@ -315,30 +351,30 @@ function TransactionPage() {
                   setVoucherInput("");
                   setVoucherMessage("");
                 }}
-                className="mt-2 text-sm font-medium text-gray-500 hover:text-red-600"
+                className="mt-2 text-xs font-semibold text-brand-muted underline underline-offset-4 hover:text-brand-orange"
               >
                 Remove voucher
               </button>
             )}
 
             {appliedVoucher && (
-              <div className="mt-3 flex justify-between gap-4 text-sm text-teal-700">
+              <div className="mt-3 flex justify-between gap-4 text-sm font-medium text-emerald-600">
                 <span>Voucher discount ({appliedVoucher.discountValue}%)</span>
-                <span className="font-medium">
-                  -{formatRupiah(voucherDiscount)}
-                </span>
+                <span>-{formatRupiah(voucherDiscount)}</span>
               </div>
             )}
           </div>
 
-          {/* Existing points section */}
-          <div className="mt-5 rounded-xl border border-gray-200 p-4">
+          <div className="mt-4 rounded-2xl border border-brand-navy/10 bg-brand-neutral/50 p-4">
             <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-              <label htmlFor="pointsToUse" className="font-medium">
+              <label
+                htmlFor="pointsToUse"
+                className="text-sm font-semibold text-brand-navy"
+              >
                 Use your points
               </label>
 
-              <span className="text-sm text-teal-700">
+              <span className="text-xs font-semibold text-brand-orange">
                 {isPointBalanceLoading
                   ? "Loading balance..."
                   : `${pointBalance.toLocaleString("id-ID")} points available`}
@@ -360,49 +396,45 @@ function TransactionPage() {
 
                 setPointsInput(value);
               }}
-              className="mt-3 w-full rounded-lg border border-gray-300 px-3 py-3 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-100 disabled:cursor-not-allowed disabled:bg-gray-100"
+              className="mt-3 h-10 w-full rounded-lg border border-brand-disabled/80 bg-white px-3 text-sm text-brand-text outline-none transition placeholder:text-brand-muted/70 focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/15 disabled:cursor-not-allowed disabled:bg-brand-disabled/30 disabled:text-brand-muted"
             />
 
-            <p className="mt-2 text-xs leading-5 text-gray-500">
+            <p className="mt-2 text-xs leading-5 text-brand-muted">
               1 point reduces your payment by Rp 1. Maximum usable:{" "}
-              {Math.min(pointBalance, totalAfterVoucher).toLocaleString(
-                "id-ID",
-              )}{" "}
+              {Math.min(pointBalance, totalAfterVoucher).toLocaleString("id-ID")}{" "}
               points.
             </p>
 
             {pointsNumber > Math.min(pointBalance, totalAfterVoucher) && (
-              <p className="mt-2 text-xs text-amber-700">
+              <p className="mt-2 text-xs font-medium text-amber-700">
                 Your applied points will be limited to the maximum allowed
                 amount.
               </p>
             )}
 
             {validPointsToUse > 0 && (
-              <div className="mt-3 flex justify-between gap-4 text-sm text-teal-700">
+              <div className="mt-3 flex justify-between gap-4 text-sm font-medium text-emerald-600">
                 <span>Points discount</span>
-                <span className="font-medium">
-                  -{formatRupiah(validPointsToUse)}
-                </span>
+                <span>-{formatRupiah(validPointsToUse)}</span>
               </div>
             )}
           </div>
 
-          <hr className="my-5 border-gray-200" />
+          <hr className="my-5 border-brand-navy/10" />
 
-          <div className="flex items-center justify-between gap-4 text-xl font-bold">
+          <div className="flex items-center justify-between gap-4 text-xl font-extrabold text-brand-navy">
             <span>Total</span>
             <span className="text-right">{formatRupiah(finalPrice)}</span>
           </div>
 
           {isOutOfStock && (
-            <p className="mt-4 text-sm text-red-600">
+            <p className="mt-4 text-sm font-medium text-red-600">
               Not enough tickets are available for this quantity.
             </p>
           )}
 
           {errorMessage && (
-            <p role="alert" className="mt-4 text-sm text-red-600">
+            <p role="alert" className="mt-4 text-sm font-medium text-red-600">
               {errorMessage}
             </p>
           )}
@@ -420,7 +452,7 @@ function TransactionPage() {
                 ...(appliedVoucher ? { voucherCode: appliedVoucher.code } : {}),
               });
             }}
-            className="mt-7 w-full rounded-lg bg-teal-600 px-6 py-4 font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="mt-6 w-full rounded-xl bg-brand-orange px-6 py-4 text-sm font-bold text-white shadow-lg shadow-brand-orange/20 transition hover:bg-brand-orange-dark disabled:cursor-not-allowed disabled:bg-brand-disabled disabled:text-[#5b6b88] disabled:shadow-none"
           >
             {createTransactionMutation.isPending
               ? "Creating order..."
@@ -434,7 +466,7 @@ function TransactionPage() {
           <button
             type="button"
             onClick={() => navigate(`/events/${event.id}`)}
-            className="mt-3 w-full rounded-lg py-3 text-sm font-medium text-gray-500 transition hover:bg-gray-50 hover:text-teal-700"
+            className="mt-2 w-full rounded-xl border border-transparent py-3 text-sm font-semibold text-brand-muted transition hover:border-brand-navy/10 hover:bg-brand-neutral hover:text-brand-navy"
           >
             Back to Event
           </button>

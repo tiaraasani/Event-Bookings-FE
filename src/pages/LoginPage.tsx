@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import AuthLayout from "@/components/AuthLayout";
 
 function LoginPage() {
   const { register, handleSubmit, formState } = useForm<LoginSchema>({
@@ -18,48 +19,66 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#002F36] px-4">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-md space-y-5 bg-white p-8"
-      >
-        <h1 className="text-2xl font-bold">Login</h1>
-
+    <AuthLayout
+      title="Welcome back"
+      subtitle="Sign in to manage your bookings and events."
+    >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" {...register("email")} />
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            {...register("email")}
+          />
           {formState.errors.email && (
-            <p className="text-sm text-red-500">
+            <p className="text-sm font-medium text-red-600">
               {formState.errors.email.message}
             </p>
           )}
         </div>
+
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" {...register("password")} />
+          <div className="flex items-center justify-between gap-3">
+            <Label htmlFor="password">Password</Label>
+            <Link
+              to="/forgot-password"
+              className="text-xs font-semibold text-brand-orange underline underline-offset-4 hover:text-brand-orange-dark"
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <Input
+            id="password"
+            type="password"
+            autoComplete="current-password"
+            placeholder="Enter your password"
+            {...register("password")}
+          />
           {formState.errors.password && (
-            <p className="text-sm text-red-500">
+            <p className="text-sm font-medium text-red-600">
               {formState.errors.password.message}
             </p>
           )}
         </div>
-        <p className="text-right text-sm">
-          <Link to="/forgot-password" className="text-[#2bb3b3]">
-            Forget password?
-          </Link>
-        </p>
 
         <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? "Loading..." : "Login"}
+          {isPending ? "Signing in..." : "Login"}
         </Button>
-        <p className="text-center text-sm">
+
+        <p className="text-center text-sm text-brand-muted">
           Don't have an account?{" "}
-          <Link to="/register" className="font-semibold text-[#2bb3b3]">
+          <Link
+            to="/register"
+            className="font-semibold text-brand-navy underline underline-offset-4 hover:text-brand-orange"
+          >
             Register
           </Link>
         </p>
       </form>
-    </div>
+    </AuthLayout>
   );
 }
 

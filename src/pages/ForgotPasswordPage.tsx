@@ -9,6 +9,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import AuthLayout from "@/components/AuthLayout";
 
 function ForgotPasswordPage() {
   const { register, handleSubmit, formState } = useForm<ForgotPasswordSchema>({
@@ -21,37 +22,42 @@ function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#002F36] px-4">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-md space-y-5 rounded-lg bg-white p-8"
-      >
-        <h1 className="text-2xl font-bold">Frogot Password</h1>
-        <p className="text-sm text-gray-600">
-          Enter your email, and we will send you a link to reset your password.
-        </p>
-
+    <AuthLayout
+      title="Forgot password?"
+      subtitle="Enter your email and we'll send you a link to reset your password."
+    >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" {...register("email")} />
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            {...register("email")}
+          />
           {formState.errors.email && (
-            <p className="text-sm text-red-500">
+            <p className="text-sm font-medium text-red-600">
               {formState.errors.email.message}
             </p>
           )}
         </div>
 
         <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? "Mengirim..." : "Kirim Link Reset"}
+          {isPending ? "Sending..." : "Send reset link"}
         </Button>
 
-        <p className="text-center text-sm">
-          <Link to="/login" className="font-semibold text-[#2bb3b3]">
-            Return to Login
+        <p className="text-center text-sm text-brand-muted">
+          Remembered your password?{" "}
+          <Link
+            to="/login"
+            className="font-semibold text-brand-navy underline underline-offset-4 hover:text-brand-orange"
+          >
+            Return to login
           </Link>
         </p>
       </form>
-    </div>
+    </AuthLayout>
   );
 }
 

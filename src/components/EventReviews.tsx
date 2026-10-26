@@ -38,9 +38,13 @@ function EventReviews() {
           setRating(5);
           setMessage("Your review was submitted successfully.");
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
+          const apiMessage = (
+            error as { response?: { data?: { message?: string } } }
+          ).response?.data?.message;
+
           setMessage(
-            error.response?.data?.message ??
+            apiMessage ??
               "Failed to submit your review. Please try again.",
           );
         },
@@ -49,40 +53,52 @@ function EventReviews() {
   };
 
   return (
-    <section className="mx-auto max-w-7xl px-6 pb-16 md:px-12">
-      <div className="border-t border-gray-200 pt-10">
-        <h2 className="text-2xl font-bold md:text-3xl">Event Reviews</h2>
+    <section className="pb-4">
+      <div className="border-t border-brand-navy/10 pt-10">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+          Community feedback
+        </p>
+        <h2 className="mt-2 text-2xl font-extrabold text-brand-navy md:text-3xl">
+          Event Reviews
+        </h2>
 
-        <p className="mt-2 text-gray-500">
+        <p className="mt-2 text-sm text-brand-muted">
           Read about other customers' experiences.
         </p>
 
         {reviews && reviews.length > 0 && (
-          <div className="mt-6 rounded-xl border border-gray-200 p-6">
-            <p className="text-sm text-gray-500">Average rating</p>
-
-            <p className="mt-2 text-3xl font-bold text-teal-700">
-              {(
-                reviews.reduce((total, review) => total + review.rating, 0) /
-                reviews.length
-              ).toFixed(1)}{" "}
-              / 5
-            </p>
-
-            <p className="mt-1 text-sm text-gray-500">
+          <div className="mt-6 inline-flex flex-wrap items-center gap-4 rounded-2xl border border-brand-navy/10 bg-white px-6 py-4 shadow-sm">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-brand-muted">
+                Average rating
+              </p>
+              <p className="mt-1 text-3xl font-extrabold text-brand-navy">
+                {(
+                  reviews.reduce((total, review) => total + review.rating, 0) /
+                  reviews.length
+                ).toFixed(1)}
+                <span className="ml-1 text-base font-medium text-brand-muted">
+                  / 5
+                </span>
+              </p>
+            </div>
+            <div className="h-10 w-px bg-brand-navy/10" />
+            <p className="text-sm text-brand-muted">
               {reviews.length} review{reviews.length === 1 ? "" : "s"}
             </p>
           </div>
         )}
 
-        {isLoading && <p className="mt-6 text-gray-500">Loading reviews...</p>}
+        {isLoading && <p className="mt-6 text-brand-muted">Loading reviews...</p>}
 
         {isError && (
-          <p className="mt-6 text-red-600">Failed to load event reviews.</p>
+          <p className="mt-6 font-medium text-red-600">
+            Failed to load event reviews.
+          </p>
         )}
 
         {!isLoading && !isError && reviews?.length === 0 && (
-          <p className="mt-6 rounded-xl border border-gray-200 p-6 text-gray-500">
+          <p className="mt-6 rounded-2xl border border-brand-navy/10 bg-white p-6 text-brand-muted">
             No reviews for this event yet.
           </p>
         )}
@@ -92,30 +108,32 @@ function EventReviews() {
             {reviews.map((review) => (
               <article
                 key={review.id}
-                className="rounded-xl border border-gray-200 p-6"
+                className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm shadow-brand-navy/5"
               >
                 <div className="flex flex-col justify-between gap-2 sm:flex-row">
                   <div>
-                    <h3 className="text-lg font-bold">{review.title}</h3>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <h3 className="text-lg font-bold text-brand-navy">
+                      {review.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-brand-muted">
                       By {review.order.user.name}
                     </p>
                   </div>
 
-                  <p className="font-semibold text-amber-500">
+                  <p className="font-semibold text-brand-orange">
                     {"★".repeat(review.rating)}
-                    <span className="text-gray-300">
+                    <span className="text-brand-disabled">
                       {"★".repeat(5 - review.rating)}
                     </span>
-                    <span className="ml-2 text-gray-700">
+                    <span className="ml-2 text-brand-text">
                       {review.rating}/5
                     </span>
                   </p>
                 </div>
 
-                <p className="mt-4 leading-7 text-gray-600">{review.comment}</p>
+                <p className="mt-4 leading-7 text-brand-text">{review.comment}</p>
 
-                <p className="mt-4 text-xs text-gray-400">
+                <p className="mt-4 text-xs text-brand-muted">
                   {new Date(review.createdAt).toLocaleDateString("en-ID", {
                     day: "numeric",
                     month: "long",
@@ -127,15 +145,15 @@ function EventReviews() {
           </div>
         )}
 
-        <div className="mt-10 rounded-2xl border border-gray-200 p-6 md:p-8">
-          <h3 className="text-xl font-bold">Write a Review</h3>
+        <div className="mt-10 rounded-3xl border border-brand-navy/10 bg-white p-6 shadow-sm shadow-brand-navy/5 md:p-8">
+          <h3 className="text-xl font-bold text-brand-navy">Write a Review</h3>
 
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-brand-muted">
             You must have a paid ticket, and the event must have ended.
           </p>
 
           {!user && (
-            <p className="mt-4 text-sm text-gray-600">
+            <p className="mt-4 rounded-xl bg-brand-neutral px-4 py-3 text-sm text-brand-text">
               Please log in to submit a review.
             </p>
           )}
@@ -143,9 +161,11 @@ function EventReviews() {
           {user && (
             <form onSubmit={handleSubmit} className="mt-6 space-y-5">
               <div>
-                <label className="mb-2 block font-medium">Your rating</label>
+                <label className="mb-2 block text-sm font-medium text-brand-navy">
+                  Your rating
+                </label>
 
-                <div className="flex gap-2">
+                <div className="flex gap-1.5">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
@@ -154,8 +174,10 @@ function EventReviews() {
                       aria-label={`Rate ${star} out of 5 stars`}
                       aria-pressed={rating === star}
                       className={`text-3xl transition ${
-                        star <= rating ? "text-amber-500" : "text-gray-300"
-                      }`}
+                        star <= rating
+                          ? "text-brand-orange"
+                          : "text-brand-disabled"
+                      } hover:text-brand-orange`}
                     >
                       ★
                     </button>
@@ -166,7 +188,7 @@ function EventReviews() {
               <div>
                 <label
                   htmlFor="review-title"
-                  className="mb-2 block font-medium"
+                  className="mb-2 block text-sm font-medium text-brand-navy"
                 >
                   Review title
                 </label>
@@ -178,7 +200,7 @@ function EventReviews() {
                   required
                   minLength={3}
                   maxLength={100}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+                  className="h-11 w-full rounded-lg border border-brand-disabled/80 bg-white px-3.5 text-sm text-brand-text outline-none transition placeholder:text-brand-muted/70 focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/15"
                   placeholder="Summarize your experience"
                 />
               </div>
@@ -186,7 +208,7 @@ function EventReviews() {
               <div>
                 <label
                   htmlFor="review-comment"
-                  className="mb-2 block font-medium"
+                  className="mb-2 block text-sm font-medium text-brand-navy"
                 >
                   Your review
                 </label>
@@ -199,7 +221,7 @@ function EventReviews() {
                   minLength={10}
                   maxLength={1000}
                   rows={5}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+                  className="w-full rounded-lg border border-brand-disabled/80 bg-white px-3.5 py-3 text-sm text-brand-text outline-none transition placeholder:text-brand-muted/70 focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/15"
                   placeholder="Tell us about your experience..."
                 />
               </div>
@@ -208,7 +230,9 @@ function EventReviews() {
                 <p
                   role="status"
                   className={
-                    createReview.isError ? "text-red-600" : "text-teal-700"
+                    createReview.isError
+                      ? "text-sm font-medium text-red-600"
+                      : "text-sm font-medium text-emerald-600"
                   }
                 >
                   {message}
@@ -218,7 +242,7 @@ function EventReviews() {
               <button
                 type="submit"
                 disabled={createReview.isPending}
-                className="rounded-lg bg-teal-600 px-6 py-3 font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg bg-brand-orange px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-orange/20 transition hover:bg-brand-orange-dark disabled:cursor-not-allowed disabled:bg-brand-disabled disabled:text-[#5b6b88] disabled:shadow-none"
               >
                 {createReview.isPending ? "Submitting..." : "Submit Review"}
               </button>

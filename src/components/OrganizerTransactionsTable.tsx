@@ -18,11 +18,14 @@ function formatDate(value: string) {
 }
 
 function statusStyle(status: PaymentStatus) {
-  if (status === "PAID") return "bg-green-100 text-green-700";
-  if (status === "WAITING_FOR_CONFIRMATION") return "bg-blue-100 text-blue-700";
-  if (status === "WAITING_FOR_PAYMENT") return "bg-amber-100 text-amber-700";
-  if (status === "REJECTED") return "bg-red-100 text-red-700";
-  return "bg-gray-100 text-gray-600";
+  if (status === "PAID")
+    return "bg-emerald-50 text-emerald-700 ring-emerald-200";
+  if (status === "WAITING_FOR_CONFIRMATION")
+    return "bg-blue-50 text-blue-700 ring-blue-200";
+  if (status === "WAITING_FOR_PAYMENT")
+    return "bg-amber-50 text-amber-700 ring-amber-200";
+  if (status === "REJECTED") return "bg-red-50 text-red-700 ring-red-200";
+  return "bg-brand-neutral text-brand-muted ring-brand-disabled/60";
 }
 
 function OrganizerTransactionsTable() {
@@ -34,90 +37,114 @@ function OrganizerTransactionsTable() {
   const confirm = useConfirmTransaction();
 
   if (isPending) {
-    return <p className="text-sm text-gray-500">Loading transactions...</p>;
+    return <p className="text-sm text-brand-muted">Loading transactions...</p>;
   }
 
   if (isError || !transactions) {
-    return <p className="text-sm text-red-500">Failed to load transactions.</p>;
+    return (
+      <p className="text-sm font-medium text-red-600">
+        Failed to load transactions.
+      </p>
+    );
   }
 
   if (transactions.length === 0) {
-    return <p className="text-sm text-gray-500">No transactions yet.</p>;
+    return (
+      <div className="rounded-2xl border border-brand-navy/10 bg-white p-10 text-center shadow-sm shadow-brand-navy/5">
+        <p className="font-semibold text-brand-navy">No transactions yet</p>
+        <p className="mt-2 text-sm text-brand-muted">
+          Orders will appear here when customers book your events.
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-100 bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-2xl border border-brand-navy/10 bg-white shadow-sm shadow-brand-navy/5">
       <table className="w-full min-w-[800px] text-sm">
-        <thead className="bg-gray-50 text-left text-gray-500">
+        <thead className="bg-brand-neutral/70 text-left text-xs font-bold uppercase tracking-wider text-brand-muted">
           <tr>
-            <th className="px-4 py-3">Order</th>
-            <th className="px-4 py-3">Customer</th>
-            <th className="px-4 py-3">Event</th>
-            <th className="hidden px-4 py-3 md:table-cell">Ticket</th>
-            <th className="px-4 py-3">Total</th>
-            <th className="px-4 py-3">Status</th>
-            <th className="hidden px-4 py-3 md:table-cell">Proof</th>
-            <th className="px-4 py-3">Action</th>
+            <th className="px-4 py-3.5">Order</th>
+            <th className="px-4 py-3.5">Customer</th>
+            <th className="px-4 py-3.5">Event</th>
+            <th className="hidden px-4 py-3.5 md:table-cell">Ticket</th>
+            <th className="px-4 py-3.5">Total</th>
+            <th className="px-4 py-3.5">Status</th>
+            <th className="hidden px-4 py-3.5 md:table-cell">Proof</th>
+            <th className="px-4 py-3.5">Action</th>
           </tr>
         </thead>
         <tbody>
           {transactions.map((trx) => (
-            <tr key={trx.id} className="border-t border-gray-100">
-              <td className="px-4 py-3">
-                <p className="font-semibold">#{trx.id}</p>
-                <p className="text-xs text-gray-500">
+            <tr
+              key={trx.id}
+              className="border-t border-brand-navy/10 transition hover:bg-brand-neutral/40"
+            >
+              <td className="px-4 py-3.5">
+                <p className="font-semibold text-brand-navy">#{trx.id}</p>
+                <p className="mt-0.5 text-xs text-brand-muted">
                   {formatDate(trx.createdAt)}
                 </p>
               </td>
-              <td className="px-4 py-3">
-                <p>{trx.user.name}</p>
-                <p className="text-xs text-gray-500">{trx.user.email}</p>
+              <td className="px-4 py-3.5">
+                <p className="font-medium text-brand-navy">{trx.user.name}</p>
+                <p className="mt-0.5 text-xs text-brand-muted">
+                  {trx.user.email}
+                </p>
               </td>
-              <td className="px-4 py-3">{trx.ticket.event.name}</td>
-              <td className="hidden px-4 py-3 md:table-cell">
+              <td className="px-4 py-3.5 text-brand-text">
+                {trx.ticket.event.name}
+              </td>
+              <td className="hidden px-4 py-3.5 text-brand-text md:table-cell">
                 {trx.ticket.name} x {trx.quantity}
               </td>
-              <td className="px-4 py-3">
-                <p className="font-semibold">{formatRupiah(trx.finalPrice)}</p>
+              <td className="px-4 py-3.5">
+                <p className="font-semibold text-brand-navy">
+                  {formatRupiah(trx.finalPrice)}
+                </p>
                 {trx.pointsUsed > 0 && (
-                  <p className="text-xs text-gray-500">
+                  <p className="mt-0.5 text-xs text-brand-muted">
                     {trx.pointsUsed.toLocaleString("id-ID")} points used
                   </p>
                 )}
               </td>
-              <td className="px-4 py-3">
+              <td className="px-4 py-3.5">
                 <span
-                  className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold ${statusStyle(trx.paymentStatus)}`}
+                  className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold ring-1 ${statusStyle(trx.paymentStatus)}`}
                 >
                   {trx.paymentStatus.replaceAll("_", " ")}
                 </span>
               </td>
-              <td className="hidden px-4 py-3 md:table-cell">
+              <td className="hidden px-4 py-3.5 md:table-cell">
                 {trx.paymentProofUrl ? (
                   <a
                     href={trx.paymentProofUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[#147D74] underline"
+                    className="font-semibold text-brand-navy underline underline-offset-4 transition hover:text-brand-orange"
                   >
                     View
                   </a>
                 ) : (
-                  <span className="text-gray-400">-</span>
+                  <span className="text-brand-muted/60">-</span>
                 )}
               </td>
-              <td className="px-4 py-3">
+              <td className="px-4 py-3.5">
                 {trx.paymentStatus === "WAITING_FOR_CONFIRMATION" ? (
                   <div className="flex flex-col gap-2 md:flex-row">
                     <Button
                       size="sm"
+                      variant="secondary"
                       disabled={confirm.isPending}
                       onClick={() => {
-                        if (window.confirm(`Accept payment for order #${trx.id}?`)) {
+                        if (
+                          window.confirm(
+                            `Accept payment for order #${trx.id}?`,
+                          )
+                        ) {
                           confirm.mutate({ orderId: trx.id, action: "accept" });
                         }
                       }}
-                      className="bg-[#159E98] text-white hover:bg-[#117F7A]"
                     >
                       Accept
                     </Button>
@@ -126,7 +153,11 @@ function OrganizerTransactionsTable() {
                       variant="outline"
                       disabled={confirm.isPending}
                       onClick={() => {
-                        if (window.confirm(`Reject payment for order #${trx.id}?`)) {
+                        if (
+                          window.confirm(
+                            `Reject payment for order #${trx.id}?`,
+                          )
+                        ) {
                           confirm.mutate({ orderId: trx.id, action: "reject" });
                         }
                       }}
@@ -135,7 +166,7 @@ function OrganizerTransactionsTable() {
                     </Button>
                   </div>
                 ) : (
-                  <span className="text-gray-400">-</span>
+                  <span className="text-brand-muted/60">-</span>
                 )}
               </td>
             </tr>

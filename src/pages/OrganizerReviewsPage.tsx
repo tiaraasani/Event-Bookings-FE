@@ -1,9 +1,13 @@
 import Navbar from "@/components/Navbar";
+import { Button } from "@/components/ui/button";
 import useGetOrganizationReviews from "@/hooks/api/useGetOrganizationReviews";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { useGetMyTransactions } from "@/hooks/api/useGetMyTransaction";
 import useCreateReview from "@/hooks/api/useCreateReviews";
+
+const inputClass =
+  "h-11 w-full rounded-lg border border-brand-disabled/80 bg-white px-3.5 text-sm text-brand-text shadow-sm outline-none transition placeholder:text-brand-muted/60 focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/15";
 
 function OrganizerReviewsPage() {
   const { organizationId } = useParams();
@@ -30,38 +34,49 @@ function OrganizerReviewsPage() {
   } = useGetOrganizationReviews(organizationId);
 
   return (
-    <main className="min-h-screen bg-white text-gray-900">
+    <main className="min-h-screen bg-brand-neutral">
       <Navbar />
 
-      <section className="mx-auto max-w-5xl px-6 py-12 md:px-12">
+      <section className="mx-auto max-w-5xl px-5 py-8 sm:px-8 md:py-10">
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="mb-8 font-semibold text-teal-700 hover:text-teal-800"
+          className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-brand-navy underline underline-offset-4 transition hover:text-brand-orange"
         >
-          ← Back
+          <span aria-hidden="true">←</span>
+          Back
         </button>
 
-        <h1 className="text-3xl font-bold md:text-4xl">Organizer Reviews</h1>
+        <header className="mb-8">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+            Organizer feedback
+          </p>
 
-        <p className="mt-3 text-gray-500">
-          See what customers think about this organizer.
-        </p>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-brand-navy md:text-4xl">
+            Organizer Reviews
+          </h1>
 
-        <div className="mt-8 rounded-xl border border-gray-200 p-6">
-          <h2 className="text-xl font-bold">Write an Organizer Review</h2>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm leading-6 text-brand-text">
+            See what customers think about this organizer.
+          </p>
+        </header>
+
+        <div className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm shadow-brand-navy/5 md:p-8">
+          <h2 className="text-xl font-bold text-brand-navy">
+            Write an Organizer Review
+          </h2>
+          <p className="mt-2 text-sm text-brand-muted">
             Select an eligible event and share your experience.
           </p>
 
           {eligibleEvents.length === 0 ? (
-            <p className="mt-4 text-sm text-gray-500">
+            <p className="mt-5 rounded-xl bg-brand-neutral/70 px-4 py-3 text-sm text-brand-text">
               No eligible paid orders for this organizer's ended events were
               found.
             </p>
           ) : (
             <form
-              className="mt-5 space-y-4"
+              className="mt-6 space-y-5"
               onSubmit={(e) => {
                 e.preventDefault();
 
@@ -88,7 +103,7 @@ function OrganizerReviewsPage() {
               <div>
                 <label
                   htmlFor="review-event"
-                  className="mb-2 block font-medium"
+                  className="mb-2 block text-sm font-semibold text-brand-navy"
                 >
                   Select event
                 </label>
@@ -97,7 +112,7 @@ function OrganizerReviewsPage() {
                   required
                   value={selectedEventId}
                   onChange={(e) => setSelectedEventId(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-4 py-3"
+                  className={inputClass}
                 >
                   <option value="">Choose an event</option>
                   {eligibleEvents.map((order) => (
@@ -109,16 +124,22 @@ function OrganizerReviewsPage() {
               </div>
 
               <div>
-                <p className="mb-2 font-medium">Rating</p>
-                <div className="flex gap-2">
+                <p className="mb-2 text-sm font-semibold text-brand-navy">
+                  Rating
+                </p>
+                <div className="flex gap-1.5">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       type="button"
                       onClick={() => setRating(star)}
-                      className={`text-3xl ${
-                        star <= rating ? "text-amber-400" : "text-gray-300"
-                      }`}
+                      aria-label={`Rate ${star} out of 5`}
+                      aria-pressed={rating === star}
+                      className={`text-3xl transition ${
+                        star <= rating
+                          ? "text-brand-orange"
+                          : "text-brand-disabled"
+                      } hover:text-brand-orange`}
                     >
                       ★
                     </button>
@@ -129,7 +150,7 @@ function OrganizerReviewsPage() {
               <div>
                 <label
                   htmlFor="review-title"
-                  className="mb-2 block font-medium"
+                  className="mb-2 block text-sm font-semibold text-brand-navy"
                 >
                   Title
                 </label>
@@ -140,7 +161,7 @@ function OrganizerReviewsPage() {
                   minLength={3}
                   maxLength={100}
                   required
-                  className="w-full rounded-md border border-gray-300 px-4 py-3"
+                  className={inputClass}
                   placeholder="Summarize your experience"
                 />
               </div>
@@ -148,7 +169,7 @@ function OrganizerReviewsPage() {
               <div>
                 <label
                   htmlFor="review-comment"
-                  className="mb-2 block font-medium"
+                  className="mb-2 block text-sm font-semibold text-brand-navy"
                 >
                   Comment
                 </label>
@@ -160,64 +181,68 @@ function OrganizerReviewsPage() {
                   maxLength={1000}
                   required
                   rows={4}
-                  className="w-full rounded-md border border-gray-300 px-4 py-3"
+                  className="w-full rounded-lg border border-brand-disabled/80 bg-white px-3.5 py-3 text-sm text-brand-text shadow-sm outline-none transition placeholder:text-brand-muted/60 focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/15"
                   placeholder="Tell others about your experience"
                 />
               </div>
 
               {createReview.isError && (
-                <p className="text-sm text-red-600">
+                <p className="text-sm font-medium text-red-600">
                   Failed to publish review. Check your eligibility and try
                   again.
                 </p>
               )}
 
               {createReview.isSuccess && (
-                <p className="text-sm text-green-600">
+                <p className="text-sm font-medium text-emerald-600">
                   Review published successfully.
                 </p>
               )}
 
-              <button
-                type="submit"
-                disabled={createReview.isPending}
-                className="rounded-md bg-teal-600 px-6 py-3 font-semibold text-white hover:bg-teal-700 disabled:opacity-50"
-              >
+              <Button type="submit" disabled={createReview.isPending}>
                 {createReview.isPending ? "Publishing..." : "Publish Review"}
-              </button>
+              </Button>
             </form>
           )}
         </div>
 
-        {isLoading && <p className="mt-8 text-gray-500">Loading reviews...</p>}
+        {isLoading && (
+          <p className="mt-8 text-brand-muted">Loading reviews...</p>
+        )}
 
         {isError && (
-          <p className="mt-8 text-red-600">
+          <p className="mt-8 font-medium text-red-600">
             Failed to load reviews. Please try again.
           </p>
         )}
 
         {!isLoading && !isError && reviews?.length === 0 && (
-          <div className="mt-8 rounded-xl border border-gray-200 p-8 text-center">
-            <h2 className="text-xl font-semibold">No reviews yet</h2>
-            <p className="mt-2 text-gray-500">
+          <div className="mt-6 rounded-2xl border border-brand-navy/10 bg-white p-10 text-center shadow-sm shadow-brand-navy/5">
+            <h2 className="text-xl font-bold text-brand-navy">
+              No reviews yet
+            </h2>
+            <p className="mt-2 text-sm text-brand-muted">
               This organizer has not received any reviews yet.
             </p>
           </div>
         )}
 
         {!isLoading && !isError && reviews && reviews.length > 0 && (
-          <div className="mt-8 space-y-5">
-            <div className="rounded-xl border border-gray-200 p-6">
-              <p className="text-sm text-gray-500">Average rating</p>
-              <p className="mt-2 text-3xl font-bold text-teal-700">
+          <div className="mt-6 space-y-4">
+            <div className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm shadow-brand-navy/5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-brand-muted">
+                Average rating
+              </p>
+              <p className="mt-2 text-3xl font-extrabold text-brand-navy">
                 {(
                   reviews.reduce((total, review) => total + review.rating, 0) /
                   reviews.length
-                ).toFixed(1)}{" "}
-                / 5
+                ).toFixed(1)}
+                <span className="ml-1 text-base font-medium text-brand-muted">
+                  / 5
+                </span>
               </p>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-brand-muted">
                 {reviews.length} review{reviews.length === 1 ? "" : "s"}
               </p>
             </div>
@@ -225,34 +250,38 @@ function OrganizerReviewsPage() {
             {reviews.map((review) => (
               <article
                 key={review.id}
-                className="rounded-xl border border-gray-200 p-6 shadow-sm"
+                className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm shadow-brand-navy/5"
               >
                 <div className="flex flex-col justify-between gap-2 sm:flex-row">
                   <div>
-                    <h2 className="text-lg font-bold">{review.title}</h2>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <h2 className="text-lg font-bold text-brand-navy">
+                      {review.title}
+                    </h2>
+                    <p className="mt-1 text-sm text-brand-muted">
                       By {review.order.user.name}
                     </p>
                   </div>
 
-                  <p className="font-semibold text-amber-500">
+                  <p className="font-semibold text-brand-orange">
                     {"★".repeat(review.rating)}
-                    <span className="text-gray-300">
+                    <span className="text-brand-disabled">
                       {"★".repeat(5 - review.rating)}
                     </span>
-                    <span className="ml-2 text-gray-700">
+                    <span className="ml-2 text-brand-text">
                       {review.rating}/5
                     </span>
                   </p>
                 </div>
 
-                <p className="mt-4 leading-7 text-gray-600">{review.comment}</p>
+                <p className="mt-4 leading-7 text-brand-text">
+                  {review.comment}
+                </p>
 
-                <p className="mt-4 text-sm text-gray-400">
+                <p className="mt-4 text-sm text-brand-muted">
                   Event: {review.order.ticket.event.name}
                 </p>
 
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-brand-muted">
                   {new Date(review.createdAt).toLocaleDateString("en-ID", {
                     day: "numeric",
                     month: "long",

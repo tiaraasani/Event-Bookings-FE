@@ -32,8 +32,6 @@ function formatDate(value: string) {
 
 function ProfilePage() {
   const [activeTab, setActiveTab] = useState<ProfileTab>("home");
-  const [orderId, setOrderId] = useState("");
-  const [noOrderId, setNoOrderId] = useState(false);
 
   const { data: profile, isPending, isError } = useGetProfile();
   const isCustomer = profile?.role === "CUSTOMER";
@@ -105,8 +103,8 @@ function ProfilePage() {
     return (
       <>
         <Navbar />
-        <div className="flex min-h-screen items-center justify-center bg-[#F7FAFA]">
-          <p className="text-gray-600">Loading profile...</p>
+        <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-brand-neutral">
+          <p className="text-brand-muted">Loading profile...</p>
         </div>
       </>
     );
@@ -116,8 +114,8 @@ function ProfilePage() {
     return (
       <>
         <Navbar />
-        <div className="flex min-h-screen items-center justify-center bg-[#F7FAFA]">
-          <p className="text-gray-600">
+        <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-brand-neutral px-4">
+          <p className="text-brand-muted">
             Failed to load profile. Please try again.
           </p>
         </div>
@@ -126,38 +124,38 @@ function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7FAFA] text-gray-800">
+    <div className="min-h-screen bg-brand-neutral text-brand-text">
       <Navbar />
 
       {/* Profile banner */}
-      <section className="bg-gradient-to-r from-[#DDF4F0] to-[#E8F5F5]">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 pb-10 pt-28 sm:flex-row sm:items-center sm:px-10">
+      <section className="bg-brand-navy">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-10 sm:flex-row sm:items-center sm:px-10">
           {profile.picture ? (
             <img
               src={profile.picture}
               alt={profile.name}
-              className="h-24 w-24 shrink-0 rounded-full border-4 border-white object-cover shadow-sm"
+              className="size-24 shrink-0 rounded-2xl border-4 border-white/20 object-cover shadow-lg"
             />
           ) : (
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-4 border-white bg-[#BCE7DF] text-3xl font-bold text-[#147D74] shadow-sm">
+            <div className="flex size-24 shrink-0 items-center justify-center rounded-2xl border-4 border-white/20 bg-brand-orange text-3xl font-extrabold text-white shadow-lg">
               {profile.name.charAt(0).toUpperCase()}
             </div>
           )}
 
           <div>
-            <p className="mb-2 text-sm text-gray-600">
+            <p className="mb-2 text-sm text-white/55">
               Member since {formatDate(profile.createdAt)}
             </p>
 
-            <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+            <h1 className="text-3xl font-extrabold text-white sm:text-4xl">
               {profile.name}
             </h1>
 
             {profile.organization && (
-              <p className="mt-2 text-gray-600">{profile.organization.name}</p>
+              <p className="mt-2 text-white/70">{profile.organization.name}</p>
             )}
 
-            <p className="mt-2 text-sm font-medium text-[#147D74]">
+            <p className="mt-3 inline-flex rounded-full bg-brand-orange px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
               {profile.role}
             </p>
           </div>
@@ -166,14 +164,14 @@ function ProfilePage() {
 
       <main className="mx-auto max-w-7xl px-6 pb-16 sm:px-10">
         {/* Tabs */}
-        <div className="mb-8 flex flex-wrap gap-2 border-b border-gray-200">
+        <div className="relative z-10 -mt-7 mb-8 flex flex-wrap gap-2 rounded-2xl border border-brand-navy/10 bg-white px-2 shadow-lg shadow-brand-navy/10">
           <button
             type="button"
             onClick={() => setActiveTab("home")}
             className={`border-b-2 px-5 py-4 text-sm font-semibold transition ${
               activeTab === "home"
-                ? "border-[#159E98] text-[#147D74]"
-                : "border-transparent text-gray-500 hover:text-gray-800"
+                ? "border-brand-orange text-brand-navy"
+                : "border-transparent text-brand-muted hover:text-brand-navy"
             }`}
           >
             Home
@@ -182,12 +180,10 @@ function ProfilePage() {
           {profile?.role === "CUSTOMER" && (
             <Link
               to="/my-orders"
-              type="button"
-              onClick={() => setActiveTab("orders")}
               className={`border-b-2 px-5 py-4 text-sm font-semibold transition ${
                 activeTab === "orders"
-                  ? "border-[#159E98] text-[#147D74]"
-                  : "border-transparent text-gray-500 hover:text-gray-800"
+                  ? "border-brand-orange text-brand-navy"
+                  : "border-transparent text-brand-muted hover:text-brand-navy"
               }`}
             >
               My Orders
@@ -200,8 +196,8 @@ function ProfilePage() {
               onClick={() => setActiveTab("orders")}
               className={`border-b-2 px-5 py-4 text-sm font-semibold transition ${
                 activeTab === "orders"
-                  ? "border-[#159E98] text-[#147D74]"
-                  : "border-transparent text-gray-500 hover:text-gray-800"
+                  ? "border-brand-orange text-brand-navy"
+                  : "border-transparent text-brand-muted hover:text-brand-navy"
               }`}
             >
               My Transaction
@@ -211,7 +207,7 @@ function ProfilePage() {
           {profile?.role === "ORGANIZER" && (
             <Link
               to="/organizer/dashboard"
-              className="border-b-2 border-transparent px-5 py-4 text-sm font-semibold text-gray-500 transition hover:text-gray-800"
+              className="border-b-2 border-transparent px-5 py-4 text-sm font-semibold text-brand-muted transition hover:text-brand-navy"
             >
               Dashboard
             </Link>
@@ -221,8 +217,8 @@ function ProfilePage() {
             onClick={() => setActiveTab("settings")}
             className={`border-b-2 px-5 py-4 text-sm font-semibold transition ${
               activeTab === "settings"
-                ? "border-[#159E98] text-[#147D74]"
-                : "border-transparent text-gray-500 hover:text-gray-800"
+                ? "border-brand-orange text-brand-navy"
+                : "border-transparent text-brand-muted hover:text-brand-navy"
             }`}
           >
             Settings
@@ -233,35 +229,35 @@ function ProfilePage() {
         {activeTab === "home" && (
           <div className="space-y-8">
             <section>
-              <h2 className="mb-5 text-2xl font-bold text-gray-900">
+              <h2 className="mb-5 text-2xl font-bold text-brand-navy">
                 Your Activity
               </h2>
 
               {/* Organizer activity */}
               {isOrganizer && (
-                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+                <div className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm">
                   <h3 className="mb-4 text-lg font-semibold">
                     Organised Events
                   </h3>
 
                   {isOrganizedEventsPending ? (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-brand-muted">
                       Loading your events...
                     </p>
                   ) : isOrganizedEventsError ? (
-                    <p className="text-sm text-red-500">
+                    <p className="text-sm text-red-600">
                       Failed to load your events.
                     </p>
                   ) : !organizedEvents || organizedEvents.length === 0 ? (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-brand-muted">
                       You haven't organised any events yet.
                     </p>
                   ) : (
                     <div className="grid gap-4 sm:grid-cols-2">
-                      {organizedEvents.map((event: any) => (
+                      {organizedEvents.map((event) => (
                         <div
                           key={event.id}
-                          className="rounded-lg border border-gray-100 p-4"
+                          className="rounded-lg border border-brand-navy/10 p-4"
                         >
                           {event.image && (
                             <img
@@ -273,15 +269,15 @@ function ProfilePage() {
 
                           <h4 className="font-semibold">{event.name}</h4>
 
-                          <p className="mt-1 text-sm text-gray-500">
+                          <p className="mt-1 text-sm text-brand-muted">
                             {event.category?.name ?? "Uncategorized"}
                           </p>
 
-                          <p className="mt-1 text-sm text-gray-600">
+                          <p className="mt-1 text-sm text-brand-text">
                             {event.type === "ONLINE" ? "Online" : event.city}
                           </p>
 
-                          <p className="mt-1 text-sm text-gray-600">
+                          <p className="mt-1 text-sm text-brand-text">
                             Starts: {formatDate(event.startDate)}
                           </p>
 
@@ -290,20 +286,20 @@ function ProfilePage() {
                               Ticket Availability
                             </p>
 
-                            {event.tickets.map((ticket: any) => (
+                            {event.tickets.map((ticket) => (
                               <p
                                 key={ticket.id}
                                 className="flex justify-between gap-3 text-sm"
                               >
                                 <span>{ticket.name}</span>
-                                <span className="text-[#147D74]">
+                                <span className="text-brand-navy">
                                   {ticket.availableQuantity} / {ticket.quantity}
                                 </span>
                               </p>
                             ))}
                             <Link
                               to={`/organizer/events/${event.id}/attendees`}
-                              className="mt-4 block text-center text-sm font-semibold text-[#147D74] underline"
+                              className="mt-4 block text-center text-sm font-semibold text-brand-navy underline"
                             >
                               View attendees
                             </Link>
@@ -336,21 +332,21 @@ function ProfilePage() {
 
               {/* Customer activity */}
               {isCustomer && (
-                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+                <div className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm">
                   <h3 className="mb-4 text-lg font-semibold">
                     Attending Events
                   </h3>
 
                   {isTransactionsPending ? (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-brand-muted">
                       Loading your bookings...
                     </p>
                   ) : isTransactionsError ? (
-                    <p className="text-sm text-red-500">
+                    <p className="text-sm text-red-600">
                       Failed to load your bookings.
                     </p>
                   ) : !transactions || transactions.length === 0 ? (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-brand-muted">
                       You haven't booked any events yet.
                     </p>
                   ) : (
@@ -359,18 +355,18 @@ function ProfilePage() {
                         new Map(
                           transactions
                             .filter(
-                              (transaction: any) =>
+                              (transaction) =>
                                 transaction.paymentStatus !== "REJECTED" &&
                                 transaction.ticket?.event,
                             )
-                            .map((transaction: any) => [
+                            .map((transaction) => [
                               transaction.ticket.event.id,
                               transaction.ticket.event,
                             ]),
                         ).values(),
-                      ).map((event: any) => {
+                      ).map((event) => {
                         const eventTransactions = transactions.filter(
-                          (transaction: any) =>
+                          (transaction) =>
                             transaction.ticket?.event?.id === event.id &&
                             transaction.paymentStatus !== "REJECTED",
                         );
@@ -378,7 +374,7 @@ function ProfilePage() {
                         return (
                           <div
                             key={event.id}
-                            className="rounded-lg border border-gray-100 p-4"
+                            className="rounded-lg border border-brand-navy/10 p-4"
                           >
                             {event.image && (
                               <img
@@ -390,15 +386,15 @@ function ProfilePage() {
 
                             <h4 className="font-semibold">{event.name}</h4>
 
-                            <p className="mt-1 text-sm text-gray-500">
+                            <p className="mt-1 text-sm text-brand-muted">
                               {event.category?.name ?? "Uncategorized"}
                             </p>
 
-                            <p className="mt-1 text-sm text-gray-600">
+                            <p className="mt-1 text-sm text-brand-text">
                               {event.type === "ONLINE" ? "Online" : event.city}
                             </p>
 
-                            <p className="mt-1 text-sm text-gray-600">
+                            <p className="mt-1 text-sm text-brand-text">
                               Starts: {formatDate(event.startDate)}
                             </p>
 
@@ -407,22 +403,22 @@ function ProfilePage() {
                                 Your Bookings
                               </p>
 
-                              {eventTransactions.map((transaction: any) => (
+                              {eventTransactions.map((transaction) => (
                                 <div
                                   key={transaction.id}
-                                  className="mt-2 rounded-md bg-gray-50 p-3"
+                                  className="mt-2 rounded-md bg-brand-neutral/60 p-3"
                                 >
-                                  <p className="text-sm text-gray-600">
+                                  <p className="text-sm text-brand-text">
                                     Ticket: {transaction.ticket.name}
                                   </p>
 
-                                  <p className="text-sm text-gray-600">
+                                  <p className="text-sm text-brand-text">
                                     Quantity: {transaction.quantity}
                                   </p>
 
-                                  <p className="text-sm text-gray-600">
+                                  <p className="text-sm text-brand-text">
                                     Status:{" "}
-                                    <span className="font-semibold text-[#147D74]">
+                                    <span className="font-semibold text-brand-navy">
                                       {transaction.paymentStatus.replaceAll(
                                         "_",
                                         " ",
@@ -443,13 +439,13 @@ function ProfilePage() {
 
             {/* Existing rewards functionality */}
             <section>
-              <h2 className="mb-5 text-2xl font-bold text-gray-900">
+              <h2 className="mb-5 text-2xl font-bold text-brand-navy">
                 Your Rewards
               </h2>
 
               <div className="grid gap-5 sm:grid-cols-2">
-                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-                  <p className="text-sm text-gray-500">Referral Code</p>
+                <div className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm">
+                  <p className="text-sm text-brand-muted">Referral Code</p>
 
                   <div className="mt-3 flex flex-wrap items-center gap-3">
                     <p className="break-all text-xl font-bold">
@@ -467,8 +463,8 @@ function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-                  <p className="text-sm text-gray-500">Active Points</p>
+                <div className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm">
+                  <p className="text-sm text-brand-muted">Active Points</p>
 
                   <p className="mt-3 text-2xl font-bold">
                     {profile.pointBalance.toLocaleString("id-ID")}
@@ -476,17 +472,17 @@ function ProfilePage() {
                 </div>
               </div>
 
-              <div className="mt-5 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+              <div className="mt-5 rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm">
                 <h3 className="mb-4 text-lg font-semibold">Active Coupons</h3>
 
                 {profile.coupons.length === 0 ? (
-                  <p className="text-sm text-gray-500">No coupons yet.</p>
+                  <p className="text-sm text-brand-muted">No coupons yet.</p>
                 ) : (
                   <ul className="space-y-3">
                     {profile.coupons.map((coupon) => (
                       <li
                         key={coupon.id}
-                        className="flex flex-col gap-2 rounded-lg border border-gray-100 p-4 text-sm sm:flex-row sm:items-center sm:justify-between"
+                        className="flex flex-col gap-2 rounded-lg border border-brand-navy/10 p-4 text-sm sm:flex-row sm:items-center sm:justify-between"
                       >
                         <span className="font-mono font-semibold">
                           {coupon.code}
@@ -496,7 +492,7 @@ function ProfilePage() {
                           Rp {coupon.discountValue.toLocaleString("id-ID")}
                         </span>
 
-                        <span className="text-gray-500">
+                        <span className="text-brand-muted">
                           Expires {formatDate(coupon.expiresAt)}
                         </span>
                       </li>
@@ -520,10 +516,10 @@ function ProfilePage() {
         {activeTab === "settings" && (
           <div className="mx-auto max-w-3xl space-y-6">
             {/* Email */}
-            <section className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+            <section className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm">
               <h2 className="text-xl font-bold">Email Address</h2>
 
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-brand-muted">
                 Your account email address.
               </p>
 
@@ -531,11 +527,11 @@ function ProfilePage() {
                 <Input value={profile.email} readOnly />
               </div>
 
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-2 text-xs text-brand-muted">
                 Email changes are not supported by the current profile API.
               </p>
             </section>
-            <section className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+            <section className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm">
               <h2 className="mb-4 text-xl font-bold">Profile Picture</h2>
 
               <UpdatePictureForm
@@ -545,17 +541,17 @@ function ProfilePage() {
             </section>
 
             {/* Existing name update form */}
-            <section className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+            <section className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm">
               <h2 className="mb-4 text-xl font-bold">Personal Information</h2>
 
               <UpdateNameForm currentName={profile.name} />
             </section>
 
             {/* Existing change-password functionality */}
-            <section className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm sm:p-8">
+            <section className="rounded-2xl border border-brand-navy/10 bg-white p-6 shadow-sm sm:p-8">
               <h2 className="text-xl font-bold">Password Settings</h2>
 
-              <p className="mt-2 mb-6 text-sm text-gray-500">
+              <p className="mt-2 mb-6 text-sm text-brand-muted">
                 Change your password to keep your account secure.
               </p>
 
@@ -574,7 +570,7 @@ function ProfilePage() {
                   />
 
                   {formState.errors.currentPassword && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-sm text-red-600">
                       {formState.errors.currentPassword.message}
                     </p>
                   )}
@@ -591,7 +587,7 @@ function ProfilePage() {
                   />
 
                   {formState.errors.newPassword && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-sm text-red-600">
                       {formState.errors.newPassword.message}
                     </p>
                   )}
@@ -608,17 +604,13 @@ function ProfilePage() {
                   />
 
                   {formState.errors.confirmPassword && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-sm text-red-600">
                       {formState.errors.confirmPassword.message}
                     </p>
                   )}
                 </div>
 
-                <Button
-                  type="submit"
-                  disabled={changePassword.isPending}
-                  className="bg-[#159E98] text-white hover:bg-[#117F7A]"
-                >
+                <Button type="submit" disabled={changePassword.isPending}>
                   {changePassword.isPending ? "Saving..." : "Change Password"}
                 </Button>
               </form>

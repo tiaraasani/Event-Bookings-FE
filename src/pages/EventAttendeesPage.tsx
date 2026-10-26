@@ -34,8 +34,6 @@ function formatDateTime(value: string | null) {
 }
 
 function EventAttendeesPage() {
-  // The chosen event lives in the URL (?event=ID) so the page can be
-  // refreshed, shared, or linked to from the event cards.
   const [searchParams, setSearchParams] = useSearchParams();
   const eventId = Number(searchParams.get("event")) || 0;
 
@@ -44,7 +42,6 @@ function EventAttendeesPage() {
     queryFn: getMyOrganizedEvents,
   });
 
-  // Search box for the event list; filtering waits 300ms after typing stops
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
@@ -57,8 +54,6 @@ function EventAttendeesPage() {
     event.name.toLowerCase().includes(debouncedSearch.toLowerCase()),
   );
 
-  // Page also lives in the URL; opening another event (?event=ID only)
-  // naturally resets it to 1, so no effect is needed.
   const page = Number(searchParams.get("page")) || 1;
   const TAKE = 10;
 
@@ -121,7 +116,6 @@ function EventAttendeesPage() {
       </header>
 
       {eventId === 0 ? (
-        // No event chosen yet: list every event so the organizer can click one.
         events.isPending ? (
           <p className="text-sm text-brand-muted">Loading your events...</p>
         ) : events.isError ? (

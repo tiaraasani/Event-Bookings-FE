@@ -49,7 +49,6 @@ const PERIOD_OPTIONS: { value: Period; label: string }[] = [
 const CARD =
   "rounded-2xl border border-brand-navy/10 bg-white p-5 shadow-sm shadow-brand-navy/5";
 
-// Compact variant for the chart filters
 const FILTER_SELECT = "h-10 w-24 font-medium text-brand-navy";
 
 function formatRupiah(amount: number) {
@@ -79,8 +78,6 @@ function OrganizerDashboardPage() {
     month,
   );
 
-  // Orders that need the organizer's decision: shown on the overview so the
-  // most important daily task is visible without opening Transactions.
   const pending = useGetOrganizerTransactions({
     page: 1,
     take: 5,
@@ -146,7 +143,6 @@ function OrganizerDashboardPage() {
         </p>
       </header>
 
-      {/* Summary stats */}
       <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div
           className={`${CARD} ${
@@ -194,7 +190,6 @@ function OrganizerDashboardPage() {
       </div>
 
       <div className="grid gap-5 xl:grid-cols-3">
-        {/* Chart */}
         <div className={`${CARD} sm:p-6 xl:col-span-2`}>
           <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -310,7 +305,6 @@ function OrganizerDashboardPage() {
           </div>
         </div>
 
-        {/* Pending confirmations */}
         <div className={CARD}>
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>

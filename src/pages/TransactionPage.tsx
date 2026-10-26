@@ -45,7 +45,6 @@ function TransactionPage() {
   const [voucherMessage, setVoucherMessage] = useState("");
   const [isApplyingVoucher, setIsApplyingVoucher] = useState(false);
 
-  // Coupons come from the profile (only unused, unexpired ones are returned)
   const { data: profile } = useGetProfile();
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
 
@@ -63,7 +62,6 @@ function TransactionPage() {
 
   const totalAfterVoucher = total - voucherDiscount;
 
-  // A coupon is a fixed rupiah amount and can never go below zero
   const couponDiscount = appliedCoupon
     ? Math.min(appliedCoupon.discountValue, totalAfterVoucher)
     : 0;

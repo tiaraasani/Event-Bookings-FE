@@ -22,7 +22,6 @@ const categoryOptions = [
   "Others",
 ];
 
-// Same field styling as CreateEvent so both forms look identical.
 const fieldClass =
   "h-11 w-full rounded-lg border border-brand-disabled/80 px-3.5 text-sm shadow-sm outline-none transition placeholder:text-brand-muted/60 focus:border-brand-orange focus:ring-4 focus:ring-brand-orange/15 disabled:cursor-not-allowed disabled:border-brand-disabled disabled:bg-brand-disabled/40 disabled:text-brand-muted";
 const inputClass = `${fieldClass} bg-white text-brand-text`;

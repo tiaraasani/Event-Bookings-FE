@@ -6,7 +6,6 @@ import { buttonVariants } from "@/components/ui/button";
 type NavItem = {
   to: string;
   label: string;
-  // Extra path fragments that keep this item highlighted (e.g. edit event).
   alsoMatch?: string[];
 };
 
@@ -33,7 +32,6 @@ function OrganizerLayout() {
       <Navbar />
 
       <div className="mx-auto max-w-7xl px-5 pb-16 pt-8 sm:px-8 md:pt-10 lg:flex lg:gap-10">
-        {/* Sidebar on desktop, horizontal tabs on mobile */}
         <aside className="mb-6 shrink-0 lg:mb-0 lg:w-56">
           <div className="lg:sticky lg:top-30">
             <div className="mb-5 hidden lg:block">

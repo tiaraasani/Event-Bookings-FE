@@ -107,7 +107,6 @@ function PromotionPageForOrganizer() {
     const discountValue = Number(form.discountValue);
     const quota = Number(form.quota);
 
-    // The custom Select has no native "required", so guard it here.
     if (!editingVoucher && !form.eventId) {
       alert("Please choose an event for this promotion.");
       return;

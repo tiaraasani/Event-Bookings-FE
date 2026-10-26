@@ -37,10 +37,6 @@ function EyeIcon({ open }: { open: boolean }) {
   );
 }
 
-/**
- * Password field with a show/hide toggle. Accepts the same props as Input,
- * so it works with react-hook-form's register() spread.
- */
 function PasswordInput({
   className,
   ...props

@@ -77,7 +77,6 @@ export const router = createBrowserRouter([
         element: <AttendeesRedirect />,
       },
       {
-        // Pages that share the organizer sidebar
         element: <OrganizerLayout />,
         children: [
           {

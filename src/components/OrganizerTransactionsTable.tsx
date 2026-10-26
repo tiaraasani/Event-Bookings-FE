@@ -38,9 +38,6 @@ const STATUS_OPTIONS: { value: PaymentStatus | ""; label: string }[] = [
   { value: "CANCELED", label: "Canceled" },
 ];
 
-// Text shown in the Action column once no decision is needed
-// Same labels and chip colours as the customer's My Orders page, so both
-// sides of a transaction read the same way.
 const STATUS_LABEL: Record<PaymentStatus, string> = {
   WAITING_FOR_PAYMENT: "Waiting for payment",
   WAITING_FOR_CONFIRMATION: "Waiting for confirmation",
@@ -66,7 +63,6 @@ function OrganizerTransactionsTable() {
   const [status, setStatus] = useState<PaymentStatus | "">("");
   const [eventId, setEventId] = useState<number | undefined>(undefined);
 
-  // Organizer's own events, for the event filter
   const events = useQuery({
     queryKey: ["my-organized-events"],
     queryFn: getMyOrganizedEvents,
@@ -196,7 +192,6 @@ function OrganizerTransactionsTable() {
                 key={trx.id}
                 className="border-t border-brand-navy/10 align-middle transition hover:bg-brand-neutral/40"
               >
-                {/* Keep numbering continuous across pages: page 2 starts at 11 */}
                 <td className="px-3 py-3">
                   {(data.meta.page - 1) * data.meta.take + index + 1}
                 </td>

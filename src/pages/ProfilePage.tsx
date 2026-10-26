@@ -23,7 +23,8 @@ type ProfileTab = "home" | "settings";
 
 const TAB_BASE = "border-b-2 px-5 py-4 text-sm font-semibold transition";
 const TAB_ACTIVE = "border-brand-orange text-brand-navy";
-const TAB_INACTIVE = "border-transparent text-brand-muted hover:text-brand-navy";
+const TAB_INACTIVE =
+  "border-transparent text-brand-muted hover:text-brand-navy";
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString("id-ID", {
@@ -180,7 +181,6 @@ function ProfilePage() {
         {/* HOME TAB */}
         {activeTab === "home" && (
           <div className="space-y-8">
-            {/* Organizer: everything event-related lives in the dashboard */}
             {isOrganizer && (
               <section>
                 <h2 className="mb-5 text-2xl font-bold text-brand-navy">
@@ -193,8 +193,8 @@ function ProfilePage() {
                       {profile.organization?.name ?? "Organizer dashboard"}
                     </p>
                     <p className="mt-1 text-sm text-brand-muted">
-                      Manage events, confirm payments, and track sales from
-                      your dashboard.
+                      Manage events, confirm payments, and track sales from your
+                      dashboard.
                     </p>
                   </div>
                   <Link
@@ -319,7 +319,6 @@ function ProfilePage() {
               </section>
             )}
 
-            {/* Rewards */}
             <section>
               <h2 className="mb-5 text-2xl font-bold text-brand-navy">
                 Your Rewards

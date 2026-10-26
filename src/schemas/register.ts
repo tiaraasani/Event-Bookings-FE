@@ -10,7 +10,6 @@ export const registerSchema = z
     referralCode: z.string().optional(),
     organizationName: z.string().optional(),
   })
-  // Checked after the field rules above; the error is attached to confirmPassword
   .refine((data) => data.password === data.confirmPassword, {
     message: "passwords do not match",
     path: ["confirmPassword"],

@@ -51,13 +51,6 @@ function CheckIcon() {
   );
 }
 
-/**
- * Styled replacement for a native <select>. The popup list is rendered by
- * Base UI, so it can follow the app theme (a native <select> cannot).
- *
- * `value` is a plain string; pass "" for "nothing selected" and the
- * placeholder is shown.
- */
 function Select({
   id,
   value,

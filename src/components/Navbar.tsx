@@ -75,8 +75,6 @@ function Navbar() {
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
 
-  // The organizer area spans several URLs (/organizer/*, plus edit event),
-  // so the Dashboard link stays underlined on all of them.
   const isOrganizerArea =
     pathname.startsWith("/organizer") || /^\/events\/\d+\/edit$/.test(pathname);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);

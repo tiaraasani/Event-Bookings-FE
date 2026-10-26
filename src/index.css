@@ -16,7 +16,6 @@
     --color-brand-muted: #6b7c9b;
     --color-brand-disabled: #c8d3e6;
     --color-brand-line: #d5dfef;
-    /* Warm, muted red for destructive actions; sits next to brand-orange */
     --color-brand-red: #d1584a;
     --color-brand-red-dark: #b5463a;
     --color-brand-red-soft: #fbe6e3;
@@ -141,8 +140,6 @@
 
   html {
     @apply font-sans scroll-smooth;
-    /* Always reserve space for the vertical scrollbar so the layout does not
-       shift sideways when a page becomes tall enough to scroll. */
     scrollbar-gutter: stable;
   }
 

@@ -48,7 +48,7 @@ const HowItWorks = () => {
             <div className="relative mt-8">
               <img
                 src="/howitworks.png"
-                alt="How EventBookings works"
+                alt="How Seatly works"
                 className="h-auto w-full rounded-2xl border border-white/10 object-cover shadow-2xl"
               />
             </div>

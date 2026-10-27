@@ -84,14 +84,14 @@ function Navbar() {
       <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Link to="/" className="flex shrink-0 items-center gap-3">
           <span className="flex size-10 items-center justify-center rounded-xl bg-brand-orange text-sm font-extrabold tracking-tight text-white shadow-sm shadow-brand-orange/20">
-            EB
+            S
           </span>
           <span className="leading-none">
             <span className="block text-sm font-extrabold tracking-[0.18em]">
-              EVENT
+              SEATLY
             </span>
             <span className="mt-1 block text-[0.65rem] font-semibold tracking-[0.28em] text-white/65">
-              BOOKINGS
+              EVENT TICKETS
             </span>
           </span>
         </Link>
@@ -161,7 +161,7 @@ function Navbar() {
               >
                 <div className="rounded-xl bg-brand-neutral/70 p-4">
                   <p className="text-sm font-semibold text-brand-navy">
-                    Welcome to EventBookings
+                    Welcome to Seatly
                   </p>
                   <p className="mt-1 text-xs leading-5 text-brand-muted">
                     Sign in to book tickets or manage your events.

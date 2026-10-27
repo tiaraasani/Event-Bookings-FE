@@ -8,14 +8,14 @@ const Footer = () => {
           <div>
             <Link to="/" className="inline-flex items-center gap-3">
               <span className="flex size-11 items-center justify-center rounded-xl bg-brand-orange text-sm font-extrabold text-white shadow-sm shadow-brand-orange/20">
-                EB
+                S
               </span>
               <span className="leading-none">
                 <span className="block text-lg font-extrabold tracking-[0.16em]">
-                  EVENT
+                  SEATLY
                 </span>
                 <span className="mt-1.5 block text-[0.68rem] font-semibold tracking-[0.28em] text-white/60">
-                  BOOKINGS
+                  EVENT TICKETS
                 </span>
               </span>
             </Link>
@@ -27,7 +27,7 @@ const Footer = () => {
 
           <div>
             <h3 className="mb-6 text-base font-semibold text-white">
-              EventBookings
+              Seatly
             </h3>
             <ul className="space-y-4 text-sm text-white/65">
               <li>
@@ -139,7 +139,7 @@ const Footer = () => {
 
         <div className="mt-10 border-t border-white/10 pt-5 md:mt-14 md:pt-6">
           <p className="text-xs text-white/50 md:text-sm">
-            © {new Date().getFullYear()} EventBookings. All rights reserved.
+            © {new Date().getFullYear()} Seatly. All rights reserved.
           </p>
         </div>
       </div>

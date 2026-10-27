@@ -18,14 +18,14 @@ function BrandMark() {
   return (
     <Link to="/" className="inline-flex items-center gap-3">
       <span className="flex size-11 items-center justify-center rounded-xl bg-brand-orange text-sm font-extrabold text-white shadow-sm shadow-brand-orange/20">
-        EB
+        S
       </span>
       <span className="leading-none">
         <span className="block text-base font-extrabold tracking-[0.16em] text-white">
-          EVENT
+          SEATLY
         </span>
         <span className="mt-1.5 block text-[0.65rem] font-semibold tracking-[0.28em] text-white/60">
-          BOOKINGS
+          EVENT TICKETS
         </span>
       </span>
     </Link>
@@ -51,7 +51,7 @@ function AuthLayout({ title, subtitle, children, size = "md" }: AuthLayoutProps)
 
         <div className="relative max-w-md py-16">
           <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-orange">
-            Welcome to EventBookings
+            Welcome to Seatly
           </span>
 
           <h2 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight text-white xl:text-5xl">
@@ -89,7 +89,7 @@ function AuthLayout({ title, subtitle, children, size = "md" }: AuthLayoutProps)
         </div>
 
         <p className="relative text-xs text-white/40">
-          © {new Date().getFullYear()} EventBookings. All rights reserved.
+          © {new Date().getFullYear()} Seatly. All rights reserved.
         </p>
       </aside>
 
@@ -104,14 +104,14 @@ function AuthLayout({ title, subtitle, children, size = "md" }: AuthLayoutProps)
             className="mb-8 inline-flex items-center gap-3 lg:hidden"
           >
             <span className="flex size-10 items-center justify-center rounded-xl bg-brand-orange text-sm font-extrabold text-white">
-              EB
+              S
             </span>
             <span className="leading-none">
               <span className="block text-sm font-extrabold tracking-[0.16em] text-brand-navy">
-                EVENT
+                SEATLY
               </span>
               <span className="mt-1 block text-[0.6rem] font-semibold tracking-[0.26em] text-brand-muted">
-                BOOKINGS
+                EVENT TICKETS
               </span>
             </span>
           </Link>
